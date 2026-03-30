@@ -7,7 +7,8 @@ const config: Config = {
         "^.+.tsx?$": ["ts-jest",{ diagnostics: { ignoreCodes: ["TS151001"] } }],
     },
     globals: {
-        "__AIKEY__": ""
+        "__AIKEY__": "",
+        "__NAACLIENTID__": ""
     },
     collectCoverage: true,
     collectCoverageFrom: ["./src/**"],

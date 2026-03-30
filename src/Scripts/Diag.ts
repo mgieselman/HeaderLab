@@ -7,7 +7,7 @@ import { mhaVersion } from "./mhaVersion";
 import { ParentFrame } from "./ParentFrame";
 import { GetHeaders } from "./ui/getHeaders/GetHeaders";
 import { GetHeadersAPI } from "./ui/getHeaders/GetHeadersAPI";
-import { GetHeadersRest } from "./ui/getHeaders/GetHeadersRest";
+import { GetHeadersGraph } from "./ui/getHeaders/GetHeadersGraph";
 
 import "promise-polyfill/dist/polyfill";
 
@@ -230,7 +230,7 @@ class Diag {
             if (GetHeaders) {
                 this.appDiagnostics["permissionLevel"] = GetHeaders.permissionLevel();
                 this.appDiagnostics["canUseAPI"] = GetHeadersAPI.canUseAPI();
-                this.appDiagnostics["canUseRest"] = GetHeadersRest.canUseRest();
+                this.appDiagnostics["canUseGraph"] = GetHeadersGraph.canUseGraph();
                 this.appDiagnostics["sufficientPermission"] = GetHeaders.sufficientPermission(true);
             }
         }

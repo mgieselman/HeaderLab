@@ -85,6 +85,9 @@ console.log("version:", version);
 const aikey = process.env.APPINSIGHTS_INSTRUMENTATIONKEY || "unknown";
 console.log("aikey:", aikey);
 
+const naaClientId = process.env.MHA_NAA_CLIENT_ID || "";
+console.log("naaClientId:", naaClientId ? "set" : "not set");
+
 const buildTime = new Date().toUTCString();
 console.log("buildTime:", buildTime);
 
@@ -169,6 +172,7 @@ export default async (env, options) => {
                 __VERSION__: JSON.stringify(version),
                 __AIKEY__: JSON.stringify(aikey),
                 __BUILDTIME__: JSON.stringify(buildTime),
+                __NAACLIENTID__: JSON.stringify(naaClientId),
             }),
             new ForkTsCheckerWebpackPlugin(),
             // Custom plugin to log compilation start/end times with timestamps
@@ -274,6 +278,13 @@ export default async (env, options) => {
                         test: /[\\/]node_modules[\\/](office-addin|@microsoft)[\\/]/,
                         name: "office-libs",
                         priority: 25,
+                        reuseExistingChunk: true,
+                    },
+                    // Authentication libraries (MSAL)
+                    auth: {
+                        test: /[\\/]node_modules[\\/](@azure)[\\/]/,
+                        name: "auth-libs",
+                        priority: 26,
                         reuseExistingChunk: true,
                     },
                     // Utilities and smaller libraries

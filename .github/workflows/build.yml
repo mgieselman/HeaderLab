@@ -1,7 +1,7 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: Build mha
+name: Build and Deploy MHA
 
 on:
   push:
@@ -11,6 +11,10 @@ on:
 
 permissions:
   contents: read
+
+env:
+  NODE_VERSION: '22'
+  AZURE_WEBAPP_NAME: 'mha'
 
 jobs:
   build:
@@ -34,6 +38,7 @@ jobs:
         env:
           SCM_COMMIT_ID: ${{ github.sha }}
           APPINSIGHTS_INSTRUMENTATIONKEY: ${{ secrets.APPINSIGHTS_INSTRUMENTATIONKEY }}
+          MHA_NAA_CLIENT_ID: ${{ secrets.MHA_NAA_CLIENT_ID }}
         run: |
           npm ci
           npm run build --if-present
@@ -53,3 +58,22 @@ jobs:
             .deployment
             deploy.cmd
             Web.config
+
+  deploy:
+    needs: build
+    runs-on: windows-latest
+    environment:
+      name: production
+      url: https://mha.azurewebsites.net
+
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@95815c38cf2ff2164869cbab79da8d1f422bc89e # v4.2.1
+        with:
+          name: mha-assets
+
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@2fdd5c3ebb4e540834b57a18cee3e11a8e083b05 # v3.0.2
+        with:
+          app-name: ${{ env.AZURE_WEBAPP_NAME }}
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
