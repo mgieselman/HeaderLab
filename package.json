@@ -84,6 +84,7 @@
     "webpack-dev-server": "^5.2.3"
   },
   "dependencies": {
+    "@azure/msal-browser": "^5.2.0",
     "@fluentui/web-components": "^2.6.1",
     "@microsoft/applicationinsights-web": "^3.3.11",
     "@microsoft/office-js": "^1.1.110",
@@ -91,7 +92,6 @@
     "dayjs": "^1.11.20",
     "framework7": "^9.0.3",
     "framework7-icons": "^5.0.5",
-    "jwt-decode": "^4.0.0",
     "promise-polyfill": "8.3.0",
     "stacktrace-js": "^2.0.2",
     "unfetch": "^5.0.0"

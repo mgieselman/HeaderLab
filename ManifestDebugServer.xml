@@ -205,6 +205,13 @@
           <bt:String id="mhaOpenPaneBtnTipDescription" DefaultValue="Retrieves the transport message headers of the current message and displays them in an easy-to-read format. Debug build on server" />
         </bt:LongStrings>
       </Resources>
+      <WebApplicationInfo>
+        <Id>{CLIENT_ID}</Id>
+        <Resource>api://mha-test3ff4.azurewebsites.net/{CLIENT_ID}</Resource>
+        <Scopes>
+          <Scope>Mail.Read</Scope>
+        </Scopes>
+      </WebApplicationInfo>
     </VersionOverrides>
   </VersionOverrides>
 </OfficeApp>

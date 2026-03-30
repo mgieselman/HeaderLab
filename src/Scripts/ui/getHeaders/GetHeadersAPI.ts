@@ -15,9 +15,7 @@ import { ParentFrame } from "../../ParentFrame";
  */
 
 export class GetHeadersAPI {
-    private static minAPISet = "1.9";
-
-    public static canUseAPI(): boolean { return GetHeaders.canUseAPI("API", GetHeadersAPI.minAPISet); }
+    public static canUseAPI(): boolean { return GetHeaders.canUseAPI(); }
 
     private static async getAllInternetHeaders(item: Office.MessageRead): Promise<string> {
         return new Promise((resolve) => {

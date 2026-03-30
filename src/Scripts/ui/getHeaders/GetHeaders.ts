@@ -1,14 +1,14 @@
 import { GetHeadersAPI } from "./GetHeadersAPI";
-import { GetHeadersEWS } from "./GetHeadersEWS";
-import { GetHeadersRest } from "./GetHeadersRest";
+import { GetHeadersGraph } from "./GetHeadersGraph";
 import { diagnostics } from "../../Diag";
 import { Errors } from "../../Errors";
 import { ParentFrame } from "../../ParentFrame";
 
 /*
- * GetHeaders.js
+ * GetHeaders.ts
  *
- * Selector for switching between EWS and Rest logic
+ * Selector for switching between API and Graph logic.
+ * Fallback chain: getAllInternetHeadersAsync (API) → Graph (NAA + extended property)
  */
 
 export class GetHeaders {
@@ -38,17 +38,14 @@ export class GetHeaders {
         return true;
     }
 
-    public static canUseAPI(apiType: string, minset: string): boolean {
-        // if (apiType === "API") { return false; }
-        // if (apiType === "Rest") { return false; }
-        if (typeof (Office) === "undefined") { diagnostics.set(`no${apiType}reason`, "Office undefined"); return false; }
-        if (!Office) { diagnostics.set(`no${apiType}reason`, "Office false"); return false; }
-        if (!Office.context) { diagnostics.set("noUseRestReason", "context false"); return false; }
-        if (!Office.context.requirements) { diagnostics.set("noUseRestReason", "requirements false"); return false; }
-        if (!Office.context.requirements.isSetSupported("Mailbox", minset)) { diagnostics.set(`no${apiType}reason`, "requirements too low"); return false; }
-        if (!GetHeaders.sufficientPermission(true)) { diagnostics.set(`no${apiType}reason`, "sufficientPermission false"); return false; }
-        if (!Office.context.mailbox) { diagnostics.set(`no${apiType}reason`, "mailbox false"); return false; }
-        if (!Office.context.mailbox.getCallbackTokenAsync) { diagnostics.set(`no${apiType}reason`, "getCallbackTokenAsync false"); return false; }
+    public static canUseAPI(): boolean {
+        if (typeof (Office) === "undefined") { diagnostics.set("noAPIreason", "Office undefined"); return false; }
+        if (!Office) { diagnostics.set("noAPIreason", "Office false"); return false; }
+        if (!Office.context) { diagnostics.set("noAPIreason", "context false"); return false; }
+        if (!Office.context.requirements) { diagnostics.set("noAPIreason", "requirements false"); return false; }
+        if (!Office.context.requirements.isSetSupported("Mailbox", "1.9")) { diagnostics.set("noAPIreason", "requirements too low"); return false; }
+        if (!GetHeaders.sufficientPermission(true)) { diagnostics.set("noAPIreason", "sufficientPermission false"); return false; }
+        if (!Office.context.mailbox) { diagnostics.set("noAPIreason", "mailbox false"); return false; }
         return true;
     }
 
@@ -74,23 +71,16 @@ export class GetHeaders {
         }
 
         try {
-            let headers:string = await GetHeadersAPI.send();
+            let headers: string = await GetHeadersAPI.send();
             if (headers !== "") {
                 headersLoadedCallback(headers, "API");
                 return;
             }
 
-            Errors.logMessage("API failed, trying REST");
-            headers = await GetHeadersRest.send();
+            Errors.logMessage("API failed, trying Graph");
+            headers = await GetHeadersGraph.send();
             if (headers !== "") {
-                headersLoadedCallback(headers, "REST");
-                return;
-            }
-
-            Errors.logMessage("REST failed, trying EWS");
-            headers = await GetHeadersEWS.send();
-            if (headers !== "") {
-                headersLoadedCallback(headers, "EWS");
+                headersLoadedCallback(headers, "Graph");
                 return;
             }
         } catch (e) {
