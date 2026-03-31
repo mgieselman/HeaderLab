@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en-US">
 <head>
     <meta charset="UTF-8" />
@@ -21,13 +21,19 @@
             </nav>
         </header>
 
-        <!-- Status message overlay positioned as true overlay -->
-        <div id="statusMessage" class="status-overlay status-overlay-fixed" role="status" aria-live="polite">
-        </div>
+        <!-- Status message overlay -->
+        <div id="statusMessage" class="status-overlay status-overlay-fixed" role="status" aria-live="polite"></div>
 
-        <section class="frame-row">
-            <iframe id="uiFrame" src="newDesktopFrame.html" title="Message Header Analyzer" sandbox="allow-scripts allow-same-origin"></iframe>
-        </section>
+        <!-- Content area -->
+        <div class="content-wrap">
+            <div class="overlay" id="loading-overlay">
+                <div class="status-display">
+                    <div id="status-message"></div>
+                    <fluent-progress-ring class="status-spinner"></fluent-progress-ring>
+                </div>
+            </div>
+            <mha-results hidden></mha-results>
+        </div>
 
         <!-- Settings Dialog -->
         <fluent-dialog id="dialog-Settings" aria-label="Settings" hidden>
@@ -40,11 +46,7 @@
                     <fluent-radio-group orientation="vertical" id="themeChoice" name="themeChoice" aria-label="Choose visual theme" aria-labelledby="Label-Theme">
                         <fluent-radio value="default">Default</fluent-radio>
                         <fluent-radio value="fluent-refresh">Fluent Refresh</fluent-radio>
-                        <fluent-radio value="glassmorphism">Glassmorphism</fluent-radio>
-                        <fluent-radio value="minimal-mono">Minimal Mono</fluent-radio>
                         <fluent-radio value="neon-grid">Neon Grid</fluent-radio>
-                        <fluent-radio value="warm-earth">Warm Earth</fluent-radio>
-                        <fluent-radio value="aurora-nord">Aurora Nord</fluent-radio>
                     </fluent-radio-group>
                 </fieldset>
                 <fieldset>

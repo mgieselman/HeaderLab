@@ -1,5 +1,4 @@
 import { Decoder } from "./2047";
-import { Poster } from "./Poster";
 import { AntiSpamReport } from "./row/Antispam";
 import { ForefrontAntiSpamReport } from "./row/ForefrontAntispam";
 import { Header } from "./row/Header";
@@ -42,7 +41,6 @@ export class HeaderModel {
         if (headers) {
             model.parseHeaders(headers);
             await model.analyzeRules();
-            Poster.postMessageToParent("modelToString", model.toString());
         }
 
         return model;

@@ -94,7 +94,6 @@ console.log("buildTime:", buildTime);
 const pages = [
     { name: "mha", script: "mha" },
     { name: "uitoggle", script: "uiToggle" },
-    { name: "newDesktopFrame", script: "newDesktopFrame" },
     { name: "privacy", script: "privacy" },
     // Redirection/static pages (all redirect to uitoggle.html)
     { name: "Default" },
@@ -259,20 +258,6 @@ export default async (env, options) => {
                 minSize: 20000, // 20KB minimum chunk size
                 maxSize: 500000, // 500KB maximum chunk size
                 cacheGroups: {
-                    // Framework libraries (React, Vue, etc. if any)
-                    framework: {
-                        test: /[\\/]node_modules[\\/](react|react-dom|vue|angular)[\\/]/,
-                        name: "framework",
-                        priority: 40,
-                        reuseExistingChunk: true,
-                    },
-                    // Large libraries that should be separate
-                    largeLibs: {
-                        test: /[\\/]node_modules[\\/](lodash|moment|date-fns)[\\/]/,
-                        name: "large-libs",
-                        priority: 30,
-                        reuseExistingChunk: true,
-                    },
                     // Office/Microsoft specific libraries
                     office: {
                         test: /[\\/]node_modules[\\/](office-addin|@microsoft)[\\/]/,

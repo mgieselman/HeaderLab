@@ -1,17 +1,14 @@
-import { Poster } from "../Poster";
-
 /**
  * Manages theme and color mode (light/dark) across the MHA app.
  *
  * Sets `data-theme` and `data-mode` attributes on <html>.
  * Persists choices to localStorage.
- * Relays theme changes across the iframe boundary (parent <-> child frames).
  */
 
 const storageKeyTheme = "mha-theme";
 const storageKeyMode = "mha-mode";
 
-export type ThemeName = "default" | "neon-grid" | "fluent-refresh" | "glassmorphism" | "minimal-mono" | "warm-earth" | "aurora-nord";
+export type ThemeName = "default" | "fluent-refresh" | "neon-grid";
 export type ModeName = "light" | "dark" | "system";
 
 export class ThemeManager {
@@ -22,11 +19,12 @@ export class ThemeManager {
     /**
      * Initialize the theme system. Call once from each entry point.
      * Reads persisted preferences and applies them immediately.
-     * @param listenForParent If true, listen for theme messages from parent frame.
      */
-    public static initialize(listenForParent = false): void {
-        // Read persisted preferences
-        ThemeManager.currentTheme = ThemeManager.readStorage(storageKeyTheme, "default") as ThemeName;
+    public static initialize(): void {
+        // Read persisted preferences (fall back to default for removed themes)
+        const validThemes: ThemeName[] = ["default", "fluent-refresh", "neon-grid"];
+        const storedTheme = ThemeManager.readStorage(storageKeyTheme, "default");
+        ThemeManager.currentTheme = validThemes.includes(storedTheme as ThemeName) ? storedTheme as ThemeName : "default";
         ThemeManager.currentMode = ThemeManager.readStorage(storageKeyMode, "system") as ModeName;
 
         // Apply immediately (before any paint if possible)
@@ -40,11 +38,6 @@ export class ThemeManager {
                 ThemeManager.applyMode();
             }
         });
-
-        // Listen for theme messages from parent/child frames
-        if (listenForParent) {
-            window.addEventListener("message", ThemeManager.handleMessage, false);
-        }
     }
 
     /** Get the current theme name. */
@@ -57,26 +50,18 @@ export class ThemeManager {
         return ThemeManager.currentMode;
     }
 
-    /** Set theme and persist. Optionally relay to child frame. */
-    public static setTheme(theme: ThemeName, childFrame?: Window): void {
+    /** Set theme and persist. */
+    public static setTheme(theme: ThemeName): void {
         ThemeManager.currentTheme = theme;
         ThemeManager.writeStorage(storageKeyTheme, theme);
         ThemeManager.applyTheme();
-
-        if (childFrame) {
-            Poster.postMessageToFrame(childFrame, "themeChange", { theme, mode: ThemeManager.currentMode });
-        }
     }
 
-    /** Set color mode and persist. Optionally relay to child frame. */
-    public static setMode(mode: ModeName, childFrame?: Window): void {
+    /** Set color mode and persist. */
+    public static setMode(mode: ModeName): void {
         ThemeManager.currentMode = mode;
         ThemeManager.writeStorage(storageKeyMode, mode);
         ThemeManager.applyMode();
-
-        if (childFrame) {
-            Poster.postMessageToFrame(childFrame, "themeChange", { theme: ThemeManager.currentTheme, mode });
-        }
     }
 
     /** Resolve whether we're effectively in dark mode right now. */
@@ -115,24 +100,6 @@ export class ThemeManager {
         }
     }
 
-    /** Handle incoming theme messages from parent frame. */
-    private static handleMessage(event: MessageEvent): void {
-        if (!event || event.origin !== Poster.site()) return;
-        if (event.data?.eventName === "themeChange") {
-            const { theme, mode } = event.data.data;
-            if (theme) {
-                ThemeManager.currentTheme = theme;
-                ThemeManager.writeStorage(storageKeyTheme, theme);
-                ThemeManager.applyTheme();
-            }
-            if (mode) {
-                ThemeManager.currentMode = mode;
-                ThemeManager.writeStorage(storageKeyMode, mode);
-                ThemeManager.applyMode();
-            }
-        }
-    }
-
     private static readStorage(key: string, fallback: string): string {
         try {
             return localStorage.getItem(key) || fallback;
@@ -145,7 +112,7 @@ export class ThemeManager {
         try {
             localStorage.setItem(key, value);
         } catch {
-            // Storage may be unavailable in some iframe contexts
+            // Storage may be unavailable in some contexts
         }
     }
 }

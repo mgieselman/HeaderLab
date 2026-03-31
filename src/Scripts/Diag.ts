@@ -4,10 +4,6 @@ import stackTrace from "stacktrace-js";
 import { aikey } from "./aikey";
 import { buildTime } from "./buildTime";
 import { mhaVersion } from "./mhaVersion";
-import { ParentFrame } from "./ParentFrame";
-import { GetHeaders } from "./ui/getHeaders/GetHeaders";
-import { GetHeadersAPI } from "./ui/getHeaders/GetHeadersAPI";
-import { GetHeadersGraph } from "./ui/getHeaders/GetHeadersGraph";
 
 import "promise-polyfill/dist/polyfill";
 
@@ -71,16 +67,29 @@ class Diag {
         }
     }
 
+    private onTelemetryChanged: ((sendTelemetry: boolean) => void) | null = null;
+    private headerDiagProvider: (() => { [k: string]: string | number | boolean }) | null = null;
+
+    /** Register a provider that returns header capability diagnostics. Breaks circular dependency. */
+    public setHeaderDiagProvider(provider: () => { [k: string]: string | number | boolean }): void {
+        this.headerDiagProvider = provider;
+    }
+
+    /** Register a callback to be notified when telemetry setting changes. */
+    public onSendTelemetryChanged(callback: (sendTelemetry: boolean) => void): void {
+        this.onTelemetryChanged = callback;
+    }
+
     public initSendTelemetry(sendTelemetry: boolean): void {
         this.sendTelemetry = sendTelemetry;
-        ParentFrame.setSendTelemetryUI(sendTelemetry);
+        this.onTelemetryChanged?.(sendTelemetry);
     }
 
     public setSendTelemetry(sendTelemetry: boolean): void {
         const changed = this.sendTelemetry != sendTelemetry;
 
         if (changed) {
-            ParentFrame.setSendTelemetryUI(sendTelemetry);
+            this.onTelemetryChanged?.(sendTelemetry);
             this.sendTelemetry = sendTelemetry;
             if (typeof (Office) !== "undefined" && Office.context) {
                 Office.context.roamingSettings.set("sendTelemetry", this.sendTelemetry);
@@ -219,11 +228,9 @@ class Diag {
                 this.appDiagnostics["Office"] = "missing";
             }
 
-            if (GetHeaders) {
-                this.appDiagnostics["permissionLevel"] = GetHeaders.permissionLevel();
-                this.appDiagnostics["canUseAPI"] = GetHeadersAPI.canUseAPI();
-                this.appDiagnostics["canUseGraph"] = GetHeadersGraph.canUseGraph();
-                this.appDiagnostics["sufficientPermission"] = GetHeaders.sufficientPermission(true);
+            if (this.headerDiagProvider) {
+                const headerDiag = this.headerDiagProvider();
+                Object.assign(this.appDiagnostics, headerDiag);
             }
         }
         catch (e) {
