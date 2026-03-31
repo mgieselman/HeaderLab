@@ -90,9 +90,9 @@
     "@microsoft/office-js": "^1.1.110",
     "codepage": "^1.15.0",
     "dayjs": "^1.11.20",
+    "lit": "^3.3.2",
     "promise-polyfill": "8.3.0",
-    "stacktrace-js": "^2.0.2",
-    "unfetch": "^5.0.0"
+    "stacktrace-js": "^2.0.2"
   },
   "overrides": {
     "tmp": "^0.2.5",

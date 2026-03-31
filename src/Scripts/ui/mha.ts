@@ -11,21 +11,18 @@ import {
 import "../../Content/fluentCommon.css";
 import "../../Content/newDesktopFrame.css";
 import "../../Content/standalone.css";
-import "../../Content/themes/neon-grid.css";
 import "../../Content/themes/fluent-refresh.css";
-import "../../Content/themes/glassmorphism.css";
-import "../../Content/themes/minimal-mono.css";
-import "../../Content/themes/warm-earth.css";
-import "../../Content/themes/aurora-nord.css";
+import "../../Content/themes/neon-grid.css";
 
+import { buildTime } from "../buildTime";
 import { diagnostics } from "../Diag";
 import { mhaStrings } from "../mhaStrings";
 import { Strings } from "../Strings";
+import { MhaResults } from "./components/MhaResults";
 import { DomUtils } from "./domUtils";
 import { ModeName, ThemeManager, ThemeName } from "./ThemeManager";
-import { UnifiedRenderer } from "./UnifiedRenderer";
 
-// Register Fluent UI Web Components needed by the unified renderer
+// Register Fluent UI Web Components
 provideFluentDesignSystem().register(
     fluentButton(),
     fluentProgress(),
@@ -36,7 +33,9 @@ provideFluentDesignSystem().register(
     fluentCard()
 );
 
-const renderer = new UnifiedRenderer();
+function getResults(): MhaResults | null {
+    return document.querySelector("mha-results") as MhaResults | null;
+}
 
 function showStatusMessage(message: string): void {
     const el = document.getElementById("statusMessage");
@@ -50,20 +49,6 @@ function showStatusMessage(message: string): void {
     }
 }
 
-function showResults(): void {
-    const nav = document.getElementById("results-section");
-    const content = document.getElementById("results-content");
-    if (nav) nav.style.display = "";
-    if (content) content.style.display = "";
-}
-
-function hideResults(): void {
-    const nav = document.getElementById("results-section");
-    const content = document.getElementById("results-content");
-    if (nav) nav.style.display = "none";
-    if (content) content.style.display = "none";
-}
-
 async function analyze(): Promise<void> {
     const inputElement = document.getElementById("inputHeaders") as HTMLTextAreaElement;
     const headers = inputElement?.value?.trim();
@@ -73,9 +58,12 @@ async function analyze(): Promise<void> {
         return;
     }
 
-    renderer.clear();
-    showResults();
-    await renderer.render(headers);
+    const results = getResults();
+    if (results) {
+        results.clear();
+        results.hidden = false;
+        await results.analyze(headers);
+    }
 
     // Show clear/copy buttons
     DomUtils.showElement("#clearButton");
@@ -88,8 +76,11 @@ function clear(): void {
     const inputElement = document.getElementById("inputHeaders") as HTMLTextAreaElement;
     if (inputElement) inputElement.value = "";
 
-    renderer.clear();
-    hideResults();
+    const results = getResults();
+    if (results) {
+        results.clear();
+        results.hidden = true;
+    }
     DomUtils.hideElement("#clearButton");
     DomUtils.hideElement("#copyButton");
 
@@ -97,7 +88,7 @@ function clear(): void {
 }
 
 function copy(): void {
-    Strings.copyToClipboard(renderer.toString());
+    Strings.copyToClipboard(getResults()?.getModelString() ?? "");
     showStatusMessage(mhaStrings.mhaCopied);
 }
 
@@ -105,8 +96,9 @@ document.addEventListener("DOMContentLoaded", function() {
     ThemeManager.initialize();
     diagnostics.set("API used", "standalone");
 
-    // Initialize the unified renderer navigation and popover handlers
-    UnifiedRenderer.initializeNav();
+    // Show build timestamp
+    const buildInfo = document.getElementById("buildInfo");
+    if (buildInfo) buildInfo.textContent = "Built: " + buildTime();
 
     // Wire up buttons
     document.getElementById("analyzeButton")?.addEventListener("click", analyze);
@@ -114,8 +106,8 @@ document.addEventListener("DOMContentLoaded", function() {
     document.getElementById("copyButton")?.addEventListener("click", copy);
 
     // Theme toggle: cycle through all themes
-    const allThemes: ThemeName[] = ["default", "fluent-refresh", "glassmorphism", "minimal-mono", "neon-grid", "warm-earth", "aurora-nord"];
-    const themeDisplayNames = ["Default", "Fluent", "Glass", "Mono", "Neon", "Earth", "Nord"];
+    const allThemes: ThemeName[] = ["default", "fluent-refresh", "neon-grid"];
+    const themeDisplayNames = ["Default", "Fluent", "Neon"];
     const themeLabel = document.getElementById("themeLabel");
     const themeToggleBtn = document.getElementById("themeToggleBtn");
 

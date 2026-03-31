@@ -1,10 +1,10 @@
-import { DeferredError } from "./DeferredError";
 import { diagnostics } from "./Diag";
 import { Errors } from "./Errors";
 import { mhaStrings } from "./mhaStrings";
-import { Poster } from "./Poster";
 import { Strings } from "./Strings";
 import { TabNavigation } from "./TabNavigation";
+import { MhaResults } from "./ui/components/MhaResults";
+import { DomUtils } from "./ui/domUtils";
 import { GetHeaders } from "./ui/getHeaders/GetHeaders";
 import { ModeName, ThemeManager, ThemeName } from "./ui/ThemeManager";
 import { ParentFrameUtils } from "./utils/ParentFrameUtils";
@@ -24,71 +24,44 @@ interface FluentCheckbox extends HTMLElement {
     checked: boolean;
 }
 
-// Single unified frame URL
-const frameUrl = "newDesktopFrame.html";
-
 export class ParentFrame {
-    private static iFrame: Window | null;
-    private static deferredErrors: DeferredError[] = [];
-    private static deferredStatus: string[] = [];
     private static headers = "";
-    private static modelToString = "";
     protected static telemetryCheckbox: FluentCheckbox | null = null;
 
-    private static postMessageToFrame(eventName: string, data: string | { error: string, message: string }): void {
-        if (ParentFrame.iFrame) {
-            Poster.postMessageToFrame(ParentFrame.iFrame, eventName, data);
-        }
+    private static getResults(): MhaResults | null {
+        return document.querySelector("mha-results") as MhaResults | null;
     }
 
     private static render(): void {
         if (ParentFrame.headers) diagnostics.trackEvent({ name: "analyzeHeaders" });
-        ParentFrame.postMessageToFrame("renderItem", ParentFrame.headers);
-    }
-
-    private static setFrame(frame: Window): void {
-        ParentFrame.iFrame = frame;
-        TabNavigation.setIFrame(frame);
-
-        if (ParentFrame.iFrame) {
-            ParentFrame.deferredStatus.forEach((status: string) => {
-                ParentFrame.postMessageToFrame("updateStatus", status);
-            });
-            ParentFrame.deferredStatus = [];
-
-            ParentFrame.deferredErrors.forEach((deferredError: DeferredError) => {
-                ParentFrame.postMessageToFrame("showError",
-                    {
-                        error: JSON.stringify(deferredError.error),
-                        message: deferredError.message
-                    });
-            });
-            ParentFrame.deferredErrors = [];
-
-            ParentFrame.render();
+        ParentFrame.hideStatus();
+        const results = ParentFrame.getResults();
+        if (results) {
+            results.clear();
+            results.analyze(ParentFrame.headers);
         }
     }
 
-    private static eventListener(event: MessageEvent): void {
-        if (!event || event.origin !== Poster.site()) return;
+    public static showError(error: unknown, message: string, suppressTracking?: boolean): void {
+        Errors.log(error, message, suppressTracking);
+        ParentFrame.hideStatus();
+        ParentFrame.getResults()?.showError(message);
+    }
 
-        if (event.data) {
-            switch (event.data.eventName) {
-                case "frameActive":
-                    ParentFrame.setFrame(event.source as Window);
-                    break;
-                case "LogError":
-                    Errors.log(JSON.parse(event.data.data.error), event.data.data.message);
-                    break;
-                case "modelToString":
-                    ParentFrame.modelToString = event.data.data;
-                    break;
-            }
-        }
+    public static updateStatus(statusText: string): void {
+        DomUtils.setText("#status-message", statusText);
+        const overlay = DomUtils.getElement("#loading-overlay");
+        if (overlay) overlay.style.display = "block";
+    }
+
+    private static hideStatus(): void {
+        const overlay = DomUtils.getElement("#loading-overlay");
+        if (overlay) overlay.style.display = "none";
     }
 
     private static async loadNewItem() {
         if (Office.context.mailbox.item) {
+            ParentFrame.updateStatus(mhaStrings.mhaLoading);
             await GetHeaders.send(function (headers: string, apiUsed: string): void {
                 ParentFrame.headers = headers;
                 diagnostics.set("API used", apiUsed);
@@ -112,31 +85,8 @@ export class ParentFrame {
         }
     }
 
-    public static showError(error: unknown, message: string, suppressTracking?: boolean): void {
-        Errors.log(error, message, suppressTracking);
-
-        if (ParentFrame.iFrame) {
-            ParentFrame.postMessageToFrame("showError", { error: JSON.stringify(error), message: message });
-        } else {
-            ParentFrame.deferredErrors.push(<DeferredError>{ error: error, message: message });
-        }
-    }
-
-    public static updateStatus(statusText: string): void {
-        if (ParentFrame.iFrame) {
-            ParentFrame.postMessageToFrame("updateStatus", statusText);
-        } else {
-            ParentFrame.deferredStatus.push(statusText);
-        }
-    }
-
-    private static loadFrame(): void {
-        ParentFrame.iFrame = null;
-        (document.getElementById("uiFrame") as HTMLIFrameElement).src = frameUrl;
-    }
-
-    private static getIFrame(): Window | null {
-        return ParentFrame.iFrame;
+    public static get modelString(): string {
+        return ParentFrame.getResults()?.getModelString() ?? "";
     }
 
     private static initFluent(): void {
@@ -176,20 +126,18 @@ export class ParentFrame {
                         activeElement.tagName.toLowerCase() === "fluent-checkbox");
 
                 if (isRadioOrCheckbox) {
-                    // Apply telemetry setting
                     if (ParentFrame.telemetryCheckbox) {
                         diagnostics.setSendTelemetry(ParentFrame.telemetryCheckbox.checked);
                     }
 
-                    // Apply theme and mode
                     const themeGroup = document.getElementById("themeChoice") as FluentRadioGroup;
                     if (themeGroup?.value) {
-                        ThemeManager.setTheme(themeGroup.value as ThemeName, ParentFrame.getIFrame() || undefined);
+                        ThemeManager.setTheme(themeGroup.value as ThemeName);
                     }
 
                     const modeGroup = document.getElementById("modeChoice") as FluentRadioGroup;
                     if (modeGroup?.value) {
-                        ThemeManager.setMode(modeGroup.value as ModeName, ParentFrame.getIFrame() || undefined);
+                        ThemeManager.setMode(modeGroup.value as ModeName);
                     }
 
                     dialogSettings.hidden = true;
@@ -221,12 +169,12 @@ export class ParentFrame {
 
             const themeGroup = document.getElementById("themeChoice") as FluentRadioGroup;
             if (themeGroup?.value) {
-                ThemeManager.setTheme(themeGroup.value as ThemeName, ParentFrame.getIFrame() || undefined);
+                ThemeManager.setTheme(themeGroup.value as ThemeName);
             }
 
             const modeGroup = document.getElementById("modeChoice") as FluentRadioGroup;
             if (modeGroup?.value) {
-                ThemeManager.setMode(modeGroup.value as ModeName, ParentFrame.getIFrame() || undefined);
+                ThemeManager.setMode(modeGroup.value as ModeName);
             }
 
             dialogSettings.hidden = true;
@@ -252,7 +200,6 @@ export class ParentFrame {
 
         const settingsButton = document.getElementById("settingsButton");
         settingsButton?.addEventListener("click", () => {
-            // Set current theme and mode in radio groups
             const themeGroup = document.getElementById("themeChoice") as FluentRadioGroup;
             if (themeGroup) {
                 themeGroup.value = ThemeManager.theme;
@@ -268,7 +215,7 @@ export class ParentFrame {
 
         const copyButton = document.getElementById("copyButton");
         copyButton?.addEventListener("click", () => {
-            Strings.copyToClipboard(ParentFrame.modelToString);
+            Strings.copyToClipboard(ParentFrame.modelString);
 
             const statusMessage = document.getElementById("statusMessage");
             if (statusMessage) {
@@ -284,10 +231,11 @@ export class ParentFrame {
             copyButton.focus();
         });
 
+        // Initialize dialog tab navigation
         TabNavigation.initialize();
     }
 
-    public static setSendTelemetryUI(sendTelemetry: boolean) {
+    private static setSendTelemetryUI(sendTelemetry: boolean) {
         if (ParentFrame.telemetryCheckbox) {
             ParentFrame.telemetryCheckbox.checked = sendTelemetry;
         }
@@ -297,8 +245,19 @@ export class ParentFrame {
         ThemeManager.initialize();
         ParentFrame.initFluent();
 
-        // Load the unified frame
-        ParentFrame.loadFrame();
+        // Register for telemetry setting changes
+        diagnostics.onSendTelemetryChanged((sendTelemetry) => {
+            ParentFrame.setSendTelemetryUI(sendTelemetry);
+        });
+
+        // Provide header diagnostics to break Diag → GetHeaders circular dependency
+        diagnostics.setHeaderDiagProvider(() => {
+            return {
+                permissionLevel: GetHeaders.permissionLevel(),
+                canUseAPI: GetHeaders.canUseAPI(),
+                sufficientPermission: GetHeaders.sufficientPermission(true),
+            };
+        });
 
         try {
             const sendTelemetry: boolean = Office.context.roamingSettings.get("sendTelemetry");
@@ -308,8 +267,6 @@ export class ParentFrame {
         }
 
         ParentFrame.registerItemChangedEvent();
-
-        window.addEventListener("message", ParentFrame.eventListener, false);
         await ParentFrame.loadNewItem();
     }
 }

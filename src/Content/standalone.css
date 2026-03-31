@@ -87,6 +87,13 @@
     flex: 1;
 }
 
+.standalone-build-info {
+    font-size: 11px;
+    color: var(--theme-text-secondary);
+    font-family: var(--theme-font-mono);
+    margin-right: 12px;
+}
+
 .standalone-feedback {
     font-size: 12px;
     color: var(--theme-link);

@@ -175,12 +175,6 @@ describe("TabNavigation initialization", () => {
     test("Should initialize without errors", () => {
         expect(() => TabNavigation.initialize()).not.toThrow();
     });
-
-    test("Should set iframe reference", () => {
-        const mockFrame = {} as Window;
-        expect(() => TabNavigation.setIFrame(mockFrame)).not.toThrow();
-        expect(() => TabNavigation.setIFrame(null)).not.toThrow();
-    });
 });
 
 describe("TabNavigation edge cases", () => {
