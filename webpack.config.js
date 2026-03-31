@@ -326,7 +326,7 @@ export default async (env, options) => {
         output: {
             filename: `${version}/[name].js`,
             path: path.resolve(__dirname, "Pages"),
-            publicPath: "/Pages/",
+            publicPath: "/",
             clean: true,
             chunkLoadingGlobal: "mhaChunkLoad",
             crossOriginLoading: "anonymous",
