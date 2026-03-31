@@ -1,5 +1,4 @@
-import { createNestablePublicClientApplication } from "@azure/msal-browser";
-import type { IPublicClientApplication } from "@azure/msal-browser";
+import { type IPublicClientApplication, createNestablePublicClientApplication } from "@azure/msal-browser";
 
 import { GetHeaders } from "./GetHeaders";
 import { diagnostics } from "../../Diag";
@@ -35,7 +34,10 @@ export class GetHeadersGraph {
     // Public for unit testing
     public static extractHeadersFromResponse(item: GraphMessageResponse): string {
         if (item.singleValueExtendedProperties !== undefined && item.singleValueExtendedProperties.length > 0) {
-            return item.singleValueExtendedProperties[0].value;
+            const prop = item.singleValueExtendedProperties[0];
+            if (prop) {
+                return prop.value;
+            }
         }
         return "";
     }
