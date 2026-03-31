@@ -206,8 +206,8 @@
         </bt:LongStrings>
       </Resources>
       <WebApplicationInfo>
-        <Id>{CLIENT_ID}</Id>
-        <Resource>api://mha.azurewebsites.net/{CLIENT_ID}</Resource>
+        <Id>3b66646d-972e-49e4-a2b0-b37a78a00e11</Id>
+        <Resource>api://mha.azurewebsites.net/3b66646d-972e-49e4-a2b0-b37a78a00e11</Resource>
         <Scopes>
           <Scope>Mail.Read</Scope>
         </Scopes>
