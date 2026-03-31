@@ -1,11 +1,18 @@
 import "../../Content/Office.css";
 import "../../Content/classicDesktopFrame.css";
+import "../../Content/themes/neon-grid.css";
+import "../../Content/themes/fluent-refresh.css";
+import "../../Content/themes/glassmorphism.css";
+import "../../Content/themes/minimal-mono.css";
+import "../../Content/themes/warm-earth.css";
+import "../../Content/themes/aurora-nord.css";
 
 import { HeaderModel } from "../HeaderModel";
 import { mhaStrings } from "../mhaStrings";
 import { Poster } from "../Poster";
 import { DomUtils } from "./domUtils";
 import { Table } from "./Table";
+import { ThemeManager } from "./ThemeManager";
 
 // This is the "classic" UI rendered in classicDesktopFrame.html
 
@@ -82,6 +89,7 @@ function eventListener(event: MessageEvent): void {
 // It ensures the DOM is ready before updating the span elements with values from the current message.
 document.addEventListener("DOMContentLoaded", function() {
     try {
+        ThemeManager.initialize(true);
         table = new Table();
         table.initializeTableUI();
         updateStatus(mhaStrings.mhaLoading);

@@ -1,0 +1,201 @@
+/* ============================================================
+   MHA Theme: Fluent Refresh
+   Clean, professional M365 evolution. Polished and modern.
+   ============================================================ */
+
+/* --- Fluent Refresh: Light --- */
+:root[data-theme="fluent-refresh"] {
+    --primary-blue: #0f6cbd;
+    --focus-blue: #115ea3;
+    --hover-blue-link: #115ea3;
+    --white: #ffffff;
+    --black: #242424;
+    --text-primary: #242424;
+    --text-secondary: #616161;
+    --background-gray: #f5f5f5;
+    --background-light-gray: #f0f0f0;
+    --background-lighter-gray: #fafafa;
+    --background-light-blue: #ebf3fc;
+    --command-bar-gray: #f5f5f5;
+    --border-gray: #e0e0e0;
+    --border-light-gray: #f0f0f0;
+
+    --theme-accent: #0f6cbd;
+    --theme-accent-hover: #115ea3;
+    --theme-accent-text: #ffffff;
+    --theme-bg: #fafafa;
+    --theme-bg-secondary: #f5f5f5;
+    --theme-surface: #ffffff;
+    --theme-surface-hover: #f0f0f0;
+    --theme-elevated: #ffffff;
+    --theme-nav-bg: #f5f5f5;
+    --theme-text: #242424;
+    --theme-text-secondary: #616161;
+    --theme-text-on-accent: #ffffff;
+    --theme-border: #e0e0e0;
+    --theme-border-subtle: #f0f0f0;
+    --theme-link: #0f6cbd;
+    --theme-link-hover: #242424;
+    --theme-link-active: #115ea3;
+
+    --theme-error: #bc2f32;
+    --theme-error-bg: #fdf3f4;
+    --theme-warning: #d97706;
+    --theme-warning-bg: #fef9ee;
+    --theme-info: #0f6cbd;
+    --theme-info-bg: #ebf3fc;
+    --theme-success: #107c10;
+    --theme-success-bg: #f0faf0;
+    --theme-highlight-bg: #fff3cd;
+    --theme-highlight-text: #1b1b1b;
+
+    --diagnostic-warning-bg: var(--theme-warning-bg);
+    --diagnostic-warning-text: var(--theme-warning);
+    --diagnostic-warning-border: var(--theme-warning);
+    --diagnostic-info-bg: var(--theme-info-bg);
+    --diagnostic-info-text: var(--theme-info);
+    --diagnostic-info-border: var(--theme-info);
+    --diagnostic-error-bg: var(--theme-error-bg);
+    --diagnostic-error-text: var(--theme-error);
+    --diagnostic-error-border: var(--theme-error);
+    --highlight-warning-bg: var(--theme-highlight-bg);
+    --highlight-warning-text: var(--theme-highlight-text);
+    --success-green: var(--theme-success);
+    --success-green-bg: var(--theme-success-bg);
+
+    --dialog-header-bg: var(--theme-accent);
+    --dialog-text-on-primary: #ffffff;
+
+    --theme-radius-sm: 6px;
+    --theme-radius-md: 8px;
+    --theme-radius-lg: 12px;
+    --theme-shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.06), 0 0 2px rgba(0, 0, 0, 0.04);
+    --theme-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+    --theme-shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.14);
+
+    --theme-font-body: "Segoe UI Variable", "Segoe UI", -apple-system, BlinkMacSystemFont, sans-serif;
+    --theme-font-mono: "Cascadia Code", "Cascadia Mono", Consolas, monospace;
+    --theme-font-display: var(--theme-font-body);
+
+    --theme-glow: none;
+    --theme-glow-hover: none;
+    --theme-nav-active-indicator: 2px solid var(--theme-accent);
+    --theme-progress-fill: var(--theme-accent);
+    --theme-progress-track: #f0f0f0;
+
+    --hover-blue: color-mix(in srgb, #0f6cbd 8%, transparent);
+    --active-blue: color-mix(in srgb, #0f6cbd 16%, transparent);
+    --progress-track-bg: #f0f0f0;
+
+    color-scheme: light;
+}
+
+/* --- Fluent Refresh: Dark --- */
+:root[data-theme="fluent-refresh"][data-mode="dark"] {
+    --primary-blue: #479ef5;
+    --focus-blue: #62abf5;
+    --hover-blue-link: #62abf5;
+    --white: #1b1b1f;
+    --black: #e0e0e0;
+    --text-primary: #e0e0e0;
+    --text-secondary: #a0a0a0;
+    --background-gray: #2b2b2f;
+    --background-light-gray: #333338;
+    --background-lighter-gray: #2b2b2f;
+    --background-light-blue: #1a3050;
+    --command-bar-gray: #2b2b2f;
+    --border-gray: #3b3b3f;
+    --border-light-gray: #2b2b2f;
+
+    --theme-accent: #479ef5;
+    --theme-accent-hover: #62abf5;
+    --theme-accent-text: #1b1b1f;
+    --theme-bg: #1b1b1f;
+    --theme-bg-secondary: #2b2b2f;
+    --theme-surface: #2b2b2f;
+    --theme-surface-hover: #333338;
+    --theme-elevated: #333338;
+    --theme-nav-bg: #2b2b2f;
+    --theme-text: #e0e0e0;
+    --theme-text-secondary: #a0a0a0;
+    --theme-text-on-accent: #1b1b1f;
+    --theme-border: #3b3b3f;
+    --theme-border-subtle: #2b2b2f;
+    --theme-link: #479ef5;
+    --theme-link-hover: #e0e0e0;
+    --theme-link-active: #62abf5;
+
+    --theme-error: #f87171;
+    --theme-error-bg: #3b1c1c;
+    --theme-warning: #fbbf24;
+    --theme-warning-bg: #3b2e10;
+    --theme-info: #479ef5;
+    --theme-info-bg: #1a3050;
+    --theme-success: #4ade80;
+    --theme-success-bg: rgba(30, 60, 30, 0.9);
+    --theme-highlight-bg: #665e00;
+    --theme-highlight-text: #fef9c3;
+
+    --diagnostic-warning-bg: var(--theme-warning-bg);
+    --diagnostic-warning-text: var(--theme-warning);
+    --diagnostic-warning-border: var(--theme-warning);
+    --diagnostic-info-bg: var(--theme-info-bg);
+    --diagnostic-info-text: var(--theme-info);
+    --diagnostic-info-border: var(--theme-info);
+    --diagnostic-error-bg: var(--theme-error-bg);
+    --diagnostic-error-text: var(--theme-error);
+    --diagnostic-error-border: var(--theme-error);
+    --highlight-warning-bg: var(--theme-highlight-bg);
+    --highlight-warning-text: var(--theme-highlight-text);
+    --success-green: var(--theme-success);
+    --success-green-bg: var(--theme-success-bg);
+
+    --dialog-header-bg: var(--theme-accent);
+    --dialog-text-on-primary: #1b1b1f;
+
+    --theme-shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.3);
+    --theme-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+    --theme-shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
+
+    --hover-blue: color-mix(in srgb, #479ef5 10%, transparent);
+    --active-blue: color-mix(in srgb, #479ef5 20%, transparent);
+    --progress-track-bg: #3b3b3f;
+
+    color-scheme: dark;
+}
+
+/* Structural: elevated cards get shadows */
+:root[data-theme="fluent-refresh"] .code-box > pre,
+:root[data-theme="fluent-refresh"] .code-box > textarea {
+    box-shadow: var(--theme-shadow-sm);
+    border-radius: var(--theme-radius-md);
+}
+
+:root[data-theme="fluent-refresh"] .hop-list-item {
+    transition: background-color 150ms ease, box-shadow 150ms ease;
+    border-radius: var(--theme-radius-sm);
+    margin: 2px 0;
+}
+
+:root[data-theme="fluent-refresh"] .hop-list-item:hover {
+    box-shadow: var(--theme-shadow-sm);
+}
+
+:root[data-theme="fluent-refresh"] .details-overlay-popup.is-shown {
+    border-radius: var(--theme-radius-lg);
+    box-shadow: var(--theme-shadow-lg);
+}
+
+:root[data-theme="fluent-refresh"] .violation-card {
+    border-radius: 0 var(--theme-radius-md) var(--theme-radius-md) 0;
+    box-shadow: var(--theme-shadow-sm);
+}
+
+:root[data-theme="fluent-refresh"] .severity-badge[data-severity] {
+    border-radius: 12px;
+    padding: 2px 8px;
+}
+
+:root[data-theme="fluent-refresh"] .dialog-header {
+    border-radius: var(--theme-radius-lg) var(--theme-radius-lg) 0 0;
+}

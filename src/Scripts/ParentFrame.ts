@@ -7,6 +7,7 @@ import { Poster } from "./Poster";
 import { Strings } from "./Strings";
 import { TabNavigation } from "./TabNavigation";
 import { GetHeaders } from "./ui/getHeaders/GetHeaders";
+import { ModeName, ThemeManager, ThemeName } from "./ui/ThemeManager";
 import { ParentFrameUtils } from "./utils/ParentFrameUtils";
 
 // Fluent UI Web Components interfaces
@@ -197,6 +198,10 @@ export class ParentFrame {
         });
     }
 
+    private static getIFrame(): Window | null {
+        return ParentFrame.iFrame;
+    }
+
     // Hook the UI together for display
     private static initFluent(): void {
         const header: Element | null = document.querySelector(".header-row");
@@ -298,6 +303,17 @@ export class ParentFrame {
                 diagnostics.setSendTelemetry(ParentFrame.telemetryCheckbox.checked);
             }
 
+            // Apply theme and mode selections
+            const themeGroup = document.getElementById("themeChoice") as FluentRadioGroup;
+            if (themeGroup?.value) {
+                ThemeManager.setTheme(themeGroup.value as ThemeName, ParentFrame.getIFrame() || undefined);
+            }
+
+            const modeGroup = document.getElementById("modeChoice") as FluentRadioGroup;
+            if (modeGroup?.value) {
+                ThemeManager.setMode(modeGroup.value as ModeName, ParentFrame.getIFrame() || undefined);
+            }
+
             dialogSettings.hidden = true;
         });
 
@@ -329,6 +345,17 @@ export class ParentFrame {
                 if (currentIndex >= 0) {
                     radioGroup.value = currentIndex.toString();
                 }
+            }
+
+            // Set current theme and mode in their radio groups
+            const themeGroup = document.getElementById("themeChoice") as FluentRadioGroup;
+            if (themeGroup) {
+                themeGroup.value = ThemeManager.theme;
+            }
+
+            const modeGroup = document.getElementById("modeChoice") as FluentRadioGroup;
+            if (modeGroup) {
+                modeGroup.value = ThemeManager.mode;
             }
 
             dialogSettings.hidden = false;
@@ -366,6 +393,7 @@ export class ParentFrame {
     }
 
     public static async initUI() {
+        ThemeManager.initialize();
         ParentFrame.setDefault();
         ParentFrame.addChoices();
         ParentFrame.initFluent();

@@ -1,0 +1,231 @@
+/* ============================================================
+   MHA Theme: Aurora Nord
+   Nordic-inspired cool palette based on Nord colors.
+   Muted blue-teal-green arctic tones, balanced and refined.
+   ============================================================ */
+
+/* --- Aurora Nord: Light --- */
+:root[data-theme="aurora-nord"] {
+    --primary-blue: #5e81ac;
+    --focus-blue: #4c6a8e;
+    --hover-blue-link: #4c6a8e;
+    --white: #ffffff;
+    --black: #2e3440;
+    --text-primary: #2e3440;
+    --text-secondary: #68768a;
+    --background-gray: #e5e9f0;
+    --background-light-gray: #e5e9f0;
+    --background-lighter-gray: #eceff4;
+    --background-light-blue: #edf1f7;
+    --command-bar-gray: #ffffff;
+    --border-gray: #d8dee9;
+    --border-light-gray: #e5e9f0;
+
+    --theme-accent: #5e81ac;
+    --theme-accent-hover: #4c6a8e;
+    --theme-accent-text: #ffffff;
+    --theme-bg: #eceff4;
+    --theme-bg-secondary: #e5e9f0;
+    --theme-surface: #ffffff;
+    --theme-surface-hover: #e5e9f0;
+    --theme-elevated: #ffffff;
+    --theme-nav-bg: #ffffff;
+    --theme-text: #2e3440;
+    --theme-text-secondary: #68768a;
+    --theme-text-on-accent: #ffffff;
+    --theme-border: #d8dee9;
+    --theme-border-subtle: #e5e9f0;
+    --theme-link: #5e81ac;
+    --theme-link-hover: #2e3440;
+    --theme-link-active: #4c6a8e;
+
+    --theme-error: #bf616a;
+    --theme-error-bg: #f9eced;
+    --theme-warning: #d08770;
+    --theme-warning-bg: #faf1ec;
+    --theme-info: #5e81ac;
+    --theme-info-bg: #edf1f7;
+    --theme-success: #a3be8c;
+    --theme-success-bg: #f1f7ec;
+    --theme-highlight-bg: #ebcb8b33;
+    --theme-highlight-text: #2e3440;
+
+    --diagnostic-warning-bg: var(--theme-warning-bg);
+    --diagnostic-warning-text: var(--theme-warning);
+    --diagnostic-warning-border: var(--theme-warning);
+    --diagnostic-info-bg: var(--theme-info-bg);
+    --diagnostic-info-text: var(--theme-info);
+    --diagnostic-info-border: var(--theme-info);
+    --diagnostic-error-bg: var(--theme-error-bg);
+    --diagnostic-error-text: var(--theme-error);
+    --diagnostic-error-border: var(--theme-error);
+    --highlight-warning-bg: var(--theme-highlight-bg);
+    --highlight-warning-text: var(--theme-highlight-text);
+    --success-green: var(--theme-success);
+    --success-green-bg: var(--theme-success-bg);
+
+    --dialog-header-bg: #5e81ac;
+    --dialog-text-on-primary: #eceff4;
+
+    --theme-radius-sm: 8px;
+    --theme-radius-md: 10px;
+    --theme-radius-lg: 14px;
+    --theme-shadow-sm: 0 1px 4px rgba(46, 52, 64, 0.06);
+    --theme-shadow-md: 0 4px 16px rgba(46, 52, 64, 0.08);
+    --theme-shadow-lg: 0 8px 24px rgba(46, 52, 64, 0.12);
+
+    --theme-font-body: "IBM Plex Sans", "Segoe UI", -apple-system, BlinkMacSystemFont, sans-serif;
+    --theme-font-mono: "IBM Plex Mono", "Cascadia Mono", Consolas, monospace;
+    --theme-font-display: var(--theme-font-body);
+
+    --theme-glow: none;
+    --theme-glow-hover: none;
+    --theme-nav-active-indicator: 3px solid transparent;
+    --theme-progress-fill: linear-gradient(90deg, #5e81ac, #88c0d0);
+    --theme-progress-track: #d8dee9;
+
+    --hover-blue: rgba(94, 129, 172, 0.08);
+    --active-blue: rgba(94, 129, 172, 0.15);
+    --progress-track-bg: #d8dee9;
+
+    color-scheme: light;
+}
+
+/* --- Aurora Nord: Dark (Polar Night) --- */
+:root[data-theme="aurora-nord"][data-mode="dark"] {
+    --primary-blue: #81a1c1;
+    --focus-blue: #88c0d0;
+    --hover-blue-link: #88c0d0;
+    --white: #2e3440;
+    --black: #eceff4;
+    --text-primary: #eceff4;
+    --text-secondary: #a0aab8;
+    --background-gray: #3b4252;
+    --background-light-gray: #434c5e;
+    --background-lighter-gray: #3b4252;
+    --background-light-blue: rgba(129, 161, 193, 0.1);
+    --command-bar-gray: #3b4252;
+    --border-gray: #434c5e;
+    --border-light-gray: #3b4252;
+
+    --theme-accent: #81a1c1;
+    --theme-accent-hover: #88c0d0;
+    --theme-accent-text: #2e3440;
+    --theme-bg: #2e3440;
+    --theme-bg-secondary: #3b4252;
+    --theme-surface: #3b4252;
+    --theme-surface-hover: #434c5e;
+    --theme-elevated: #434c5e;
+    --theme-nav-bg: #3b4252;
+    --theme-text: #eceff4;
+    --theme-text-secondary: #a0aab8;
+    --theme-text-on-accent: #2e3440;
+    --theme-border: #434c5e;
+    --theme-border-subtle: #3b4252;
+    --theme-link: #81a1c1;
+    --theme-link-hover: #eceff4;
+    --theme-link-active: #88c0d0;
+
+    --theme-error: #bf616a;
+    --theme-error-bg: rgba(191, 97, 106, 0.15);
+    --theme-warning: #d08770;
+    --theme-warning-bg: rgba(208, 135, 112, 0.15);
+    --theme-info: #81a1c1;
+    --theme-info-bg: rgba(129, 161, 193, 0.15);
+    --theme-success: #a3be8c;
+    --theme-success-bg: rgba(163, 190, 140, 0.15);
+    --theme-highlight-bg: rgba(235, 203, 139, 0.2);
+    --theme-highlight-text: #eceff4;
+
+    --diagnostic-warning-bg: var(--theme-warning-bg);
+    --diagnostic-warning-text: var(--theme-warning);
+    --diagnostic-warning-border: var(--theme-warning);
+    --diagnostic-info-bg: var(--theme-info-bg);
+    --diagnostic-info-text: var(--theme-info);
+    --diagnostic-info-border: var(--theme-info);
+    --diagnostic-error-bg: var(--theme-error-bg);
+    --diagnostic-error-text: var(--theme-error);
+    --diagnostic-error-border: var(--theme-error);
+    --highlight-warning-bg: var(--theme-highlight-bg);
+    --highlight-warning-text: var(--theme-highlight-text);
+    --success-green: var(--theme-success);
+    --success-green-bg: var(--theme-success-bg);
+
+    --dialog-header-bg: #81a1c1;
+    --dialog-text-on-primary: #2e3440;
+
+    --theme-shadow-sm: 0 1px 4px rgba(0, 0, 0, 0.2);
+    --theme-shadow-md: 0 4px 16px rgba(0, 0, 0, 0.25);
+    --theme-shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.35);
+
+    --hover-blue: rgba(129, 161, 193, 0.1);
+    --active-blue: rgba(129, 161, 193, 0.2);
+    --progress-track-bg: #434c5e;
+
+    color-scheme: dark;
+}
+
+/* ============================================================
+   STRUCTURAL: Gradient accents, numbered hops, refined cards
+   ============================================================ */
+
+/* Gradient accent under active nav */
+:root[data-theme="aurora-nord"] #nav-bar .nav-button.is-active {
+    border-bottom: 3px solid transparent;
+    border-image: linear-gradient(90deg, #5e81ac, #88c0d0) 1;
+}
+
+/* Rounded elevated cards */
+:root[data-theme="aurora-nord"] .code-box > pre,
+:root[data-theme="aurora-nord"] .code-box > textarea {
+    border-radius: var(--theme-radius-md);
+    box-shadow: var(--theme-shadow-sm);
+}
+
+/* Card-style hops with hover lift */
+:root[data-theme="aurora-nord"] .hop-list-item {
+    border-radius: var(--theme-radius-md);
+    border: 1px solid var(--theme-border-subtle);
+    background: var(--theme-surface);
+    margin: 4px 0;
+    box-shadow: var(--theme-shadow-sm);
+    transition: all 200ms ease;
+}
+
+:root[data-theme="aurora-nord"] .hop-list-item:hover {
+    box-shadow: var(--theme-shadow-md);
+    transform: translateY(-1px);
+}
+
+/* Gradient-filled progress bars */
+:root[data-theme="aurora-nord"] fluent-progress::part(progress) {
+    background: linear-gradient(90deg, #5e81ac, #88c0d0);
+}
+
+/* Rounded popover */
+:root[data-theme="aurora-nord"] .details-overlay-popup.is-shown {
+    border-radius: var(--theme-radius-lg);
+    box-shadow: var(--theme-shadow-lg);
+}
+
+/* Soft rounded badges */
+:root[data-theme="aurora-nord"] .severity-badge[data-severity] {
+    border-radius: 6px;
+    padding: 2px 10px;
+}
+
+/* Rounded violation cards */
+:root[data-theme="aurora-nord"] .violation-card {
+    border-radius: 0 var(--theme-radius-md) var(--theme-radius-md) 0;
+    border-left-width: 4px;
+}
+
+/* Nav with shadow */
+:root[data-theme="aurora-nord"] #nav-bar {
+    box-shadow: var(--theme-shadow-sm);
+}
+
+/* Dialog rounded corners */
+:root[data-theme="aurora-nord"] .dialog-header {
+    border-radius: var(--theme-radius-lg) var(--theme-radius-lg) 0 0;
+}

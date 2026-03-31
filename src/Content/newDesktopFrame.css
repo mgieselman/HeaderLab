@@ -3,7 +3,8 @@
 @import url("rulesCommon.css");
 
 .content-wrap {
-    background: var(--white);
+    background: var(--theme-bg);
+    color: var(--theme-text);
     position: fixed;
     top: 0;
     left: 0;
@@ -79,13 +80,13 @@
 
 .hop-list-item {
     padding: 8px 16px;
-    border-bottom: 1px solid var(--border-gray);
+    border-bottom: 1px solid var(--theme-border-subtle);
     cursor: pointer;
     position: relative;
 }
 
 .hop-list-item:hover {
-    background-color: var(--background-light-gray);
+    background-color: var(--theme-surface-hover);
     outline: 1px solid transparent;
 }
 
@@ -93,7 +94,7 @@
     display: block;
     font-size: 16px;
     line-height: 1.3;
-    color: var(--text-primary);
+    color: var(--theme-text);
     margin-bottom: 4px;
 }
 
@@ -101,7 +102,7 @@
     display: block;
     font-size: 12px;
     line-height: 1.3;
-    color: var(--text-primary);
+    color: var(--theme-text);
 }
 
 .hop-list-selection {
@@ -116,8 +117,8 @@
 .section-header {
     font-size: 12px;
     font-weight: 600;
-    color: var(--text-primary);
-    font-family: var(--font-family);
+    color: var(--theme-text);
+    font-family: var(--theme-font-body);
     margin-bottom: 8px;
 }
 
@@ -139,7 +140,7 @@
 .content-header,
 .nav-bar,
 #nav-bar {
-    background-color: var(--command-bar-gray);
+    background-color: var(--theme-nav-bg);
 }
 
 #nav-bar .button-label {
@@ -267,13 +268,14 @@
     display: block;
     position: fixed;
     z-index: 1000;
-    background: var(--white);
-    border: 1px solid var(--border-gray);
-    border-radius: var(--border-radius);
+    background: var(--theme-surface);
+    border: 1px solid var(--theme-border);
+    border-radius: var(--theme-radius-md);
     padding: 24px 28px 12px 28px;
     width: 90vw;
     max-width: 500px;
-    font-family: var(--font-family);
+    font-family: var(--theme-font-body);
+    box-shadow: var(--theme-shadow-lg);
 }
 
 /* Arrow pointing upward at the top of the pane */
@@ -287,7 +289,7 @@
     height: 0;
     border-left: 10px solid transparent;
     border-right: 10px solid transparent;
-    border-bottom: 10px solid var(--white);
+    border-bottom: 10px solid var(--theme-surface);
 }
 
 .hop-title {

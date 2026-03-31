@@ -5,6 +5,12 @@ import {
 import "../../Content/fluentCommon.css";
 import "../../Content/Office.css";
 import "../../Content/classicDesktopFrame.css";
+import "../../Content/themes/neon-grid.css";
+import "../../Content/themes/fluent-refresh.css";
+import "../../Content/themes/glassmorphism.css";
+import "../../Content/themes/minimal-mono.css";
+import "../../Content/themes/warm-earth.css";
+import "../../Content/themes/aurora-nord.css";
 
 import { diagnostics } from "../Diag";
 import { HeaderModel } from "../HeaderModel";
@@ -12,6 +18,7 @@ import { mhaStrings } from "../mhaStrings";
 import { Strings } from "../Strings";
 import { DomUtils } from "./domUtils";
 import { Table } from "./Table";
+import { ModeName, ThemeManager, ThemeName } from "./ThemeManager";
 
 // Register Fluent UI Web Components
 provideFluentDesignSystem().register(
@@ -141,6 +148,7 @@ function copy() {
 }
 
 document.addEventListener("DOMContentLoaded", function() {
+    ThemeManager.initialize();
     diagnostics.set("API used", "standalone");
     table = new Table();
     table.initializeTableUI();
@@ -149,4 +157,33 @@ document.addEventListener("DOMContentLoaded", function() {
     (document.querySelector("#analyzeButton") as HTMLButtonElement).onclick = analyze;
     (document.querySelector("#clearButton") as HTMLButtonElement).onclick = clear;
     (document.querySelector("#copyButton") as HTMLButtonElement).onclick = copy;
+
+    // Theme toggle: cycle through all themes
+    const allThemes: ThemeName[] = ["default", "fluent-refresh", "glassmorphism", "minimal-mono", "neon-grid", "warm-earth", "aurora-nord"];
+    const themeToggleBtn = document.getElementById("themeToggleBtn");
+    themeToggleBtn?.addEventListener("click", () => {
+        const idx = allThemes.indexOf(ThemeManager.theme);
+        const next = allThemes[(idx + 1) % allThemes.length] as ThemeName;
+        ThemeManager.setTheme(next);
+    });
+
+    // Dark mode toggle: cycle light -> dark -> system
+    const darkModeToggleBtn = document.getElementById("darkModeToggleBtn");
+    const darkModeIcon = document.getElementById("darkModeIcon");
+    function updateDarkModeIcon() {
+        if (!darkModeIcon) return;
+        switch (ThemeManager.mode) {
+            case "dark": darkModeIcon.textContent = "\u263E"; break;   // moon
+            case "light": darkModeIcon.textContent = "\u2600"; break;  // sun
+            case "system": darkModeIcon.textContent = "\u25D1"; break; // half circle
+        }
+    }
+    darkModeToggleBtn?.addEventListener("click", () => {
+        const modes: Array<ModeName> = ["light", "dark", "system"];
+        const idx = modes.indexOf(ThemeManager.mode);
+        const nextMode = modes[(idx + 1) % modes.length] as ModeName;
+        ThemeManager.setMode(nextMode);
+        updateDarkModeIcon();
+    });
+    updateDarkModeIcon();
 });
