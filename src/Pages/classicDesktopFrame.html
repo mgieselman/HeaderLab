@@ -1,0 +1,56 @@
+﻿<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <meta charset="UTF-8">
+    <title>Classic Desktop Frame</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+    <div class="commandBar"></div>
+    <div id="SectionContent">
+        <hr id="lineBreak" />
+        <div id="response" class="hiddenElement">
+            <div class="responsePane">
+                <div id="status"></div>
+                <table id="summary"></table>
+                <div id="diagnosticsContent" class="hiddenElement"></div>
+                <table id="receivedHeaders"></table>
+                <table id="forefrontAntiSpamReport"></table>
+                <table id="antiSpamReport"></table>
+                <table id="otherHeaders"></table>
+                <textarea id="originalHeaders" readonly rows="10"></textarea>
+            </div>
+        </div>
+    </div>
+
+    <template id="violation-inline-template">
+        <span class="violation-inline">
+            <span class="severity-badge"></span>
+            <span class="violation-message"></span>
+        </span>
+    </template>
+
+    <template id="violation-card-template">
+        <div class="violation-card">
+            <div class="violation-card-header">
+                <span class="severity-badge"></span>
+                <span class="violation-message"></span>
+            </div>
+            <div class="violation-details">
+                <div class="violation-rule"></div>
+                <div class="violation-parent-message"></div>
+            </div>
+        </div>
+    </template>
+
+    <template id="diagnostic-accordion-item-template">
+        <div class="diagnostic-group">
+            <div class="violation-card-header">
+                <span class="severity-badge"></span>
+                <span class="violation-message"></span>
+            </div>
+            <div class="diagnostic-content diagnostic-violations"></div>
+        </div>
+    </template>
+</body>
+</html>

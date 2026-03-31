@@ -1,0 +1,90 @@
+﻿<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Message Header Analyzer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+
+<body>
+    <header id="SectionHeader">
+        <div id="floater"></div>
+        <h1 id="title">Message Header Analyzer</h1>
+    </header>
+    <main id="SectionContent">
+        <section role="region" aria-label="Input Headers">
+            <h2 id="inputSection" class="sr-only">Input Headers</h2>
+            <textarea id="inputHeaders" autofocus="autofocus" placeholder="Paste headers here." required="required"
+                rows="15"></textarea>
+            <fluent-button appearance="accent" id="analyzeButton" aria-describedby="analyzeButtonDesc">
+                <span>Analyze headers</span>
+                <div class="status-overlay status-overlay-inline" id="analyzeStatusMessage" role="status" aria-live="polite">
+                </div>
+                <div class="status-overlay status-overlay-inline" id="clearStatusMessage" role="status" aria-live="polite">
+                </div>
+            </fluent-button>
+            <span id="analyzeButtonDesc" class="sr-only">Analyze message headers</span>
+            <fluent-button class="hiddenElement" id="clearButton" aria-label="Clear input and results">
+                <span>Clear</span>
+            </fluent-button>
+            <fluent-button class="hiddenElement" id="copyButton" aria-describedby="copyButtonDesc">
+                <span class="fluent-icon fluent-icon--copy"></span>
+                <span>Copy</span>
+                <span id="copyButtonDesc" class="sr-only">Copy analysis results to clipboard</span>
+                <div class="status-overlay status-overlay-inline" id="copyStatusMessage" role="status" aria-live="polite">
+                </div>
+            </fluent-button>
+            <div id="feedbackLink">
+                <a href="https://github.com/microsoft/MHA" target="_blank" rel="noopener">Submit feedback on github</a>
+            </div>
+        </section>
+
+        <hr id="lineBreak" />
+
+        <section id="response" class="hiddenElement" role="region" aria-label="Analysis Results">
+            <h2 id="resultsSection" class="sr-only">Analysis Results</h2>
+            <div class="responsePane">
+                <div id="status"></div>
+                <table id="summary"></table>
+                <div id="diagnosticsContent" class="hiddenElement"></div>
+                <table id="receivedHeaders"></table>
+                <table id="forefrontAntiSpamReport"></table>
+                <table id="antiSpamReport"></table>
+                <table id="otherHeaders"></table>
+            </div>
+        </section>
+    </main>
+
+    <template id="violation-inline-template">
+        <span class="violation-inline">
+            <span class="severity-badge"></span>
+            <span class="violation-message"></span>
+        </span>
+    </template>
+
+    <template id="violation-card-template">
+        <div class="violation-card">
+            <div class="violation-card-header">
+                <span class="severity-badge"></span>
+                <span class="violation-message"></span>
+            </div>
+            <div class="violation-details">
+                <div class="violation-rule"></div>
+                <div class="violation-parent-message"></div>
+            </div>
+        </div>
+    </template>
+
+    <template id="diagnostic-accordion-item-template">
+        <div class="diagnostic-group">
+            <div class="violation-card-header">
+                <span class="severity-badge"></span>
+                <span class="violation-message"></span>
+            </div>
+            <div class="diagnostic-content diagnostic-violations"></div>
+        </div>
+    </template>
+</body>
+
+</html>

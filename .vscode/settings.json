@@ -1,0 +1,14 @@
+{
+  "editor.formatOnSave": false,
+  "eslint.validate": ["javascript", "javascriptreact", "typescript"],
+  "editor.codeActionsOnSave": {
+    "source.fixAll": "explicit"
+  },
+  "jest.jestCommandLine": "npm test --",
+  "jest.autoRun": {
+    "watch": false,
+    "onSave": "test-src-file"
+  },
+  "jest.showCoverageOnLoad": true,
+  "jest.coverageFormatter": "DefaultFormatter"
+}
