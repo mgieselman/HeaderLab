@@ -95,28 +95,19 @@ export class UnifiedRenderer {
         // Initialize original headers toggle
         const buttonElement = DomUtils.getElement("#orig-header-btn");
         if (buttonElement) {
-            buttonElement.addEventListener("click", function (event: Event): void {
-                if (event.currentTarget) {
-                    const currentTarget = event.currentTarget as HTMLElement;
-                    const btnIcon = currentTarget.querySelector(".fluent-icon--add, .fluent-icon--remove");
-                    const originalHeaders = DomUtils.getElement("#original-headers");
-                    const isExpanded = buttonElement.getAttribute("aria-expanded") === "true";
+            buttonElement.addEventListener("click", function (): void {
+                const toggleIcon = buttonElement.querySelector(".fluent-icon--toggle") as HTMLElement;
+                const originalHeaders = DomUtils.getElement("#original-headers");
+                const isExpanded = buttonElement.getAttribute("aria-expanded") === "true";
 
-                    if (!isExpanded) {
-                        buttonElement.setAttribute("aria-expanded", "true");
-                        if (originalHeaders) originalHeaders.style.display = "block";
-                        if (btnIcon) {
-                            btnIcon.classList.remove("fluent-icon--add");
-                            btnIcon.classList.add("fluent-icon--remove");
-                        }
-                    } else {
-                        buttonElement.setAttribute("aria-expanded", "false");
-                        if (originalHeaders) originalHeaders.style.display = "none";
-                        if (btnIcon) {
-                            btnIcon.classList.remove("fluent-icon--remove");
-                            btnIcon.classList.add("fluent-icon--add");
-                        }
-                    }
+                if (!isExpanded) {
+                    buttonElement.setAttribute("aria-expanded", "true");
+                    if (originalHeaders) originalHeaders.style.display = "block";
+                    if (toggleIcon) toggleIcon.style.transform = "rotate(90deg)";
+                } else {
+                    buttonElement.setAttribute("aria-expanded", "false");
+                    if (originalHeaders) originalHeaders.style.display = "none";
+                    if (toggleIcon) toggleIcon.style.transform = "rotate(0deg)";
                 }
             });
         }
