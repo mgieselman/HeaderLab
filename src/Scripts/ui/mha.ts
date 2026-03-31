@@ -158,14 +158,25 @@ document.addEventListener("DOMContentLoaded", function() {
     (document.querySelector("#clearButton") as HTMLButtonElement).onclick = clear;
     (document.querySelector("#copyButton") as HTMLButtonElement).onclick = copy;
 
-    // Theme toggle: cycle through all themes
+    // Theme display names
     const allThemes: ThemeName[] = ["default", "fluent-refresh", "glassmorphism", "minimal-mono", "neon-grid", "warm-earth", "aurora-nord"];
+    const themeDisplayNames = ["Default", "Fluent", "Glass", "Mono", "Neon", "Earth", "Nord"];
+    const themeLabel = document.getElementById("themeLabel");
     const themeToggleBtn = document.getElementById("themeToggleBtn");
+
+    function updateThemeLabel() {
+        if (!themeLabel) return;
+        const idx = allThemes.indexOf(ThemeManager.theme);
+        themeLabel.textContent = (idx >= 0 ? themeDisplayNames[idx] : "Theme") ?? "Theme";
+    }
+
     themeToggleBtn?.addEventListener("click", () => {
         const idx = allThemes.indexOf(ThemeManager.theme);
         const next = allThemes[(idx + 1) % allThemes.length] as ThemeName;
         ThemeManager.setTheme(next);
+        updateThemeLabel();
     });
+    updateThemeLabel();
 
     // Dark mode toggle: cycle light -> dark -> system
     const darkModeToggleBtn = document.getElementById("darkModeToggleBtn");
@@ -173,9 +184,9 @@ document.addEventListener("DOMContentLoaded", function() {
     function updateDarkModeIcon() {
         if (!darkModeIcon) return;
         switch (ThemeManager.mode) {
-            case "dark": darkModeIcon.textContent = "\u263E"; break;   // moon
-            case "light": darkModeIcon.textContent = "\u2600"; break;  // sun
-            case "system": darkModeIcon.textContent = "\u25D1"; break; // half circle
+            case "dark": darkModeIcon.textContent = "Dark"; break;
+            case "light": darkModeIcon.textContent = "Light"; break;
+            case "system": darkModeIcon.textContent = "Auto"; break;
         }
     }
     darkModeToggleBtn?.addEventListener("click", () => {
