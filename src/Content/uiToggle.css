@@ -180,10 +180,39 @@ fluent-dialog fluent-radio-group {
 
 fluent-dialog fluent-radio {
     margin: 3px 0;
+    color: var(--theme-text);
+}
+
+/* Force label text color inside Fluent radio/checkbox shadow DOM */
+fluent-radio::part(label),
+fluent-checkbox::part(label) {
+    color: var(--theme-text);
+    font-family: var(--theme-font-body);
+}
+
+fluent-radio::part(control) {
+    border-color: var(--theme-border);
+}
+
+fluent-radio[aria-checked="true"]::part(control),
+fluent-radio:checked::part(control) {
+    border-color: var(--theme-accent);
+    background: var(--theme-accent);
+}
+
+fluent-checkbox::part(control) {
+    border-color: var(--theme-border);
+}
+
+fluent-checkbox[aria-checked="true"]::part(control),
+fluent-checkbox:checked::part(control) {
+    border-color: var(--theme-accent);
+    background: var(--theme-accent);
 }
 
 fluent-dialog fluent-checkbox {
     margin: 2px 0 3px 0;
+    color: var(--theme-text);
 }
 
 
