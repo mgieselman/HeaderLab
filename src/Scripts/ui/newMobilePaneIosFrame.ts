@@ -2,6 +2,12 @@ import "framework7/css";
 import "framework7/css/bundle";
 import "framework7-icons/css/framework7-icons.css";
 import "../../Content/newMobilePaneIosFrame.css";
+import "../../Content/themes/neon-grid.css";
+import "../../Content/themes/fluent-refresh.css";
+import "../../Content/themes/glassmorphism.css";
+import "../../Content/themes/minimal-mono.css";
+import "../../Content/themes/warm-earth.css";
+import "../../Content/themes/aurora-nord.css";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import Framework7 from "framework7";
@@ -16,6 +22,7 @@ import { HeaderModel } from "../HeaderModel";
 import { mhaStrings } from "../mhaStrings";
 import { Poster } from "../Poster";
 import { DomUtils } from "./domUtils";
+import { ThemeManager } from "./ThemeManager";
 import { ViolationUI } from "./ViolationUI";
 import { OtherRow } from "../row/OtherRow";
 import { ReceivedRow } from "../row/ReceivedRow";
@@ -513,6 +520,7 @@ function eventListener(event: MessageEvent): void {
 
 document.addEventListener("DOMContentLoaded", function() {
     try {
+        ThemeManager.initialize(true);
         initializeFramework7();
         updateStatus(mhaStrings.mhaLoading);
         window.addEventListener("message", eventListener, false);

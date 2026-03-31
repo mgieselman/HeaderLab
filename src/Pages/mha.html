@@ -11,6 +11,14 @@
     <header id="SectionHeader">
         <div id="floater"></div>
         <h1 id="title">Message Header Analyzer</h1>
+        <div id="themeControls" style="position:absolute;top:8px;right:8px;display:flex;gap:4px;">
+            <fluent-button appearance="subtle" id="themeToggleBtn" aria-label="Toggle theme" title="Toggle theme">
+                <span class="fluent-icon fluent-icon--settings" aria-hidden="true"></span>
+            </fluent-button>
+            <fluent-button appearance="subtle" id="darkModeToggleBtn" aria-label="Toggle dark mode" title="Toggle dark mode">
+                <span id="darkModeIcon" aria-hidden="true">&#x263E;</span>
+            </fluent-button>
+        </div>
     </header>
     <main id="SectionContent">
         <section role="region" aria-label="Input Headers">

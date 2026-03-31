@@ -1,5 +1,11 @@
 import "../../Content/fluentCommon.css";
 import "../../Content/newDesktopFrame.css";
+import "../../Content/themes/neon-grid.css";
+import "../../Content/themes/fluent-refresh.css";
+import "../../Content/themes/glassmorphism.css";
+import "../../Content/themes/minimal-mono.css";
+import "../../Content/themes/warm-earth.css";
+import "../../Content/themes/aurora-nord.css";
 
 import { HeaderModel } from "../HeaderModel";
 import { mhaStrings } from "../mhaStrings";
@@ -10,6 +16,7 @@ import { Row } from "../row/Row";
 import { SummaryRow } from "../row/SummaryRow";
 import { TabNavigation } from "../TabNavigation";
 import { DomUtils } from "./domUtils";
+import { ThemeManager } from "./ThemeManager";
 import { ViolationUI } from "./ViolationUI";
 import { RuleViolation, ViolationGroup } from "../rules/types/AnalysisTypes";
 import { escapeAndHighlight, getViolationsForRow } from "../rules/ViolationUtils";
@@ -458,6 +465,7 @@ function eventListener(event: MessageEvent): void {
 // Initialize when DOM is ready
 document.addEventListener("DOMContentLoaded", function() {
     try {
+        ThemeManager.initialize(true);
         initializeFluentUI();
         updateStatus(mhaStrings.mhaLoading);
         window.addEventListener("message", eventListener, false);

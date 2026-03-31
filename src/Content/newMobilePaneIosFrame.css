@@ -4,25 +4,24 @@
 /* Framework7 specific overrides */
 
 :root {
-    --code-box-bg: var(--background-light-gray);
-    --border-light-grey: var(--border-gray);
-    --focus-outline-blue: var(--focus-blue);
-    --light-grey-border: var(--border-light-gray);
-    --f7-block-title-text-color: var(--text-primary);
-    --f7-progressbar-bg-color: var(--progress-track-bg);
-    --f7-progressbar-progress-color: var(--primary-blue);
-    --f7-timeline-item-inner-bg-color: var(--white);
-    --f7-timeline-item-text-color: var(--text-primary);
-    --f7-tabs-bg-color: var(--command-bar-gray);
-    --f7-link-color: var(--link-default);
+    --code-box-bg: var(--theme-bg-secondary);
+    --border-light-grey: var(--theme-border);
+    --focus-outline-blue: var(--theme-accent-hover);
+    --light-grey-border: var(--theme-border-subtle);
+    --f7-block-title-text-color: var(--theme-text);
+    --f7-progressbar-bg-color: var(--theme-progress-track);
+    --f7-progressbar-progress-color: var(--theme-accent);
+    --f7-timeline-item-inner-bg-color: var(--theme-surface);
+    --f7-timeline-item-text-color: var(--theme-text);
+    --f7-tabs-bg-color: var(--theme-nav-bg);
+    --f7-link-color: var(--theme-link);
     --f7-accordion-chevron-icon-down: "chevron_right";
     --f7-accordion-chevron-icon-up: "chevron_down";
-    --f7-timeline-item-inner-bg-color: var(--white);
-    --f7-page-bg-color: var(-f7-tabs-bg-color);
-    --f7-toolbar-bg-color: var(--background-light-blue);
-    --f7-toolbar-text-color: var(--text-primary);
-    --f7-tabbar-link-inactive-color: var(--text-secondary);
-    --f7-tabbar-link-active-color: var(--link-active);
+    --f7-page-bg-color: var(--theme-bg);
+    --f7-toolbar-bg-color: var(--theme-surface);
+    --f7-toolbar-text-color: var(--theme-text);
+    --f7-tabbar-link-inactive-color: var(--theme-text-secondary);
+    --f7-tabbar-link-active-color: var(--theme-accent);
 }
 
 /* Reserve space for parent frame toolbar overlay */
