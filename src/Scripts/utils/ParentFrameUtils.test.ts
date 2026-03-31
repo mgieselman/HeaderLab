@@ -3,7 +3,6 @@
  */
 
 import { ParentFrameUtils } from "./ParentFrameUtils";
-import { Choice } from "../Choice";
 import { diagnostics } from "../Diag";
 import { Errors } from "../Errors";
 
@@ -98,8 +97,6 @@ describe("ParentFrameUtils", () => {
         });
 
         test("returns default key when Office context throws error", () => {
-            // Make Office.context.mailbox.diagnostics.hostName throw
-
             (global as unknown as { Office: MockOfficeContext }).Office = {
                 context: {
                     mailbox: {
@@ -116,55 +113,8 @@ describe("ParentFrameUtils", () => {
         });
 
         test("returns default key when Office context is undefined", () => {
-
             delete (global as unknown as { Office?: MockOfficeContext }).Office;
             expect(ParentFrameUtils.getSettingsKey()).toBe("frame");
-        });
-    });
-
-    describe("setDefaultChoice", () => {
-        const testChoices: Choice[] = [
-            { label: "classic", url: "classic.html", checked: false },
-            { label: "new", url: "new.html", checked: false },
-            { label: "mobile", url: "mobile.html", checked: false }
-        ];
-
-        test("sets choice based on query parameter", () => {
-            const search = "?default=classic&other=value";
-            const result = ParentFrameUtils.setDefaultChoice(testChoices, "new", search);
-
-            expect(result.find(c => c.label === "classic")?.checked).toBe(true);
-            expect(result.find(c => c.label === "new")?.checked).toBe(false);
-            expect(result.find(c => c.label === "mobile")?.checked).toBe(false);
-        });
-
-        test("uses fallback default when no query parameter", () => {
-            const result = ParentFrameUtils.setDefaultChoice(testChoices, "mobile", "?other=value");
-
-            expect(result.find(c => c.label === "classic")?.checked).toBe(false);
-            expect(result.find(c => c.label === "new")?.checked).toBe(false);
-            expect(result.find(c => c.label === "mobile")?.checked).toBe(true);
-        });        test("uses default 'new' when no custom default provided", () => {
-            const result = ParentFrameUtils.setDefaultChoice(testChoices, undefined, "?other=value");
-
-            expect(result.find(c => c.label === "new")?.checked).toBe(true);
-        });
-
-        test("handles non-existent choice gracefully", () => {
-            const search = "?default=nonexistent";
-            const result = ParentFrameUtils.setDefaultChoice(testChoices, "new", search);
-
-            // Should all be false since nonexistent choice won't match
-            expect(result.every(c => !c.checked)).toBe(true);
-        });
-
-        test("preserves other choice properties", () => {
-            const search = "?default=new";
-            const result = ParentFrameUtils.setDefaultChoice(testChoices, "new", search);
-
-            const newChoice = result.find(c => c.label === "new");
-            expect(newChoice?.url).toBe("new.html");
-            expect(newChoice?.label).toBe("new");
         });
     });
 
@@ -187,7 +137,9 @@ describe("ParentFrameUtils", () => {
             expect(result).toContain("version = 1.0\n");
             expect(result).toContain("ERROR: Connection failed\n");
             expect(result).toContain("ERROR: Timeout occurred\n");
-        });        test("handles diagnostics retrieval failure", () => {
+        });
+
+        test("handles diagnostics retrieval failure", () => {
             mockDiagnostics.get.mockImplementation(() => {
                 throw new Error("Diagnostics unavailable");
             });
@@ -217,30 +169,6 @@ describe("ParentFrameUtils", () => {
             expect(result).toContain("validKey = ValidValue\n");
             expect(result).toContain("nullKey = null\n");
             expect(result).toContain("undefinedKey = undefined\n");
-        });
-    });
-
-    describe("isValidChoice", () => {
-        test("returns true for valid choice", () => {
-            const choice = { label: "test", url: "test.html", checked: true };
-            expect(ParentFrameUtils.isValidChoice(choice)).toBe(true);
-        });
-
-        test("returns false for null/undefined", () => {
-            expect(ParentFrameUtils.isValidChoice(null)).toBe(false);
-            expect(ParentFrameUtils.isValidChoice(undefined)).toBe(false);
-        });
-
-        test("returns false for missing properties", () => {
-            expect(ParentFrameUtils.isValidChoice({})).toBe(false);
-            expect(ParentFrameUtils.isValidChoice({ label: "test" })).toBe(false);
-            expect(ParentFrameUtils.isValidChoice({ label: "test", url: "test.html" })).toBe(false);
-        });
-
-        test("returns false for wrong property types", () => {
-            expect(ParentFrameUtils.isValidChoice({ label: 123, url: "test.html", checked: true })).toBe(false);
-            expect(ParentFrameUtils.isValidChoice({ label: "test", url: 123, checked: true })).toBe(false);
-            expect(ParentFrameUtils.isValidChoice({ label: "test", url: "test.html", checked: "true" })).toBe(false);
         });
     });
 });

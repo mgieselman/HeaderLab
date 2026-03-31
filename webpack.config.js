@@ -95,15 +95,13 @@ const pages = [
     { name: "mha", script: "mha" },
     { name: "uitoggle", script: "uiToggle" },
     { name: "newDesktopFrame", script: "newDesktopFrame" },
-    { name: "classicDesktopFrame", script: "classicDesktopFrame" },
-    { name: "newMobilePaneIosFrame", script: "newMobilePaneIosFrame" },
     { name: "privacy", script: "privacy" },
-    // Redirection/static pages
-    { name: "Default" }, // uitoggle.html?default=classic
-    { name: "DefaultPhone" }, // uitoggle.html?default=classic
-    { name: "DefaultTablet" }, // uitoggle.html?default=classic
-    { name: "DesktopPane" }, // uitoggle.html?default=new
-    { name: "MobilePane" }, // uitoggle.html?default=new-mobile
+    // Redirection/static pages (all redirect to uitoggle.html)
+    { name: "Default" },
+    { name: "DefaultPhone" },
+    { name: "DefaultTablet" },
+    { name: "DesktopPane" },
+    { name: "MobilePane" },
     { name: "Functions" },
     { name: "index" }, // redirect to mha.html for Azure Static Web Apps
 ];
@@ -270,7 +268,7 @@ export default async (env, options) => {
                     },
                     // Large libraries that should be separate
                     largeLibs: {
-                        test: /[\\/]node_modules[\\/](framework7|lodash|moment|date-fns)[\\/]/,
+                        test: /[\\/]node_modules[\\/](lodash|moment|date-fns)[\\/]/,
                         name: "large-libs",
                         priority: 30,
                         reuseExistingChunk: true,

@@ -428,3 +428,55 @@ fluent-badge.severity-badge {
     border-radius: 4px;
     letter-spacing: 0.5px;
 }
+
+/* ============================================================
+   RESPONSIVE BREAKPOINTS
+   ============================================================ */
+
+/* Narrow pane: 320-480px (Outlook mobile, narrow desktop pane) */
+@media (max-width: 480px) {
+    #nav-bar .button-label {
+        display: none !important;
+    }
+
+    #nav-bar .nav-button {
+        width: var(--button-height);
+        min-width: var(--button-height);
+        padding-inline: 0;
+    }
+
+    #nav-bar .nav-button:is(:hover, .is-active):has(.button-label) {
+        width: var(--button-height);
+        padding-inline: 0;
+    }
+
+    .page-title {
+        font-size: 16px;
+    }
+
+    .code-box > pre,
+    .code-box > textarea {
+        font-size: 10px;
+    }
+
+    .hop-primary-text {
+        font-size: 14px;
+    }
+
+    .details-overlay-popup.is-shown {
+        width: calc(100vw - 20px);
+        max-width: none;
+        left: 10px !important;
+    }
+}
+
+/* Medium pane: 481-768px */
+@media (max-width: 768px) {
+    .fluent-table td {
+        font-size: 11px;
+    }
+
+    .details-overlay-popup.is-shown {
+        max-width: 90vw;
+    }
+}

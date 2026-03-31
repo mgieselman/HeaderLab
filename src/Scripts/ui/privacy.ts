@@ -1,4 +1,4 @@
-import "../../Content/Office.css";
+import "../../Content/fluentCommon.css";
 import "../../Content/privacy.css";
 
 // Initialize privacy policy page
