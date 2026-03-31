@@ -15,30 +15,54 @@
 /* Layout and Typography Variables */
 :root {
     /* Typography */
-    --font-monospace: "Consolas", "Monaco", "Courier New", monospace;
-    --font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, "Roboto", "Helvetica Neue", sans-serif;
-    
+    --font-monospace: var(--theme-font-mono);
+    --font-family: var(--theme-font-body);
+
     /* Layout */
-    --border-radius: 4px;
+    --border-radius: var(--theme-radius-sm);
     --spacing-small: 8px;
     --spacing-medium: 12px;
-    --focus-outline: 2px solid var(--focus-blue);
+    --focus-outline: 2px solid var(--theme-accent-hover);
     --button-height: 44px;
+
+    /* Fluent UI Web Component token overrides */
+    --accent-fill-rest: var(--theme-accent);
+    --accent-fill-hover: var(--theme-accent-hover);
+    --accent-fill-active: var(--theme-accent-hover);
+    --accent-foreground-rest: var(--theme-accent);
+    --accent-foreground-hover: var(--theme-accent-hover);
+    --foreground-on-accent-rest: var(--theme-text-on-accent);
+    --neutral-fill-rest: var(--theme-surface);
+    --neutral-fill-hover: var(--theme-surface-hover);
+    --neutral-fill-stealth-rest: transparent;
+    --neutral-fill-stealth-hover: var(--theme-surface-hover);
+    --neutral-foreground-rest: var(--theme-text);
+    --neutral-foreground-hint: var(--theme-text-secondary);
+    --neutral-stroke-rest: var(--theme-border);
+    --neutral-stroke-hover: var(--theme-accent);
+    --neutral-layer-floating: var(--theme-elevated);
+    --neutral-layer-1: var(--theme-surface);
+    --neutral-layer-2: var(--theme-bg-secondary);
+    --body-font: var(--theme-font-body);
+    --type-ramp-base-font-family: var(--theme-font-body);
 }
 
-/* Secondary Button Styling - Default black border, blue highlight */
+/* Secondary Button Styling */
 fluent-button:is(:not([appearance]), [appearance="neutral"]):not([disabled]),
 fluent-button:is(:not([appearance]), [appearance="neutral"])::part(control) {
-    border: 1px solid var(--black);
+    border: 1px solid var(--theme-border);
+    color: var(--theme-text);
+    background: var(--theme-surface);
 }
 
 fluent-button:is(:not([appearance]), [appearance="neutral"]):hover {
-    background-color: var(--hover-blue);
+    background-color: var(--theme-surface-hover);
+    border-color: var(--theme-accent);
 }
 
 fluent-button:is(:not([appearance]), [appearance="neutral"]):focus,
 fluent-button:is(:not([appearance]), [appearance="neutral"])::part(control):focus {
-    border: 1px solid var(--primary-blue);
+    border: 1px solid var(--theme-accent);
     outline: none;
 }
 
@@ -56,11 +80,11 @@ fluent-button[appearance="subtle"] {
     border-radius: 0;
     margin: 0;
     padding: 0;
-    color: var(--primary-blue);
+    color: var(--theme-accent);
     cursor: pointer;
     outline: none;
     display: inline-flex;
-    font-family: var(--font-family);
+    font-family: var(--theme-font-body);
 }
 
 fluent-button[appearance="subtle"]::part(control) {
@@ -81,7 +105,7 @@ fluent-button[appearance="subtle"]:is(:hover, :active, .is-active) {
 
 fluent-button[appearance="subtle"]:is(:active, .is-active) {
     background: transparent;
-    border-bottom: 3px solid var(--primary-blue);
+    border-bottom: var(--theme-nav-active-indicator);
 }
 
 /* Navigation buttons with labels need flexible width when label shows */
@@ -91,76 +115,31 @@ fluent-button[appearance="subtle"]:is(:hover, .is-active):has(.button-label:not(
     padding-inline: var(--spacing-small);
 }
 
-/* Modern Fluent Icon Styling */
+/* SVG Icon System */
 .fluent-icon {
-    font-size: 20px;
-    font-style: normal;
-    color: var(--primary-blue);
-}
-
-/* Modern Fluent Icon Classes */
-.fluent-icon--info::before {
-    content: "\24D8"; /* Unicode ⓘ icon */
-}
-
-.fluent-icon--stopwatch::before {
-    content: "\23F1"; /* Unicode stopwatch ⏱ */
-}
-
-.fluent-icon--mail-alert {
-    position: relative;
-    display: inline-block;
-}
-
-.fluent-icon--mail-alert::before {
-    content: "\2709"; /* Unicode Mail icon ✉ */
-    position: relative;
-    z-index: 1;
-}
-
-.fluent-icon--mail-alert::after {
-    content: "\24D8"; /* Unicode Info icon ⓘ */
-    position: absolute;
-    bottom: -2px;
-    right: -4px;
-    font-size: 8px;
-    color: var(--primary-blue);
-    background: white;
-    border-radius: 50%;
-    z-index: 2;
-    width: 10px;
-    height: 10px;
-    display: flex;
+    display: inline-flex;
     align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
 }
 
-.fluent-icon--cake::before {
-    content: "\1F370\FE0E"; /* Unicode cake slice with text presentation */
+.fluent-icon svg {
+    width: 100%;
+    height: 100%;
+    fill: currentColor;
 }
 
-.fluent-icon--add::before {
-    content: "\2295"; /* Unicode circled plus ⊕ */
+/* Nav and toolbar icons inherit accent color */
+#nav-bar .fluent-icon,
+.toolbar .fluent-icon {
+    color: var(--theme-accent);
 }
 
-.fluent-icon--remove::before {
-    content: "\2296"; /* Unicode circled minus ⊖ */
-}
-
-.fluent-icon--copy::before {
-    content: "\1F5D0"; /* Unicode 🗐 icon */
-}
-
-.fluent-icon--settings::before {
-    content: "\2699"; /* Unicode ⚙ gear icon */
-    font-weight: bolder;
-}
-
-.fluent-icon--arrow-circle-down::before {
-    content: "\2B07"; /* Unicode ⬇ down arrow */
-}
-
-.fluent-icon--error::before {
-    content: "\2715"; /* Unicode ✕ multiplication X */
+/* Error icon color */
+.error-content .fluent-icon {
+    color: var(--theme-error);
 }
 
 /* High contrast mode support */

@@ -164,17 +164,13 @@
     width: auto !important;
 }
 
-#orig-header-btn .fluent-icon--add,
-#orig-header-btn .fluent-icon--remove {
-    color: var(--primary-blue);
-    width: 20px;
-    height: 20px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+#orig-header-btn .fluent-icon {
+    color: var(--theme-accent);
+    width: 16px;
+    height: 16px;
     margin-right: 8px;
-    font-size: 20px;
     vertical-align: middle;
+    transition: transform 200ms ease;
 }
 
 #orig-header-btn::part(control) {

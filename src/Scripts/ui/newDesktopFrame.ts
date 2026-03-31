@@ -1,3 +1,13 @@
+import {
+    fluentAccordion,
+    fluentAccordionItem,
+    fluentBadge,
+    fluentButton,
+    fluentCard,
+    fluentProgress,
+    fluentProgressRing,
+    provideFluentDesignSystem
+} from "@fluentui/web-components";
 import "../../Content/fluentCommon.css";
 import "../../Content/newDesktopFrame.css";
 import "../../Content/themes/neon-grid.css";
@@ -13,6 +23,17 @@ import { TabNavigation } from "../TabNavigation";
 import { DomUtils } from "./domUtils";
 import { ThemeManager } from "./ThemeManager";
 import { UnifiedRenderer } from "./UnifiedRenderer";
+
+// Register Fluent UI Web Components
+provideFluentDesignSystem().register(
+    fluentAccordion(),
+    fluentAccordionItem(),
+    fluentBadge(),
+    fluentButton(),
+    fluentCard(),
+    fluentProgress(),
+    fluentProgressRing()
+);
 
 // This is the add-in iframe UI rendered in newDesktopFrame.html
 
