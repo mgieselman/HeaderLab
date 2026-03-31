@@ -101,14 +101,24 @@ export class ParentFrame {
         dialogSettings.hidden = true;
         dialogDiagnostics.hidden = true;
 
+        // Close dialog on backdrop click — use composedPath to avoid
+        // swallowing clicks on fluent-radio/checkbox inside shadow DOM
         dialogSettings.addEventListener("click", (e) => {
-            if (e.target === dialogSettings) {
+            const path = e.composedPath();
+            const clickedInside = path.some(el =>
+                el instanceof HTMLElement && el !== dialogSettings && dialogSettings.contains(el)
+            );
+            if (!clickedInside) {
                 dialogSettings.hidden = true;
             }
         });
 
         dialogDiagnostics.addEventListener("click", (e) => {
-            if (e.target === dialogDiagnostics) {
+            const path = e.composedPath();
+            const clickedInside = path.some(el =>
+                el instanceof HTMLElement && el !== dialogDiagnostics && dialogDiagnostics.contains(el)
+            );
+            if (!clickedInside) {
                 dialogDiagnostics.hidden = true;
             }
         });
