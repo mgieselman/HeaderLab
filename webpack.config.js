@@ -198,7 +198,8 @@ export default async (env, options) => {
             new CopyWebpackPlugin({
                 patterns: [
                     { from: "src/Resources/*", to: path.resolve(__dirname, "Resources/[name][ext]") },
-                    { from: "src/data/rules.json", to: path.resolve(__dirname, "Pages/data/[name][ext]") }
+                    { from: "src/data/rules.json", to: path.resolve(__dirname, "Pages/data/[name][ext]") },
+                    { from: "staticwebapp.config.json", to: path.resolve(__dirname, "Pages/[name][ext]") }
                 ]
             }),
             ...generateHtmlWebpackPlugins(),
