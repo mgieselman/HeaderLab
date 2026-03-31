@@ -1,4 +1,3 @@
-﻿import { Choice } from "./Choice";
 import { DeferredError } from "./DeferredError";
 import { diagnostics } from "./Diag";
 import { Errors } from "./Errors";
@@ -21,38 +20,20 @@ interface FluentRadioGroup extends HTMLElement {
     value: string;
 }
 
-interface FluentRadio extends HTMLElement {
-    value: string;
-    checked: boolean;
-}
-
 interface FluentCheckbox extends HTMLElement {
     checked: boolean;
 }
 
+// Single unified frame URL
+const frameUrl = "newDesktopFrame.html";
+
 export class ParentFrame {
     private static iFrame: Window | null;
-    private static currentChoice = {} as Choice;
     private static deferredErrors: DeferredError[] = [];
     private static deferredStatus: string[] = [];
     private static headers = "";
     private static modelToString = "";
     protected static telemetryCheckbox: FluentCheckbox | null = null;
-
-    private static choices: Array<Choice> = [
-        { label: "classic", url: "classicDesktopFrame.html", checked: false },
-        { label: "new", url: "newDesktopFrame.html", checked: true },
-        { label: "new-mobile", url: "newMobilePaneIosFrame.html", checked: false }
-    ];
-
-    private static setDefault(): void {
-        let uiDefault: string = ParentFrameUtils.getQueryVariable("default");
-        if (uiDefault === null) {
-            uiDefault = "new";
-        }
-
-        ParentFrameUtils.setDefaultChoice(ParentFrame.choices, uiDefault);
-    }
 
     private static postMessageToFrame(eventName: string, data: string | { error: string, message: string }): void {
         if (ParentFrame.iFrame) {
@@ -70,15 +51,11 @@ export class ParentFrame {
         TabNavigation.setIFrame(frame);
 
         if (ParentFrame.iFrame) {
-            // If we have any deferred status, signal them
             ParentFrame.deferredStatus.forEach((status: string) => {
                 ParentFrame.postMessageToFrame("updateStatus", status);
             });
-
-            // Clear out the now displayed status
             ParentFrame.deferredStatus = [];
 
-            // If we have any deferred errors, signal them
             ParentFrame.deferredErrors.forEach((deferredError: DeferredError) => {
                 ParentFrame.postMessageToFrame("showError",
                     {
@@ -86,8 +63,6 @@ export class ParentFrame {
                         message: deferredError.message
                     });
             });
-
-            // Clear out the now displayed errors
             ParentFrame.deferredErrors = [];
 
             ParentFrame.render();
@@ -137,72 +112,33 @@ export class ParentFrame {
         }
     }
 
-    // Tells the UI to show an error.
     public static showError(error: unknown, message: string, suppressTracking?: boolean): void {
         Errors.log(error, message, suppressTracking);
 
         if (ParentFrame.iFrame) {
             ParentFrame.postMessageToFrame("showError", { error: JSON.stringify(error), message: message });
         } else {
-            // We don't have an iFrame, so defer the message
             ParentFrame.deferredErrors.push(<DeferredError>{ error: error, message: message });
         }
     }
 
-    // Tells the UI to show an error.
     public static updateStatus(statusText: string): void {
         if (ParentFrame.iFrame) {
             ParentFrame.postMessageToFrame("updateStatus", statusText);
         } else {
-            // We don't have an iFrame, so defer the status
             ParentFrame.deferredStatus.push(statusText);
         }
     }
 
-    // Display primary UI
-    private static go(choice: Choice): void {
+    private static loadFrame(): void {
         ParentFrame.iFrame = null;
-        ParentFrame.currentChoice = choice;
-        (document.getElementById("uiFrame") as HTMLIFrameElement).src = choice.url;
-        if (Office.context) {
-            Office.context.roamingSettings.set(ParentFrameUtils.getSettingsKey(), choice);
-            Office.context.roamingSettings.saveAsync();
-        }
-    }
-
-    private static goDefaultChoice(): void {
-        const choice = ParentFrame.choices.find((c: Choice) => c.checked);
-        if (choice) {
-            ParentFrame.go(choice);
-        }
-    }
-
-    // Create list of choices to display for the UI types
-    private static addChoices(): void {
-        const radioGroup = document.getElementById("uiChoice") as FluentRadioGroup;
-        if (!radioGroup) return;
-
-        // Clear existing options
-        radioGroup.innerHTML = "";
-
-        ParentFrame.choices.forEach((choice: Choice, iChoice: number) => {
-            const radio = document.createElement("fluent-radio") as FluentRadio;
-            radio.value = iChoice.toString();
-            radio.textContent = choice.label;
-
-            if (choice.checked) {
-                radio.checked = true;
-            }
-
-            radioGroup.appendChild(radio);
-        });
+        (document.getElementById("uiFrame") as HTMLIFrameElement).src = frameUrl;
     }
 
     private static getIFrame(): Window | null {
         return ParentFrame.iFrame;
     }
 
-    // Hook the UI together for display
     private static initFluent(): void {
         const header: Element | null = document.querySelector(".header-row");
         if (!header) return;
@@ -212,11 +148,9 @@ export class ParentFrame {
 
         if (!dialogSettings || !dialogDiagnostics) return;
 
-        // Ensure dialogs are initially hidden
         dialogSettings.hidden = true;
         dialogDiagnostics.hidden = true;
 
-        // Add click-outside-to-dismiss functionality
         dialogSettings.addEventListener("click", (e) => {
             if (e.target === dialogSettings) {
                 dialogSettings.hidden = true;
@@ -229,48 +163,41 @@ export class ParentFrame {
             }
         });
 
-        // Add escape key to dismiss dialogs and enter key to apply settings
         document.addEventListener("keydown", (e) => {
             if (e.key === "Escape") {
-                if (!dialogSettings.hidden) {
-                    dialogSettings.hidden = true;
-                }
-
-                if (!dialogDiagnostics.hidden) {
-                    dialogDiagnostics.hidden = true;
-                }
+                if (!dialogSettings.hidden) dialogSettings.hidden = true;
+                if (!dialogDiagnostics.hidden) dialogDiagnostics.hidden = true;
             }
 
             if (e.key === "Enter" && !dialogSettings.hidden) {
-                // Only trigger OK action when focused on radio buttons or checkboxes
                 const activeElement = document.activeElement;
                 const isRadioOrCheckbox = activeElement &&
                     (activeElement.tagName.toLowerCase() === "fluent-radio" ||
                         activeElement.tagName.toLowerCase() === "fluent-checkbox");
 
                 if (isRadioOrCheckbox) {
-                    // Trigger the same action as the OK button
-                    const radioGroup = document.getElementById("uiChoice") as FluentRadioGroup;
-                    if (radioGroup && radioGroup.value) {
-                        const iChoice = parseInt(radioGroup.value);
-                        const choice: Choice | undefined = ParentFrame.choices[iChoice];
-                        if (choice && choice.label !== ParentFrame.currentChoice.label) {
-                            ParentFrame.go(choice);
-                        }
-                    }
-
-                    // Update telemetry setting
+                    // Apply telemetry setting
                     if (ParentFrame.telemetryCheckbox) {
                         diagnostics.setSendTelemetry(ParentFrame.telemetryCheckbox.checked);
                     }
 
+                    // Apply theme and mode
+                    const themeGroup = document.getElementById("themeChoice") as FluentRadioGroup;
+                    if (themeGroup?.value) {
+                        ThemeManager.setTheme(themeGroup.value as ThemeName, ParentFrame.getIFrame() || undefined);
+                    }
+
+                    const modeGroup = document.getElementById("modeChoice") as FluentRadioGroup;
+                    if (modeGroup?.value) {
+                        ThemeManager.setMode(modeGroup.value as ModeName, ParentFrame.getIFrame() || undefined);
+                    }
+
                     dialogSettings.hidden = true;
-                    e.preventDefault(); // Prevent default form submission behavior
+                    e.preventDefault();
                 }
             }
 
             if (e.key === "Enter" && !dialogDiagnostics.hidden) {
-                // Close diagnostics dialog when Enter is pressed on the code box
                 const activeElement = document.activeElement;
                 if (activeElement && activeElement.id === "diagpre") {
                     dialogDiagnostics.hidden = true;
@@ -285,25 +212,13 @@ export class ParentFrame {
             ParentFrame.setSendTelemetryUI(diagnostics.canSendTelemetry());
         }
 
-        // Wire up action buttons
+        // OK button: apply theme/mode/telemetry settings
         const okButton = document.getElementById("actionsSettings-OK");
         okButton?.addEventListener("click", () => {
-            // Get selected choice from radio group
-            const radioGroup = document.getElementById("uiChoice") as FluentRadioGroup;
-            if (radioGroup && radioGroup.value) {
-                const iChoice = parseInt(radioGroup.value);
-                const choice: Choice | undefined = ParentFrame.choices[iChoice];
-                if (choice && choice.label !== ParentFrame.currentChoice.label) {
-                    ParentFrame.go(choice);
-                }
-            }
-
-            // Update telemetry setting
             if (ParentFrame.telemetryCheckbox) {
                 diagnostics.setSendTelemetry(ParentFrame.telemetryCheckbox.checked);
             }
 
-            // Apply theme and mode selections
             const themeGroup = document.getElementById("themeChoice") as FluentRadioGroup;
             if (themeGroup?.value) {
                 ThemeManager.setTheme(themeGroup.value as ThemeName, ParentFrame.getIFrame() || undefined);
@@ -325,7 +240,6 @@ export class ParentFrame {
                 diagnosticsElement.textContent = diagnosticsText;
             }
 
-            // Hide settings dialog and show diagnostics dialog
             dialogSettings.hidden = true;
             dialogDiagnostics.hidden = false;
             document.getElementById("diagpre")?.focus();
@@ -338,16 +252,7 @@ export class ParentFrame {
 
         const settingsButton = document.getElementById("settingsButton");
         settingsButton?.addEventListener("click", () => {
-            // Set the current choice in the radio group
-            const radioGroup = document.getElementById("uiChoice") as FluentRadioGroup;
-            if (radioGroup) {
-                const currentIndex = ParentFrame.choices.findIndex(c => c.label === ParentFrame.currentChoice.label);
-                if (currentIndex >= 0) {
-                    radioGroup.value = currentIndex.toString();
-                }
-            }
-
-            // Set current theme and mode in their radio groups
+            // Set current theme and mode in radio groups
             const themeGroup = document.getElementById("themeChoice") as FluentRadioGroup;
             if (themeGroup) {
                 themeGroup.value = ThemeManager.theme;
@@ -365,24 +270,20 @@ export class ParentFrame {
         copyButton?.addEventListener("click", () => {
             Strings.copyToClipboard(ParentFrame.modelToString);
 
-            // Show status message for accessibility
             const statusMessage = document.getElementById("statusMessage");
             if (statusMessage) {
                 statusMessage.textContent = mhaStrings.mhaCopied;
                 statusMessage.classList.add("show");
 
-                // Hide after 2 seconds
                 setTimeout(() => {
                     statusMessage.classList.remove("show");
                     statusMessage.textContent = "";
                 }, 2000);
             }
 
-            // Maintain focus on copy button for keyboard users
             copyButton.focus();
         });
 
-        // Initialize tab navigation handling
         TabNavigation.initialize();
     }
 
@@ -394,18 +295,16 @@ export class ParentFrame {
 
     public static async initUI() {
         ThemeManager.initialize();
-        ParentFrame.setDefault();
-        ParentFrame.addChoices();
         ParentFrame.initFluent();
 
+        // Load the unified frame
+        ParentFrame.loadFrame();
+
         try {
-            const choice: Choice = Office.context.roamingSettings.get(ParentFrameUtils.getSettingsKey());
             const sendTelemetry: boolean = Office.context.roamingSettings.get("sendTelemetry");
             diagnostics.initSendTelemetry(sendTelemetry);
-
-            ParentFrame.go(choice);
         } catch {
-            ParentFrame.goDefaultChoice();
+            // Ignore stale roaming settings
         }
 
         ParentFrame.registerItemChangedEvent();
@@ -413,6 +312,4 @@ export class ParentFrame {
         window.addEventListener("message", ParentFrame.eventListener, false);
         await ParentFrame.loadNewItem();
     }
-
-    public static get choice(): Choice { return ParentFrame.currentChoice; }
 }

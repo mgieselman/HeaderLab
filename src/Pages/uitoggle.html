@@ -36,13 +36,6 @@
             </header>
             <section class="dialog-content">
                 <fieldset>
-                    <legend id="Label-Heading">UI style</legend>
-                    <fluent-radio-group orientation="vertical" id="uiChoice" name="uiChoice" aria-label="Choose UI style" aria-labelledby="Label-Heading">
-                        <!-- Radio options will be dynamically populated -->
-                    </fluent-radio-group>
-                    <fluent-checkbox id="telemetryInput">Send telemetry</fluent-checkbox>
-                </fieldset>
-                <fieldset>
                     <legend id="Label-Theme">Theme</legend>
                     <fluent-radio-group orientation="vertical" id="themeChoice" name="themeChoice" aria-label="Choose visual theme" aria-labelledby="Label-Theme">
                         <fluent-radio value="default">Default</fluent-radio>
@@ -62,6 +55,7 @@
                         <fluent-radio value="dark">Dark</fluent-radio>
                     </fluent-radio-group>
                 </fieldset>
+                <fluent-checkbox id="telemetryInput">Send telemetry</fluent-checkbox>
                 <div class="privacy-link">
                     <small>
                         <a href="privacy.html" id="privacy-link" target="_blank" rel="noopener noreferrer" aria-label="View privacy policy (opens in new tab)">privacy policy</a>

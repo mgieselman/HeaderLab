@@ -168,15 +168,7 @@ class Diag {
         if (!this.appDiagnostics) return;
 
         try {
-            if (ParentFrame) {
-                const choice = ParentFrame.choice;
-                if (choice) {
-                    this.appDiagnostics["ui"] = choice.label;
-                }
-            }
-            else {
-                this.appDiagnostics["ui"] = "standalone";
-            }
+            this.appDiagnostics["ui"] = "unified";
 
             this.appDiagnostics["Last Update"] = buildTime();
             this.appDiagnostics["mhaVersion"] = mhaVersion();

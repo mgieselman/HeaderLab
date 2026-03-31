@@ -187,9 +187,7 @@
    ============================================================ */
 
 /* Grid background */
-:root[data-theme="neon-grid"] .content-wrap::before,
-:root[data-theme="neon-grid"] .framework7-root::before,
-:root[data-theme="neon-grid"] body.classic-ui::before {
+:root[data-theme="neon-grid"] .content-wrap::before {
     content: '';
     position: fixed;
     inset: 0;
@@ -202,8 +200,7 @@
 }
 
 /* Scanline overlay (dark mode only) */
-:root[data-theme="neon-grid"]:not([data-mode="light"]) .content-wrap::after,
-:root[data-theme="neon-grid"]:not([data-mode="light"]) .framework7-root::after {
+:root[data-theme="neon-grid"]:not([data-mode="light"]) .content-wrap::after {
     content: '';
     position: fixed;
     inset: 0;
@@ -319,9 +316,7 @@
 /* Forced colors / high contrast override */
 @media (forced-colors: active) {
     :root[data-theme="neon-grid"] .content-wrap::before,
-    :root[data-theme="neon-grid"] .content-wrap::after,
-    :root[data-theme="neon-grid"] .framework7-root::before,
-    :root[data-theme="neon-grid"] .framework7-root::after {
+    :root[data-theme="neon-grid"] .content-wrap::after {
         display: none;
     }
 }
