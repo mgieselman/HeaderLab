@@ -105,6 +105,7 @@ const pages = [
     { name: "DesktopPane" }, // uitoggle.html?default=new
     { name: "MobilePane" }, // uitoggle.html?default=new-mobile
     { name: "Functions" },
+    { name: "index" }, // redirect to mha.html for Azure Static Web Apps
 ];
 
 /**
