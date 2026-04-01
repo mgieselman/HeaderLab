@@ -2,9 +2,9 @@
  * @jest-environment jsdom
  */
 
+import { diagnostics } from "./Diagnostics";
+import { Errors } from "./Errors";
 import { ParentFrameUtils } from "./ParentFrameUtils";
-import { diagnostics } from "../Diag";
-import { Errors } from "../Errors";
 
 // Mock the Office context for testing
 interface MockOfficeContext {
@@ -23,8 +23,8 @@ interface Global {
 }
 
 // Mock dependencies
-jest.mock("../Diag");
-jest.mock("../Errors");
+jest.mock("./Diagnostics");
+jest.mock("./Errors");
 
 const mockDiagnostics = diagnostics as jest.Mocked<typeof diagnostics>;
 const mockErrors = Errors as jest.Mocked<typeof Errors>;

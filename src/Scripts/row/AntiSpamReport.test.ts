@@ -1,7 +1,7 @@
 ﻿import "../jestMatchers/arrayEqual";
 import { expect } from "@jest/globals";
 
-import { AntiSpamReport } from "./Antispam";
+import { AntiSpamReport } from "./AntiSpamReport";
 
 describe("antiSpam Tests", () => {
     const header = "BCL:1;";

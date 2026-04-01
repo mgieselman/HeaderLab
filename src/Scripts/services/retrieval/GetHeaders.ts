@@ -1,7 +1,7 @@
 import { GetHeadersAPI } from "./GetHeadersAPI";
 import { GetHeadersGraph } from "./GetHeadersGraph";
-import { diagnostics } from "../../Diag";
-import { Errors } from "../../Errors";
+import { diagnostics } from "../Diagnostics";
+import { Errors } from "../Errors";
 
 /**
  * Callbacks for the retrieval layer to communicate status and errors

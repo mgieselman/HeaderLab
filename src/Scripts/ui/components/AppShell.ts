@@ -7,8 +7,8 @@ import { renderResults } from "./ResultsView";
 import { openSettingsDialog } from "./SettingsDialog";
 import { renderStatusBar } from "./StatusBar";
 import { renderTabNav } from "./TabNav";
-import { labels } from "../../labels";
-import { Strings } from "../../Strings";
+import { statusLabels } from "../../core/labels";
+import { Strings } from "../../core/Strings";
 import { clear, el } from "../rendering/dom";
 import { AppState } from "../state/AppState";
 
@@ -28,11 +28,11 @@ export function createAppShell(root: HTMLElement, state: AppState, mode: AppMode
             onclick: async () => {
                 const model = state.headerModel;
                 if (!model || !model.hasData) {
-                    state.setStatus(labels.nothingToCopy);
+                    state.setStatus(statusLabels.nothingToCopy);
                     return;
                 }
                 await Strings.copyToClipboard(model.toString());
-                state.setStatus(labels.copied);
+                state.setStatus(statusLabels.copied);
             },
         }, "Copy"));
     }

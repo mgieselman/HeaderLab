@@ -1,6 +1,6 @@
 import { GetHeaders, HeaderCallbacks } from "./GetHeaders";
-import { diagnostics } from "../../Diag";
-import { Errors } from "../../Errors";
+import { diagnostics } from "../Diagnostics";
+import { Errors } from "../Errors";
 
 export class GetHeadersAPI {
     public static canUseAPI(): boolean { return GetHeaders.canUseAPI(); }

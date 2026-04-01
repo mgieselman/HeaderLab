@@ -2,7 +2,7 @@
  * Tab navigation: shows sections that have data, hides empty ones.
  */
 
-import { HeaderModel } from "../../HeaderModel";
+import { HeaderModel } from "../../model/HeaderModel";
 import { clear, el } from "../rendering/dom";
 import { AppState } from "../state/AppState";
 

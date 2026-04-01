@@ -27,36 +27,50 @@ Node >= 18.12.0 required. CI uses Node 22.
 
 ## Architecture
 
-### Data Layer (`src/Scripts/`)
+Code is organized under `src/Scripts/` into layers with dependencies flowing downward:
 
-The core is a pure data/parsing layer with no UI dependencies:
+### `config/` — Build-time constants
+Webpack DefinePlugin wrappers: `aikey`, `buildTime`, `version`, `naaClientId`. No internal imports.
 
-- **`HeaderModel`** — central orchestrator. `HeaderModel.create(headers)` parses headers and runs rule analysis. Parsing dispatches each header to the first matching section (summary → antispam → received → other).
-- **`labels.ts`** — string constants for display labels (section names, field labels, status messages).
+### `core/` — Pure domain utilities
+Foundational modules imported broadly across all layers:
 - **`Strings.ts`** — HTML encoding, header-to-URL mapping (RFC links), clipboard utilities.
-- **`2047.ts`** — RFC 2047 MIME encoded-word decoder.
-- **Row types (`row/`)** — individual header parsers: `ReceivedRow`, `Antispam`, `ForefrontAntispam`, `SummaryRow`, `OtherRow`, etc. Each row type knows how to parse its specific header format.
-- **Table types (`table/`)** — collections of rows: `Received` (computes hop deltas/delays), `Other`, `SummaryTable`. `Received.computeDeltas()` calculates time differences between hops.
-- **Rules engine (`rules/`)** — validates parsed headers against rules defined in `src/data/rules.json`. Entry point is `rulesService.analyzeHeaders(model)`. Rule types: `SimpleValidationRule`, `AndValidationRule`, `HeaderSectionMissingRule`. Results are `ViolationGroup[]` on the model.
+- **`Dates.ts`** / **`DateWithNum.ts`** — Cross-browser date parsing via dayjs.
+- **`Decoder.ts`** / **`Block.ts`** — RFC 2047 MIME encoded-word decoder.
+- **`labels.ts`** — Typed string constants grouped by section (`statusLabels`, `timeLabels`, `summaryLabels`, `receivedLabels`, `otherLabels`, `antispamLabels`).
 
-### Retrieval Layer (`src/Scripts/ui/getHeaders/`)
+### `row/` — Header row parsers
+Individual header parsers: `ReceivedRow`, `AntiSpamReport`, `ForefrontAntiSpamReport`, `SummaryRow` (with constructor options for postFix/valueUrlMapper), `OtherRow`. Base class `Row` with `Header`, `Match`, `ReceivedField` value types.
 
-Retrieves headers when running as an Outlook add-in:
-- **`GetHeaders`** — tries Office.js API first (`GetHeadersAPI`), falls back to Microsoft Graph (`GetHeadersGraph`).
-- Uses `HeaderCallbacks` interface to communicate status/errors to UI without importing UI modules.
+### `table/` — Row collections
+Collections of rows: `Received` (computes hop deltas/delays), `Other`, `SummaryTable`. Base classes `TableSection` and `DataTable` (adds sorting).
 
-### UI Layer (`src/Scripts/ui/`)
+### `model/` — Domain aggregate
+- **`HeaderModel`** — central orchestrator. `HeaderModel.create(headers)` parses headers and runs rule analysis. Parsing dispatches each header to the first matching section (summary → antispam → received → other).
+- **`Summary`** — summary metadata rows (Subject, From, Date, etc.), tightly coupled to HeaderModel.
 
+### `rules/` — Validation engine
+Validates parsed headers against rules defined in `src/data/rules.json`. Entry point: `rulesService.analyzeHeaders(model)`. Rule types: `SimpleValidationRule`, `AndValidationRule`, `HeaderSectionMissingRule`. Results are `ViolationGroup[]` on the model. Sub-directories: `engine/`, `loaders/`, `types/`.
+
+### `services/` — Infrastructure
+- **`Diagnostics.ts`** — Application Insights telemetry (singleton `diagnostics`).
+- **`Errors.ts`** / **`Stack.ts`** — Error collection, stack trace parsing.
+- **`ParentFrameUtils.ts`** — Query string parsing, diagnostics string generation.
+- **`retrieval/`** — Header retrieval for Outlook add-in mode. `GetHeaders` tries Office.js API first (`GetHeadersAPI`), falls back to Microsoft Graph (`GetHeadersGraph`). Uses `HeaderCallbacks` interface to decouple from UI.
+
+### `ui/` — Presentation layer
 Vanilla TypeScript + CSS custom properties, no framework. Two entry points:
-
 - **`app.ts`** — standalone mode: textarea input + Analyze/Clear/Copy/Sample buttons + results display.
-- **`addin.ts`** — Outlook add-in mode: auto-retrieves headers via `GetHeaders.send()`, no textarea.
+- **`addin.ts`** — Outlook add-in mode: auto-retrieves headers via retrieval layer, no textarea.
 
-**Components (`components/`)**: `AppShell` (layout), `HeaderInput`, `TabNav`, `ResultsView`, section renderers (`SummarySection`, `RoutingSection`, `SecuritySection`, `OtherSection`, `DiagnosticsSection`, `OriginalSection`), `SettingsDialog`, `StatusBar`, `ViolationBadge`.
+**`components/`**: `AppShell` (layout), `HeaderInput`, `TabNav`, `ResultsView`, section renderers (`SummarySection`, `RoutingSection`, `SecuritySection`, `OtherSection`, `DiagnosticsSection`, `OriginalSection`), `SettingsDialog`, `StatusBar`, `ViolationBadge`.
 
-**State (`state/`)**: `AppState` (observer pattern — holds model, active tab, status) and `ThemeManager` (light/dark/system persisted to localStorage via `data-theme` attribute).
+**`state/`**: `AppState` (observer pattern — holds model, active tab, status) and `ThemeManager` (light/dark/system persisted to localStorage via `data-theme` attribute).
 
-**CSS (`src/Content/`)**: `theme.css` (custom properties for light/dark/system/high-contrast), `layout.css` (responsive grid, 320px–desktop), `components.css` (buttons, cards, tables, badges, dialogs), `typography.css`.
+**`rendering/`**: `dom.ts` — typed DOM creation helpers (`el()`, `text()`, `clear()`).
+
+### CSS (`src/Content/`)
+`theme.css` (custom properties for light/dark/system/high-contrast), `layout.css` (responsive, 320px–desktop), `components.css` (buttons, cards, tables, badges, dialogs), `typography.css`.
 
 ### Key Patterns
 

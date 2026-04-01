@@ -7,12 +7,12 @@ import "../../Content/typography.css";
 import "../../Content/layout.css";
 import "../../Content/components.css";
 
-import { diagnostics } from "../Diag";
-import { HeaderModel } from "../HeaderModel";
-import { labels } from "../labels";
+import { statusLabels } from "../core/labels";
+import { HeaderModel } from "../model/HeaderModel";
+import { diagnostics } from "../services/Diagnostics";
 import { createAppShell } from "./components/AppShell";
-import { GetHeaders, HeaderCallbacks } from "./getHeaders/GetHeaders";
 import { AppState } from "./state/AppState";
+import { GetHeaders, HeaderCallbacks } from "../services/retrieval/GetHeaders";
 
 function initAddin(): void {
     const root = document.getElementById("app");
@@ -44,7 +44,7 @@ function initAddin(): void {
     async function retrieveHeaders(): Promise<void> {
         state.clear();
         state.setLoading(true);
-        state.setStatus(labels.loading);
+        state.setStatus(statusLabels.loading);
 
         await GetHeaders.send(
             async (headers: string, apiUsed: string) => {
@@ -52,7 +52,7 @@ function initAddin(): void {
                 try {
                     const model = await HeaderModel.create(headers);
                     state.setModel(model);
-                    state.setStatus(labels.analyzed);
+                    state.setStatus(statusLabels.analyzed);
                 } catch (e) {
                     state.setError("Failed to analyze headers: " + (e instanceof Error ? e.message : String(e)));
                 } finally {

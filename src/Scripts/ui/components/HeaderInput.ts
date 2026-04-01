@@ -2,9 +2,9 @@
  * Header input: textarea + Analyze/Clear/Copy/Sample buttons.
  */
 
-import { HeaderModel } from "../../HeaderModel";
-import { labels } from "../../labels";
-import { Strings } from "../../Strings";
+import { statusLabels } from "../../core/labels";
+import { Strings } from "../../core/Strings";
+import { HeaderModel } from "../../model/HeaderModel";
 import { el } from "../rendering/dom";
 import { sampleHeaders } from "../sampleData";
 import { AppState } from "../state/AppState";
@@ -14,7 +14,7 @@ export function createHeaderInput(state: AppState): HTMLElement {
 
     const textarea = el("textarea", {
         class: "hl-input__textarea hl-mono",
-        placeholder: labels.prompt,
+        placeholder: statusLabels.prompt,
         "aria-label": "Email headers",
         rows: "8",
     }) as HTMLTextAreaElement;
@@ -30,7 +30,7 @@ export function createHeaderInput(state: AppState): HTMLElement {
             try {
                 const model = await HeaderModel.create(text);
                 state.setModel(model);
-                state.setStatus(labels.analyzed);
+                state.setStatus(statusLabels.analyzed);
             } catch (e) {
                 state.setError("Failed to analyze headers: " + (e instanceof Error ? e.message : String(e)));
             } finally {
@@ -45,7 +45,7 @@ export function createHeaderInput(state: AppState): HTMLElement {
             textarea.value = "";
             (analyzeBtn as HTMLButtonElement).disabled = true;
             state.clear();
-            state.setStatus(labels.cleared);
+            state.setStatus(statusLabels.cleared);
             textarea.focus();
         },
     }, "Clear");
@@ -55,11 +55,11 @@ export function createHeaderInput(state: AppState): HTMLElement {
         onclick: async () => {
             const model = state.headerModel;
             if (!model || !model.hasData) {
-                state.setStatus(labels.nothingToCopy);
+                state.setStatus(statusLabels.nothingToCopy);
                 return;
             }
             await Strings.copyToClipboard(model.toString());
-            state.setStatus(labels.copied);
+            state.setStatus(statusLabels.copied);
         },
     }, "Copy");
 

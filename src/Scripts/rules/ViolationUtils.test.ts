@@ -1,7 +1,8 @@
 import { RuleViolation, ViolationGroup } from "./types/AnalysisTypes";
 import { HeaderSection } from "./types/interfaces";
 import { SimpleValidationRule } from "./types/SimpleValidationRule";
-import { escapeAndHighlight, getViolationsForRow, highlightHtml } from "./ViolationUtils";
+import { highlightHtml } from "./ViolationDom";
+import { escapeAndHighlight, getViolationsForRow } from "./ViolationUtils";
 
 describe("escapeAndHighlight", () => {
     test("should return original content when no violation groups", () => {

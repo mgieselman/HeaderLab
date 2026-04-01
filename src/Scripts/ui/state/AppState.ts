@@ -3,7 +3,7 @@
  */
 
 import { ThemeManager } from "./ThemeManager";
-import { HeaderModel } from "../../HeaderModel";
+import { HeaderModel } from "../../model/HeaderModel";
 
 export type StateListener = () => void;
 

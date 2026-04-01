@@ -1,14 +1,13 @@
-import { labels } from "./labels";
-import { ArchivedRow } from "./row/ArchivedRow";
-import { CreationRow } from "./row/CreationRow";
-import { Header } from "./row/Header";
-import { Row } from "./row/Row";
-import { SummaryRow } from "./row/SummaryRow";
-import { SummaryTable } from "./table/SummaryTable";
+import { summaryLabels, timeLabels } from "../core/labels";
+import { Strings } from "../core/Strings";
+import { Header } from "../row/Header";
+import { Row } from "../row/Row";
+import { SummaryRow } from "../row/SummaryRow";
+import { SummaryTable } from "../table/SummaryTable";
 
 export class Summary extends SummaryTable {
     public readonly tableName: string = "summary";
-    public readonly displayName: string = labels.summary;
+    public readonly displayName: string = summaryLabels.summary;
     public readonly tag: string = "SUM";
     private totalTimeInternal = "";
 
@@ -17,22 +16,22 @@ export class Summary extends SummaryTable {
             return "";
         }
 
-        return ` ${labels.deliveredStart} ${totalTime}${labels.deliveredEnd}`;
+        return ` ${timeLabels.deliveredStart} ${totalTime}${timeLabels.deliveredEnd}`;
     }
 
-    private dateRow = new CreationRow("Date", labels.creationTime);
+    private dateRow = new SummaryRow("Date", summaryLabels.creationTime, { postFix: "" });
 
-    private archivedRow = new ArchivedRow("Archived-At", labels.archivedAt,);
+    private archivedRow = new SummaryRow("Archived-At", summaryLabels.archivedAt, { valueUrlMapper: Strings.mapValueToURL });
 
     private summaryRows: SummaryRow[] = [
-        new SummaryRow("Subject", labels.subject),
-        new SummaryRow("Message-ID", labels.messageId),
+        new SummaryRow("Subject", summaryLabels.subject),
+        new SummaryRow("Message-ID", summaryLabels.messageId),
         this.archivedRow,
         this.dateRow,
-        new SummaryRow("From", labels.from),
-        new SummaryRow("Reply-To", labels.replyTo),
-        new SummaryRow("To", labels.to),
-        new SummaryRow("CC", labels.cc)
+        new SummaryRow("From", summaryLabels.from),
+        new SummaryRow("Reply-To", summaryLabels.replyTo),
+        new SummaryRow("To", summaryLabels.to),
+        new SummaryRow("CC", summaryLabels.cc)
     ];
 
     public override exists(): boolean {

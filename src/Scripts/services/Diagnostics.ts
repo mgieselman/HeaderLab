@@ -1,16 +1,14 @@
 import { ApplicationInsights, ICustomProperties, IEventTelemetry, ITelemetryItem } from "@microsoft/applicationinsights-web";
 import stackTrace from "stacktrace-js";
 
-import { aikey } from "./aikey";
-import { buildTime } from "./buildTime";
-import { GetHeaders } from "./ui/getHeaders/GetHeaders";
-import { GetHeadersAPI } from "./ui/getHeaders/GetHeadersAPI";
-import { GetHeadersGraph } from "./ui/getHeaders/GetHeadersGraph";
-import { version } from "./version";
+import { aikey } from "../config/aikey";
+import { buildTime } from "../config/buildTime";
+import { GetHeaders } from "./retrieval/GetHeaders";
+import { GetHeadersAPI } from "./retrieval/GetHeadersAPI";
+import { GetHeadersGraph } from "./retrieval/GetHeadersGraph";
+import { version } from "../config/version";
 
-// diagnostics module
-
-class Diag {
+class Diagnostics {
     private appDiagnostics: { [k: string]: string | number | boolean } | null = null;
     private itemDiagnostics: { [k: string]: string | boolean } | null = null;
     private inGet = false;
@@ -326,4 +324,4 @@ class Diag {
     }
 }
 
-export const diagnostics: Diag = new Diag();
+export const diagnostics: Diagnostics = new Diagnostics();

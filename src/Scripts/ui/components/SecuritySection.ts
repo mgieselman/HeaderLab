@@ -3,8 +3,8 @@
  */
 
 import { violationBadge } from "./ViolationBadge";
-import { AntiSpamReport } from "../../row/Antispam";
-import { ForefrontAntiSpamReport } from "../../row/ForefrontAntispam";
+import { AntiSpamReport } from "../../row/AntiSpamReport";
+import { ForefrontAntiSpamReport } from "../../row/ForefrontAntiSpamReport";
 import { Row } from "../../row/Row";
 import { ViolationGroup } from "../../rules/types/AnalysisTypes";
 import { getViolationsForRow } from "../../rules/ViolationUtils";

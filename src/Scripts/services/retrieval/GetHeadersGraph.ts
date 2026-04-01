@@ -1,9 +1,9 @@
 import { type IPublicClientApplication, createNestablePublicClientApplication } from "@azure/msal-browser";
 
 import { GetHeaders, HeaderCallbacks } from "./GetHeaders";
-import { diagnostics } from "../../Diag";
-import { Errors } from "../../Errors";
-import { naaClientId } from "../../naaClientId";
+import { naaClientId } from "../../config/naaClientId";
+import { diagnostics } from "../Diagnostics";
+import { Errors } from "../Errors";
 
 interface GraphExtendedProperty {
     id: string;

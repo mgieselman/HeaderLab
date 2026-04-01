@@ -1,6 +1,6 @@
 import { ReceivedField } from "./ReceivedField";
 import { ReceivedRow } from "./ReceivedRow";
-import { labels } from "../labels";
+import { receivedLabels } from "../core/labels";
 
 describe("ReceivedRow", () => {
     let receivedRow: ReceivedRow;
@@ -13,7 +13,7 @@ describe("ReceivedRow", () => {
         expect(receivedRow.sourceHeader).toBeInstanceOf(ReceivedField);
         expect(receivedRow.sourceHeader.value).toBe("Test Header");
         expect(receivedRow.hop).toBeInstanceOf(ReceivedField);
-        expect(receivedRow.hop.label).toBe(labels.receivedHop);
+        expect(receivedRow.hop.label).toBe(receivedLabels.receivedHop);
         // Add similar checks for other fields
     });
 
@@ -32,8 +32,8 @@ describe("ReceivedRow", () => {
         receivedRow.setField("hop", "Test Hop");
         receivedRow.setField("from", "Test From");
         const result = receivedRow.toString();
-        expect(result).toContain(`${labels.receivedHop}: Test Hop`);
-        expect(result).toContain(`${labels.receivedFrom}: Test From`);
+        expect(result).toContain(`${receivedLabels.receivedHop}: Test Hop`);
+        expect(result).toContain(`${receivedLabels.receivedFrom}: Test From`);
     });
 
     test("should not set field value if fieldName is empty", () => {

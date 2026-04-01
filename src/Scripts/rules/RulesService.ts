@@ -1,8 +1,8 @@
 // Rules service - the main rules engine for processing headers
 
-import { HeaderModel } from "../HeaderModel";
+import { HeaderModel } from "../model/HeaderModel";
 import { headerValidationRules } from "./engine/HeaderValidationRules";
-import { getRules, ruleStore } from "./loaders/GetRules";
+import { getRules } from "./loaders/getRules";
 import { AnalysisResult, RuleViolation, ViolationGroup } from "./types/AnalysisTypes";
 import { HeaderSection, IValidationRule } from "./types/interfaces";
 
@@ -11,35 +11,19 @@ class RulesService {
     private loadingPromise: Promise<void> | null = null;
 
     /**
-     * Load rules once at application startup
-     * Can be called multiple times safely - subsequent calls return the same promise
+     * Load rules once at application startup.
+     * Can be called multiple times safely — subsequent calls return the same promise.
      */
     private async loadRules(): Promise<void> {
-        if (this.rulesLoaded) {
-            return Promise.resolve();
+        if (this.rulesLoaded) return;
+
+        if (!this.loadingPromise) {
+            this.loadingPromise = (async () => {
+                const rules = await getRules();
+                headerValidationRules.setRules(rules.simpleRuleSet, rules.andRuleSet);
+                this.rulesLoaded = true;
+            })();
         }
-
-        if (this.loadingPromise) {
-            return this.loadingPromise;
-        }
-
-        this.loadingPromise = (async () => {
-            try {
-                await getRules(
-                    () => {
-                        console.log("🔍 RulesService: Rules loaded successfully");
-                        console.log("🔍 RulesService: SimpleRules:", ruleStore.simpleRuleSet?.length || 0);
-                        console.log("🔍 RulesService: AndRules:", ruleStore.andRuleSet?.length || 0);
-
-                        headerValidationRules.setRules(ruleStore.simpleRuleSet, ruleStore.andRuleSet);
-                        this.rulesLoaded = true;
-                    }
-                );
-            } catch (error) {
-                console.error("🔍 RulesService: Failed to load rules:", error);
-                throw error;
-            }
-        })();
 
         return this.loadingPromise;
     }

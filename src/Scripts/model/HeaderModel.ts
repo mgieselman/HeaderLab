@@ -1,12 +1,12 @@
-import { Decoder } from "./2047";
-import { AntiSpamReport } from "./row/Antispam";
-import { ForefrontAntiSpamReport } from "./row/ForefrontAntispam";
-import { Header } from "./row/Header";
-import { rulesService } from "./rules";
-import { ViolationGroup } from "./rules/types/AnalysisTypes";
 import { Summary } from "./Summary";
-import { Other } from "./table/Other";
-import { Received } from "./table/Received";
+import { Decoder } from "../core/Decoder";
+import { AntiSpamReport } from "../row/AntiSpamReport";
+import { ForefrontAntiSpamReport } from "../row/ForefrontAntiSpamReport";
+import { Header } from "../row/Header";
+import { rulesService } from "../rules";
+import { ViolationGroup } from "../rules/types/AnalysisTypes";
+import { Other } from "../table/Other";
+import { Received } from "../table/Received";
 
 export class HeaderModel {
     public originalHeaders: string;

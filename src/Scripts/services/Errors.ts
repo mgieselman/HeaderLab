@@ -1,6 +1,6 @@
-import { diagnostics } from "./Diag";
-import { Stack } from "./stacks";
-import { Strings } from "./Strings";
+import { diagnostics } from "./Diagnostics";
+import { Stack } from "./Stack";
+import { Strings } from "../core/Strings";
 
 let errorArray: string[] = [];
 
