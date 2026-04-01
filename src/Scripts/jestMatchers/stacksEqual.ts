@@ -15,6 +15,7 @@ function cleanStack(stack: string[]) {
             .replace(/\//g, "\\") // Normalize forward slashes to backslashes
             .replace(/Function\.get \[as parse\]/, "Function.parse") // normalize function name
             .replace(/.*jest.*/, "") // Don't care about jest internals
+            .replace(/.*node:internal.*/, "") // Don't care about node internals (vary by version)
             .replace(/:\d+:\d*\)/, ")") // remove column and line # since they may vary
         ;
     }).filter(function (item: string): boolean {
