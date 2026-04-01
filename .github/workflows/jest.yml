@@ -1,12 +1,10 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: Jest MHA
+name: Test
 
 on:
   workflow_dispatch:
-  pull_request:
-  merge_group:
   push:
     branches:
       - main
@@ -15,18 +13,19 @@ permissions:
   contents: read
 
 jobs:
-  build-test:
-    runs-on: windows-latest
+  test:
+    runs-on: ubuntu-latest
 
     steps:
-      - name: Harden Runner
-        uses: step-security/harden-runner@fa2e9d605c4eeb9fcad4c99c224cee0c6c7f3594 # v2.16.0
-        with:
-          egress-policy: audit
-
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
-      - name: NPM build, test
+      - name: Set up Node.js
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install, lint, test
         env:
           MHA_NAA_CLIENT_ID: ''
         run: |
