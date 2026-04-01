@@ -325,7 +325,7 @@ export default async (env, options) => {
             },
             allowedHosts: "all", // Allow requests from any host (needed for OWA iframe)
             static: {
-                directory: __dirname,
+                directory: path.resolve(__dirname, "Pages"),
                 watch: false, // Disable watching of static files
                 publicPath: "/",
                 serveIndex: true

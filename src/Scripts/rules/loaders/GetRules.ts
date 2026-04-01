@@ -46,7 +46,7 @@ export function getRules(doOnCompletion?: CompletionCallback): Promise<void> {
             console.log("🔍 GetRules: loadLocalRules - Loading from local JSON file");
 
             // Fetch the rules data (webpack will handle this at build time)
-            const response = await fetch("/Pages/data/rules.json");
+            const response = await fetch("/data/rules.json");
 
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
