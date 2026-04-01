@@ -1,14 +1,15 @@
 {
   "compilerOptions": {
     "outDir": "./dist/",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "module": "ES2022",
     "target": "ES2022",
     "lib": ["ES2022", "DOM"],
+    "types": ["vitest/globals", "office-js"],
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "sourceMap": true,
-    "useDefineForClassFields": false,
+    "useDefineForClassFields": true,
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,
     "exactOptionalPropertyTypes": true,

@@ -1,5 +1,4 @@
 ﻿import "../jestMatchers/arrayEqual";
-import { expect } from "@jest/globals";
 
 import { ForefrontAntiSpamReport } from "./ForefrontAntiSpamReport";
 import { Header } from "./Header";

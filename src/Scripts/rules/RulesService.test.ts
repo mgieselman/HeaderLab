@@ -1,13 +1,15 @@
+import type { MockedFunction } from "vitest";
+
 import { HeaderModel } from "../model/HeaderModel";
 import { getRules, resetRulesState, RuleStore } from "./loaders/getRules";
 import { rulesService } from "./RulesService";
 
 // Mock the getRules function
-jest.mock("./loaders/getRules", () => {
-    const actualModule = jest.requireActual("./loaders/getRules");
+vi.mock("./loaders/getRules", async () => {
+    const actualModule = await vi.importActual("./loaders/getRules");
     return {
         ...actualModule,
-        getRules: jest.fn()
+        getRules: vi.fn()
     };
 });
 
@@ -15,7 +17,7 @@ const emptyRules: RuleStore = { simpleRuleSet: [], andRuleSet: [] };
 
 describe("RulesService", () => {
     beforeEach(() => {
-        const mockedGetRules = getRules as jest.MockedFunction<typeof getRules>;
+        const mockedGetRules = getRules as MockedFunction<typeof getRules>;
         mockedGetRules.mockReset();
         mockedGetRules.mockResolvedValue(emptyRules);
         rulesService.resetForTesting();
@@ -24,7 +26,7 @@ describe("RulesService", () => {
 
     describe("rule loading", () => {
         test("should load rules on first call", async () => {
-            const mockedGetRules = getRules as jest.MockedFunction<typeof getRules>;
+            const mockedGetRules = getRules as MockedFunction<typeof getRules>;
             const headerModel = await HeaderModel.create();
 
             const result = await rulesService.analyzeHeaders(headerModel);
@@ -34,7 +36,7 @@ describe("RulesService", () => {
         });
 
         test("should only call getRules once for multiple analyses (memoization)", async () => {
-            const mockedGetRules = getRules as jest.MockedFunction<typeof getRules>;
+            const mockedGetRules = getRules as MockedFunction<typeof getRules>;
 
             const headerModel1 = await HeaderModel.create();
             const headerModel2 = await HeaderModel.create();
@@ -59,7 +61,7 @@ describe("RulesService", () => {
 
     describe("simple rule processing", () => {
         test("should process simple rules and find violations", async () => {
-            const mockedGetRules = getRules as jest.MockedFunction<typeof getRules>;
+            const mockedGetRules = getRules as MockedFunction<typeof getRules>;
             /* eslint-disable @typescript-eslint/naming-convention */
             mockedGetRules.mockResolvedValue({
                 simpleRuleSet: [
@@ -86,7 +88,7 @@ describe("RulesService", () => {
         });
 
         test("should not find violations when patterns don't match", async () => {
-            const mockedGetRules = getRules as jest.MockedFunction<typeof getRules>;
+            const mockedGetRules = getRules as MockedFunction<typeof getRules>;
             /* eslint-disable @typescript-eslint/naming-convention */
             mockedGetRules.mockResolvedValue({
                 simpleRuleSet: [
@@ -112,7 +114,7 @@ describe("RulesService", () => {
         });
 
         test("should detect missing headers", async () => {
-            const mockedGetRules = getRules as jest.MockedFunction<typeof getRules>;
+            const mockedGetRules = getRules as MockedFunction<typeof getRules>;
             /* eslint-disable @typescript-eslint/naming-convention */
             mockedGetRules.mockResolvedValue({
                 simpleRuleSet: [
@@ -138,7 +140,7 @@ describe("RulesService", () => {
 
     describe("AND rule processing", () => {
         test("should process AND rules when all conditions met", async () => {
-            const mockedGetRules = getRules as jest.MockedFunction<typeof getRules>;
+            const mockedGetRules = getRules as MockedFunction<typeof getRules>;
             /* eslint-disable @typescript-eslint/naming-convention */
             mockedGetRules.mockResolvedValue({
                 simpleRuleSet: [],
@@ -188,7 +190,7 @@ describe("RulesService", () => {
 
     describe("violation grouping", () => {
         test("should group violations by rule message", async () => {
-            const mockedGetRules = getRules as jest.MockedFunction<typeof getRules>;
+            const mockedGetRules = getRules as MockedFunction<typeof getRules>;
             /* eslint-disable @typescript-eslint/naming-convention */
             mockedGetRules.mockResolvedValue({
                 simpleRuleSet: [
@@ -217,7 +219,7 @@ describe("RulesService", () => {
         });
 
         test("should preserve violation severity levels", async () => {
-            const mockedGetRules = getRules as jest.MockedFunction<typeof getRules>;
+            const mockedGetRules = getRules as MockedFunction<typeof getRules>;
             /* eslint-disable @typescript-eslint/naming-convention */
             mockedGetRules.mockResolvedValue({
                 simpleRuleSet: [
@@ -258,9 +260,9 @@ describe("RulesService", () => {
 
     describe("error handling", () => {
         test("should handle getRules errors gracefully", async () => {
-            const consoleErrorSpy = jest.spyOn(console, "error").mockImplementation(() => { });
+            const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => { });
 
-            const mockedGetRules = getRules as jest.MockedFunction<typeof getRules>;
+            const mockedGetRules = getRules as MockedFunction<typeof getRules>;
             mockedGetRules.mockRejectedValue(new Error("Failed to load rules"));
 
             const headerModel = await HeaderModel.create();
@@ -287,7 +289,7 @@ describe("RulesService", () => {
         });
 
         test("should handle missing rule properties", async () => {
-            const mockedGetRules = getRules as jest.MockedFunction<typeof getRules>;
+            const mockedGetRules = getRules as MockedFunction<typeof getRules>;
             /* eslint-disable @typescript-eslint/naming-convention */
             mockedGetRules.mockResolvedValue({
                 simpleRuleSet: [
@@ -318,9 +320,9 @@ describe("RulesService", () => {
         });
 
         test("should handle errors during rule evaluation", async () => {
-            const consoleErrorSpy = jest.spyOn(console, "error").mockImplementation(() => { });
+            const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => { });
 
-            const mockedGetRules = getRules as jest.MockedFunction<typeof getRules>;
+            const mockedGetRules = getRules as MockedFunction<typeof getRules>;
             /* eslint-disable @typescript-eslint/naming-convention */
             mockedGetRules.mockResolvedValue({
                 simpleRuleSet: [
@@ -349,7 +351,7 @@ describe("RulesService", () => {
         });
 
         test("should handle concurrent analysis requests", async () => {
-            const mockedGetRules = getRules as jest.MockedFunction<typeof getRules>;
+            const mockedGetRules = getRules as MockedFunction<typeof getRules>;
             let callCount = 0;
             mockedGetRules.mockImplementation(() => {
                 callCount++;
@@ -379,7 +381,7 @@ describe("RulesService", () => {
 
     describe("violation ordering", () => {
         test("should return violations in consistent order", async () => {
-            const mockedGetRules = getRules as jest.MockedFunction<typeof getRules>;
+            const mockedGetRules = getRules as MockedFunction<typeof getRules>;
             /* eslint-disable @typescript-eslint/naming-convention */
             const rules: RuleStore = {
                 simpleRuleSet: [
@@ -432,7 +434,7 @@ describe("RulesService", () => {
         });
 
         test("should order violation groups by severity (error > warning > info)", async () => {
-            const mockedGetRules = getRules as jest.MockedFunction<typeof getRules>;
+            const mockedGetRules = getRules as MockedFunction<typeof getRules>;
             /* eslint-disable @typescript-eslint/naming-convention */
             mockedGetRules.mockResolvedValue({
                 simpleRuleSet: [
@@ -481,7 +483,7 @@ describe("RulesService", () => {
         });
 
         test("should maintain consistent violation order within same severity level", async () => {
-            const mockedGetRules = getRules as jest.MockedFunction<typeof getRules>;
+            const mockedGetRules = getRules as MockedFunction<typeof getRules>;
             /* eslint-disable @typescript-eslint/naming-convention */
             mockedGetRules.mockResolvedValue({
                 simpleRuleSet: [
@@ -528,7 +530,7 @@ describe("RulesService", () => {
         });
 
         test("should handle empty violations array", async () => {
-            const mockedGetRules = getRules as jest.MockedFunction<typeof getRules>;
+            const mockedGetRules = getRules as MockedFunction<typeof getRules>;
             /* eslint-disable @typescript-eslint/naming-convention */
             mockedGetRules.mockResolvedValue({
                 simpleRuleSet: [
@@ -555,7 +557,7 @@ describe("RulesService", () => {
         });
 
         test("should preserve violation order across multiple header sections", async () => {
-            const mockedGetRules = getRules as jest.MockedFunction<typeof getRules>;
+            const mockedGetRules = getRules as MockedFunction<typeof getRules>;
             /* eslint-disable @typescript-eslint/naming-convention */
             mockedGetRules.mockResolvedValue({
                 simpleRuleSet: [

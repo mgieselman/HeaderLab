@@ -1,5 +1,4 @@
 ﻿import "../jestMatchers/receivedEqual";
-import { expect } from "@jest/globals";
 
 import { Received } from "./Received";
 import { Header } from "../row/Header";

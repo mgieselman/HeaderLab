@@ -2,7 +2,7 @@ import { StackFrame, StackTraceOptions } from "stacktrace-js";
 import * as stackTrace from "stacktrace-js";
 
 import { diagnostics } from "./Diagnostics";
-import { Errors } from "./Errors";
+import { errors } from "./Errors";
 import { Strings } from "../core/Strings";
 
 export class Stack {
@@ -15,16 +15,16 @@ export class Stack {
         if (item.fileName.indexOf("Stack.ts") !== -1) return false; // remove Stack.ts frames
         //if (item.functionName === "ShowError") return false;
         //if (item.functionName === "showError") return false;
-        //if (item.functionName === "Errors.log") return false; // Logs with Errors.log in them usually have location where it was called from - keep those
+        //if (item.functionName === "errors.log") return false; // Logs with errors.log in them usually have location where it was called from - keep those
         //if (item.functionName === "GetStack") return false;
-        if (item.functionName === "Errors.isError") return false; // Not called from anywhere interesting
+        if (item.functionName === "errors.isError") return false; // Not called from anywhere interesting
         if (item.functionName?.indexOf("Promise._immediateFn") !== -1) return false; // only shows in IE stacks
         return true;
     }
 
     private static async getExceptionStack(exception: unknown): Promise<StackFrame[]> {
         let stack;
-        if (!Errors.isError(exception)) {
+        if (!errors.isError(exception)) {
             stack = await stackTrace.get(Stack.options);
         } else {
             stack = await stackTrace.fromError(exception as Error, Stack.options);
@@ -35,7 +35,7 @@ export class Stack {
 
     public static parse(exception: unknown, message: string | null, handler: (eventName: string, stack: string[]) => void): void {
         let stack;
-        const exceptionMessage = Errors.getErrorMessage(exception);
+        const exceptionMessage = errors.getErrorMessage(exception);
 
         let eventName = Strings.joinArray([message, exceptionMessage], " : ");
         if (!eventName) {
@@ -48,7 +48,7 @@ export class Stack {
             });
             handler(eventName, stack);
         }).catch((err) => {
-            diagnostics.trackEvent({ name: "Errors.parse errback" });
+            diagnostics.trackEvent({ name: "errors.parse errback" });
             stack = [JSON.stringify(exception, null, 2), "Parsing error:", JSON.stringify(err, null, 2)];
             handler(eventName, stack);
         });

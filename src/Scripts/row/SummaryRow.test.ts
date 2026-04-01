@@ -1,19 +1,21 @@
+import type { Mock } from "vitest";
+
 import { SummaryRow } from "./SummaryRow";
 import { Strings } from "../core/Strings";
 
 // Mock the Strings methods
-jest.mock("../core/Strings", () => ({
+vi.mock("../core/Strings", () => ({
     // eslint-disable-next-line @typescript-eslint/naming-convention
     Strings: {
-        mapHeaderToURL: jest.fn(),
-        mapValueToURL: jest.fn()
+        mapHeaderToURL: vi.fn(),
+        mapValueToURL: vi.fn()
     }
 }));
 
 describe("SummaryRow", () => {
     beforeEach(() => {
-        (Strings.mapHeaderToURL as jest.Mock).mockClear();
-        (Strings.mapValueToURL as jest.Mock).mockClear();
+        (Strings.mapHeaderToURL as Mock).mockClear();
+        (Strings.mapValueToURL as Mock).mockClear();
     });
 
     it("should call Strings.mapHeaderToURL with correct parameters", () => {
@@ -21,7 +23,7 @@ describe("SummaryRow", () => {
         const label = "testLabel";
         const url = "testURL";
 
-        (Strings.mapHeaderToURL as jest.Mock).mockReturnValue(url);
+        (Strings.mapHeaderToURL as Mock).mockReturnValue(url);
 
         const summaryRow = new SummaryRow(header, label);
 
@@ -34,7 +36,7 @@ describe("SummaryRow", () => {
         const label = "anotherLabel";
         const url = "anotherURL";
 
-        (Strings.mapHeaderToURL as jest.Mock).mockReturnValue(url);
+        (Strings.mapHeaderToURL as Mock).mockReturnValue(url);
 
         const summaryRow = new SummaryRow(header, label);
 
@@ -42,7 +44,7 @@ describe("SummaryRow", () => {
     });
 
     it("should return value without postFix when no options provided", () => {
-        (Strings.mapHeaderToURL as jest.Mock).mockReturnValue("");
+        (Strings.mapHeaderToURL as Mock).mockReturnValue("");
         const row = new SummaryRow("header", "label");
         row.value = "test";
         expect(row.value).toBe("test");
@@ -51,8 +53,8 @@ describe("SummaryRow", () => {
 
     describe("with valueUrlMapper option", () => {
         it("should set url using Strings.mapHeaderToURL", () => {
-            (Strings.mapHeaderToURL as jest.Mock).mockReturnValue("mockedHeaderURL");
-            (Strings.mapValueToURL as jest.Mock).mockReturnValue("mockedValueURL");
+            (Strings.mapHeaderToURL as Mock).mockReturnValue("mockedHeaderURL");
+            (Strings.mapValueToURL as Mock).mockReturnValue("mockedValueURL");
 
             const row = new SummaryRow("testHeader", "testLabel", {
                 valueUrlMapper: Strings.mapValueToURL
@@ -63,8 +65,8 @@ describe("SummaryRow", () => {
         });
 
         it("should return valueUrl using the provided mapper", () => {
-            (Strings.mapHeaderToURL as jest.Mock).mockReturnValue("mockedHeaderURL");
-            (Strings.mapValueToURL as jest.Mock).mockReturnValue("mockedValueURL");
+            (Strings.mapHeaderToURL as Mock).mockReturnValue("mockedHeaderURL");
+            (Strings.mapValueToURL as Mock).mockReturnValue("mockedValueURL");
 
             const row = new SummaryRow("testHeader", "testLabel", {
                 valueUrlMapper: Strings.mapValueToURL
@@ -78,20 +80,20 @@ describe("SummaryRow", () => {
 
     describe("with postFix option", () => {
         it("should initialize postFix to the provided value", () => {
-            (Strings.mapHeaderToURL as jest.Mock).mockReturnValue("");
+            (Strings.mapHeaderToURL as Mock).mockReturnValue("");
             const row = new SummaryRow("header", "label", { postFix: "" });
             expect(row.postFix).toBe("");
         });
 
         it("should initialize url using Strings.mapHeaderToURL", () => {
-            (Strings.mapHeaderToURL as jest.Mock).mockReturnValue("url-for-header-label");
+            (Strings.mapHeaderToURL as Mock).mockReturnValue("url-for-header-label");
             const row = new SummaryRow("header", "label", { postFix: "" });
             expect(Strings.mapHeaderToURL).toHaveBeenCalledWith("header", "label");
             expect(row.url).toBe("url-for-header-label");
         });
 
         it("should append postFix to value", () => {
-            (Strings.mapHeaderToURL as jest.Mock).mockReturnValue("");
+            (Strings.mapHeaderToURL as Mock).mockReturnValue("");
             const row = new SummaryRow("header", "label", { postFix: "" });
             row["valueInternal"] = "internalValue";
             row.postFix = "PostFix";
@@ -99,7 +101,7 @@ describe("SummaryRow", () => {
         });
 
         it("should set value correctly", () => {
-            (Strings.mapHeaderToURL as jest.Mock).mockReturnValue("");
+            (Strings.mapHeaderToURL as Mock).mockReturnValue("");
             const row = new SummaryRow("header", "label", { postFix: "" });
             row.value = "newValue";
             expect(row["valueInternal"]).toBe("newValue");

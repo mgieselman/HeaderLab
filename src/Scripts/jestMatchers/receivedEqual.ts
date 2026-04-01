@@ -1,10 +1,8 @@
-import { expect } from "@jest/globals";
-import type { MatcherFunction } from "expect";
+import { expect } from "vitest";
 
 import { ReceivedRow } from "../row/ReceivedRow";
 
-export const receivedEqual: MatcherFunction<[expected: { [index: string]: string | number | null }]> =
-    function (actualUnknown: unknown, expected: { [index: string]: string | number | null }) {
+export function receivedEqual(this: { equals: (a: unknown, b: unknown) => boolean }, actualUnknown: unknown, expected: { [index: string]: string | number | null }) {
         const actual = actualUnknown as ReceivedRow;
         let passed = true;
         const messages: string[] = [];
@@ -65,8 +63,8 @@ export const receivedEqual: MatcherFunction<[expected: { [index: string]: string
 
 expect.extend({ receivedEqual, });
 
-declare module "expect" {
-    interface Matchers<R> {
-        receivedEqual(expected: { [index: string]: string | number | null }): R;
+declare module "vitest" {
+    interface Assertion<T> {
+        receivedEqual(expected: { [index: string]: string | number | null }): T;
     }
 }

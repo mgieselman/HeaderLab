@@ -3,7 +3,7 @@ import { type IPublicClientApplication, createNestablePublicClientApplication } 
 import { GetHeaders, HeaderCallbacks } from "./GetHeaders";
 import { naaClientId } from "../../config/naaClientId";
 import { diagnostics } from "../Diagnostics";
-import { Errors } from "../Errors";
+import { errors } from "../Errors";
 
 interface GraphExtendedProperty {
     id: string;
@@ -67,7 +67,7 @@ export class GetHeadersGraph {
                 return result.accessToken;
             } catch (popupError) {
                 diagnostics.set("graphTokenFailure", JSON.stringify(popupError));
-                Errors.log(popupError, "NAA acquireTokenPopup failed");
+                errors.log(popupError, "NAA acquireTokenPopup failed");
                 return "";
             }
         }
@@ -75,17 +75,17 @@ export class GetHeadersGraph {
 
     private static async getHeaders(accessToken: string, callbacks: HeaderCallbacks): Promise<string> {
         if (!accessToken) {
-            Errors.logMessage("No Graph access token");
+            errors.logMessage("No Graph access token");
             return "";
         }
 
         if (!Office.context.mailbox.item) {
-            Errors.logMessage("No item (Graph)");
+            errors.logMessage("No item (Graph)");
             return "";
         }
 
         if (!Office.context.mailbox.item.itemId) {
-            Errors.logMessage("No itemId (Graph)");
+            errors.logMessage("No itemId (Graph)");
             return "";
         }
 
@@ -130,7 +130,7 @@ export class GetHeadersGraph {
 
     public static async send(callbacks: HeaderCallbacks): Promise<string> {
         if (!GetHeaders.validItem()) {
-            Errors.logMessage("No item selected (Graph)");
+            errors.logMessage("No item selected (Graph)");
             return "";
         }
 
@@ -146,7 +146,7 @@ export class GetHeadersGraph {
             return headers;
         }
         catch (e) {
-            Errors.log(e, "Failed in Graph/NAA flow");
+            errors.log(e, "Failed in Graph/NAA flow");
         }
 
         return "";

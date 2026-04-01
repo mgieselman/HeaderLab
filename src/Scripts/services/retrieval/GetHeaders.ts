@@ -1,7 +1,7 @@
 import { GetHeadersAPI } from "./GetHeadersAPI";
 import { GetHeadersGraph } from "./GetHeadersGraph";
 import { diagnostics } from "../Diagnostics";
-import { Errors } from "../Errors";
+import { errors } from "../Errors";
 
 /**
  * Callbacks for the retrieval layer to communicate status and errors
@@ -78,7 +78,7 @@ export class GetHeaders {
                 return;
             }
 
-            Errors.logMessage("API failed, trying Graph");
+            errors.logMessage("API failed, trying Graph");
             headers = await GetHeadersGraph.send(callbacks);
             if (headers !== "") {
                 headersLoadedCallback(headers, "Graph");

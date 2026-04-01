@@ -1,11 +1,9 @@
-import { expect } from "@jest/globals";
-import type { MatcherFunction } from "expect";
+import { expect } from "vitest";
 
 import { DateWithNum } from "../core/DateWithNum";
 import { ReceivedRow } from "../row/ReceivedRow";
 
-export const datesEqual: MatcherFunction<[expected: DateWithNum]> =
-    function (actualUnknown: unknown, expected: DateWithNum) {
+export function datesEqual(this: { equals: (a: unknown, b: unknown) => boolean }, actualUnknown: unknown, expected: DateWithNum) {
         const actual = actualUnknown as ReceivedRow;
         let passed = true;
         const messages: string[] = [];
@@ -36,8 +34,8 @@ export const datesEqual: MatcherFunction<[expected: DateWithNum]> =
 
 expect.extend({ datesEqual, });
 
-declare module "expect" {
-    interface Matchers<R> {
-        datesEqual(expected: DateWithNum ): R;
+declare module "vitest" {
+    interface Assertion<T> {
+        datesEqual(expected: DateWithNum ): T;
     }
 }

@@ -8,7 +8,7 @@ import { GetHeadersAPI } from "./retrieval/GetHeadersAPI";
 import { GetHeadersGraph } from "./retrieval/GetHeadersGraph";
 import { version } from "../config/version";
 
-class Diagnostics {
+export class Diagnostics {
     private appDiagnostics: { [k: string]: string | number | boolean } | null = null;
     private itemDiagnostics: { [k: string]: string | boolean } | null = null;
     private inGet = false;
