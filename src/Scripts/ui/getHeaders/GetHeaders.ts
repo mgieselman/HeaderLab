@@ -2,14 +2,15 @@ import { GetHeadersAPI } from "./GetHeadersAPI";
 import { GetHeadersGraph } from "./GetHeadersGraph";
 import { diagnostics } from "../../Diag";
 import { Errors } from "../../Errors";
-import { ParentFrame } from "../../ParentFrame";
 
-/*
- * GetHeaders.ts
- *
- * Selector for switching between API and Graph logic.
- * Fallback chain: getAllInternetHeadersAsync (API) → Graph (NAA + extended property)
+/**
+ * Callbacks for the retrieval layer to communicate status and errors
+ * to the UI without importing any UI modules directly.
  */
+export interface HeaderCallbacks {
+    onError: (error: unknown, message: string, suppressTracking?: boolean) => void;
+    onStatus: (statusText: string) => void;
+}
 
 export class GetHeaders {
     public static permissionLevel(): number {
@@ -29,9 +30,6 @@ export class GetHeaders {
         if (!Office) return false;
         if (!Office.context) return false;
         if (!Office.context.mailbox) return false;
-        // In strict mode, we must find permissions to conclude we have them
-        // In non-strict mode, if we don't find permissions, we assume we might have them
-        // Some down level clients (such as we would use EWS on) don't have _initialData$p$0 or initialData at all.
         // @ts-expect-error initialData is missing from the type file
         if (!Office.context.mailbox._initialData$p$0 && !Office.context.mailbox.initialData) return !strict;
         if (GetHeaders.permissionLevel() < 1) return false;
@@ -59,32 +57,35 @@ export class GetHeaders {
         return true;
     }
 
-    public static async send(headersLoadedCallback: (_headers: string, apiUsed: string) => void) {
+    public static async send(
+        headersLoadedCallback: (_headers: string, apiUsed: string) => void,
+        callbacks: HeaderCallbacks
+    ) {
         if (!GetHeaders.validItem()) {
-            ParentFrame.showError(null, "No item selected", true);
+            callbacks.onError(null, "No item selected", true);
             return;
         }
 
         if (!GetHeaders.sufficientPermission(false)) {
-            ParentFrame.showError(null, "Insufficient permissions to request headers", false);
+            callbacks.onError(null, "Insufficient permissions to request headers", false);
             return;
         }
 
         try {
-            let headers: string = await GetHeadersAPI.send();
+            let headers: string = await GetHeadersAPI.send(callbacks);
             if (headers !== "") {
                 headersLoadedCallback(headers, "API");
                 return;
             }
 
             Errors.logMessage("API failed, trying Graph");
-            headers = await GetHeadersGraph.send();
+            headers = await GetHeadersGraph.send(callbacks);
             if (headers !== "") {
                 headersLoadedCallback(headers, "Graph");
                 return;
             }
         } catch (e) {
-            ParentFrame.showError(e, "Could not send header request");
+            callbacks.onError(e, "Could not send header request");
         }
     }
 }

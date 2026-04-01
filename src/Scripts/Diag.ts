@@ -4,6 +4,9 @@ import stackTrace from "stacktrace-js";
 import { aikey } from "./aikey";
 import { buildTime } from "./buildTime";
 import { mhaVersion } from "./mhaVersion";
+import { GetHeaders } from "./ui/getHeaders/GetHeaders";
+import { GetHeadersAPI } from "./ui/getHeaders/GetHeadersAPI";
+import { GetHeadersGraph } from "./ui/getHeaders/GetHeadersGraph";
 
 import "promise-polyfill/dist/polyfill";
 
@@ -68,13 +71,6 @@ class Diag {
     }
 
     private onTelemetryChanged: ((sendTelemetry: boolean) => void) | null = null;
-    private headerDiagProvider: (() => { [k: string]: string | number | boolean }) | null = null;
-
-    /** Register a provider that returns header capability diagnostics. Breaks circular dependency. */
-    public setHeaderDiagProvider(provider: () => { [k: string]: string | number | boolean }): void {
-        this.headerDiagProvider = provider;
-    }
-
     /** Register a callback to be notified when telemetry setting changes. */
     public onSendTelemetryChanged(callback: (sendTelemetry: boolean) => void): void {
         this.onTelemetryChanged = callback;
@@ -228,9 +224,11 @@ class Diag {
                 this.appDiagnostics["Office"] = "missing";
             }
 
-            if (this.headerDiagProvider) {
-                const headerDiag = this.headerDiagProvider();
-                Object.assign(this.appDiagnostics, headerDiag);
+            if (GetHeaders) {
+                this.appDiagnostics["permissionLevel"] = GetHeaders.permissionLevel();
+                this.appDiagnostics["canUseAPI"] = GetHeadersAPI.canUseAPI();
+                this.appDiagnostics["canUseGraph"] = GetHeadersGraph.canUseGraph();
+                this.appDiagnostics["sufficientPermission"] = GetHeaders.sufficientPermission(true);
             }
         }
         catch (e) {
