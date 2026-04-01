@@ -361,29 +361,32 @@ export class MhaResults extends LitElement {
         return "info";
     }
 
-    // SVG icons as template results
-    private get summaryIcon() {
-        return html`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10 2a8 8 0 110 16 8 8 0 010-16zm0 1a7 7 0 100 14 7 7 0 000-14zm0 3a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 6zm0 7.5a.75.75 0 100-1.5.75.75 0 000 1.5z"/></svg>`;
+    private icon(name: string) {
+        return icons[name] ?? nothing;
     }
-    private get receivedIcon() {
-        return html`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10 2a8 8 0 110 16 8 8 0 010-16zm0 1a7 7 0 100 14 7 7 0 000-14zm-.25 2.5a.75.75 0 01.75.75v3.69l2.28 2.28a.75.75 0 01-1.06 1.06l-2.5-2.5a.75.75 0 01-.22-.53V6.25a.75.75 0 01.75-.75z"/></svg>`;
-    }
-    private get antispamIcon() {
-        return html`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10 2.5l7.5 3.75v3.75c0 4.14-3.21 7.3-7.5 8.5-4.29-1.2-7.5-4.36-7.5-8.5V6.25L10 2.5zm0 1.34L3.5 7v3c0 3.53 2.77 6.24 6.5 7.38 3.73-1.14 6.5-3.85 6.5-7.38V7L10 3.84zM10 6a.5.5 0 01.5.5v4a.5.5 0 01-1 0v-4A.5.5 0 0110 6zm0 7a.62.62 0 100-1.25.62.62 0 000 1.25z"/></svg>`;
-    }
-    private get otherIcon() {
-        return html`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M3 4.5A1.5 1.5 0 014.5 3h11A1.5 1.5 0 0117 4.5v11a1.5 1.5 0 01-1.5 1.5h-11A1.5 1.5 0 013 15.5v-11zM4.5 4a.5.5 0 00-.5.5v11a.5.5 0 00.5.5h11a.5.5 0 00.5-.5v-11a.5.5 0 00-.5-.5h-11zM6 7.5a.5.5 0 01.5-.5h7a.5.5 0 010 1h-7a.5.5 0 01-.5-.5zm0 3a.5.5 0 01.5-.5h7a.5.5 0 010 1h-7a.5.5 0 01-.5-.5zm0 3a.5.5 0 01.5-.5h4a.5.5 0 010 1h-4a.5.5 0 01-.5-.5z"/></svg>`;
-    }
-    private get errorIcon() {
-        return html`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10 2a8 8 0 110 16 8 8 0 010-16zm0 1a7 7 0 100 14 7 7 0 000-14zm3.45 4.15a.5.5 0 01.05.64l-.05.06L10.7 10l2.75 2.15a.5.5 0 01-.56.84l-.06-.04L10 10.72l-2.83 2.23a.5.5 0 01-.67-.74l.05-.06L9.3 10 6.55 7.85a.5.5 0 01.56-.84l.06.04L10 9.28l2.83-2.23a.5.5 0 01.62.1z"/></svg>`;
-    }
-    private get chevronIcon() {
-        return html`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M7.65 4.15c.2-.2.5-.2.7 0l5.49 5.46c.2.2.2.52 0 .71l-5.49 5.46a.5.5 0 01-.7-.7L12.8 10 7.65 4.85a.5.5 0 010-.7z"/></svg>`;
-    }
-    private get arrowDownIcon() {
-        return html`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10 2.5a.5.5 0 01.5.5v11.8l3.64-3.65a.5.5 0 01.72.71l-4.5 4.5a.5.5 0 01-.72 0l-4.5-4.5a.5.5 0 01.72-.71l3.64 3.65V3a.5.5 0 01.5-.5z"/></svg>`;
-    }
+
+    private get summaryIcon() { return this.icon("summary"); }
+    private get receivedIcon() { return this.icon("received"); }
+    private get antispamIcon() { return this.icon("antispam"); }
+    private get otherIcon() { return this.icon("other"); }
+    private get errorIcon() { return this.icon("error"); }
+    private get chevronIcon() { return this.icon("chevron"); }
+    private get arrowDownIcon() { return this.icon("arrowDown"); }
 }
+
+function svg(path: string) {
+    return html`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="${path}"/></svg>`;
+}
+
+const icons: Record<string, ReturnType<typeof svg>> = {
+    summary: svg("M10 2a8 8 0 110 16 8 8 0 010-16zm0 1a7 7 0 100 14 7 7 0 000-14zm0 3a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 6zm0 7.5a.75.75 0 100-1.5.75.75 0 000 1.5z"),
+    received: svg("M10 2a8 8 0 110 16 8 8 0 010-16zm0 1a7 7 0 100 14 7 7 0 000-14zm-.25 2.5a.75.75 0 01.75.75v3.69l2.28 2.28a.75.75 0 01-1.06 1.06l-2.5-2.5a.75.75 0 01-.22-.53V6.25a.75.75 0 01.75-.75z"),
+    antispam: svg("M10 2.5l7.5 3.75v3.75c0 4.14-3.21 7.3-7.5 8.5-4.29-1.2-7.5-4.36-7.5-8.5V6.25L10 2.5zm0 1.34L3.5 7v3c0 3.53 2.77 6.24 6.5 7.38 3.73-1.14 6.5-3.85 6.5-7.38V7L10 3.84zM10 6a.5.5 0 01.5.5v4a.5.5 0 01-1 0v-4A.5.5 0 0110 6zm0 7a.62.62 0 100-1.25.62.62 0 000 1.25z"),
+    other: svg("M3 4.5A1.5 1.5 0 014.5 3h11A1.5 1.5 0 0117 4.5v11a1.5 1.5 0 01-1.5 1.5h-11A1.5 1.5 0 013 15.5v-11zM4.5 4a.5.5 0 00-.5.5v11a.5.5 0 00.5.5h11a.5.5 0 00.5-.5v-11a.5.5 0 00-.5-.5h-11zM6 7.5a.5.5 0 01.5-.5h7a.5.5 0 010 1h-7a.5.5 0 01-.5-.5zm0 3a.5.5 0 01.5-.5h7a.5.5 0 010 1h-7a.5.5 0 01-.5-.5zm0 3a.5.5 0 01.5-.5h4a.5.5 0 010 1h-4a.5.5 0 01-.5-.5z"),
+    error: svg("M10 2a8 8 0 110 16 8 8 0 010-16zm0 1a7 7 0 100 14 7 7 0 000-14zm3.45 4.15a.5.5 0 01.05.64l-.05.06L10.7 10l2.75 2.15a.5.5 0 01-.56.84l-.06-.04L10 10.72l-2.83 2.23a.5.5 0 01-.67-.74l.05-.06L9.3 10 6.55 7.85a.5.5 0 01.56-.84l.06.04L10 9.28l2.83-2.23a.5.5 0 01.62.1z"),
+    chevron: svg("M7.65 4.15c.2-.2.5-.2.7 0l5.49 5.46c.2.2.2.52 0 .71l-5.49 5.46a.5.5 0 01-.7-.7L12.8 10 7.65 4.85a.5.5 0 010-.7z"),
+    arrowDown: svg("M10 2.5a.5.5 0 01.5.5v11.8l3.64-3.65a.5.5 0 01.72.71l-4.5 4.5a.5.5 0 01-.72 0l-4.5-4.5a.5.5 0 01.72-.71l3.64 3.65V3a.5.5 0 01.5-.5z"),
+};
 
 // Manual custom element registration (ts-loader transpileOnly strips decorators)
 customElements.define("mha-results", MhaResults);
