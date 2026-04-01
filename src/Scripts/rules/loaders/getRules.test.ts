@@ -1,17 +1,19 @@
+import type { MockedFunction } from "vitest";
+
 import { getRules, resetRulesState } from "./getRules";
 
 // Mock fetch globally
-global.fetch = jest.fn();
+global.fetch = vi.fn();
 
 /* eslint-disable @typescript-eslint/naming-convention */
 describe("getRules", () => {
     beforeEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
         resetRulesState();
     });
 
     afterEach(() => {
-        jest.restoreAllMocks();
+        vi.restoreAllMocks();
     });
 
     test("should load rules from JSON file successfully", async () => {
@@ -31,7 +33,7 @@ describe("getRules", () => {
             AndRules: []
         };
 
-        const mockFetch = global.fetch as jest.MockedFunction<typeof fetch>;
+        const mockFetch = global.fetch as MockedFunction<typeof fetch>;
         mockFetch.mockResolvedValueOnce({
             ok: true,
             json: async () => mockRulesResponse,
@@ -68,7 +70,7 @@ describe("getRules", () => {
             ]
         };
 
-        const mockFetch = global.fetch as jest.MockedFunction<typeof fetch>;
+        const mockFetch = global.fetch as MockedFunction<typeof fetch>;
         mockFetch.mockResolvedValueOnce({
             ok: true,
             json: async () => mockRulesResponse,
@@ -88,7 +90,7 @@ describe("getRules", () => {
             AndRules: []
         };
 
-        const mockFetch = global.fetch as jest.MockedFunction<typeof fetch>;
+        const mockFetch = global.fetch as MockedFunction<typeof fetch>;
         mockFetch.mockResolvedValueOnce({
             ok: true,
             json: async () => mockRulesResponse,
@@ -110,7 +112,7 @@ describe("getRules", () => {
             AndRules: []
         };
 
-        const mockFetch = global.fetch as jest.MockedFunction<typeof fetch>;
+        const mockFetch = global.fetch as MockedFunction<typeof fetch>;
         mockFetch.mockResolvedValueOnce({
             ok: true,
             json: async () => mockRulesResponse,
@@ -125,14 +127,14 @@ describe("getRules", () => {
 
     describe("error handling", () => {
         test("should throw on network fetch failures", async () => {
-            const mockFetch = global.fetch as jest.MockedFunction<typeof fetch>;
+            const mockFetch = global.fetch as MockedFunction<typeof fetch>;
             mockFetch.mockRejectedValueOnce(new Error("Network error"));
 
             await expect(getRules()).rejects.toThrow("Network error");
         });
 
         test("should throw on HTTP error responses", async () => {
-            const mockFetch = global.fetch as jest.MockedFunction<typeof fetch>;
+            const mockFetch = global.fetch as MockedFunction<typeof fetch>;
             mockFetch.mockResolvedValueOnce({
                 ok: false,
                 status: 404,
@@ -150,7 +152,7 @@ describe("getRules", () => {
                 AndRules: []
             };
 
-            const mockFetch = global.fetch as jest.MockedFunction<typeof fetch>;
+            const mockFetch = global.fetch as MockedFunction<typeof fetch>;
             mockFetch.mockResolvedValueOnce({
                 ok: true,
                 json: async () => mockRulesResponse,
@@ -160,7 +162,7 @@ describe("getRules", () => {
         });
 
         test("should allow retry after failure", async () => {
-            const mockFetch = global.fetch as jest.MockedFunction<typeof fetch>;
+            const mockFetch = global.fetch as MockedFunction<typeof fetch>;
 
             // First call fails
             mockFetch.mockRejectedValueOnce(new Error("Network error"));
@@ -184,7 +186,7 @@ describe("getRules", () => {
         });
 
         test("should handle invalid JSON responses", async () => {
-            const mockFetch = global.fetch as jest.MockedFunction<typeof fetch>;
+            const mockFetch = global.fetch as MockedFunction<typeof fetch>;
             mockFetch.mockResolvedValueOnce({
                 ok: true,
                 json: async () => {
@@ -202,7 +204,7 @@ describe("getRules", () => {
                 AndRules: []
             };
 
-            const mockFetch = global.fetch as jest.MockedFunction<typeof fetch>;
+            const mockFetch = global.fetch as MockedFunction<typeof fetch>;
             mockFetch.mockResolvedValueOnce({
                 ok: true,
                 json: async () => mockRulesResponse,

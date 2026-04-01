@@ -1,5 +1,5 @@
 import { diagnostics } from "./Diagnostics";
-import { Errors } from "./Errors";
+import { errors } from "./Errors";
 
 /**
  * Utility functions extracted from ParentFrame for better testability
@@ -56,8 +56,8 @@ export class ParentFrameUtils {
             diagnosticsString += "ERROR: Failed to get diagnostics\n";
         }
 
-        const errors: string[] = Errors.get();
-        errors.forEach((error: string) => {
+        const errorList: string[] = errors.get();
+        errorList.forEach((error: string) => {
             diagnosticsString += "ERROR: " + error + "\n";
         });
 

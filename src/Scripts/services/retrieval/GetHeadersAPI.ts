@@ -1,6 +1,6 @@
 import { GetHeaders, HeaderCallbacks } from "./GetHeaders";
 import { diagnostics } from "../Diagnostics";
-import { Errors } from "../Errors";
+import { errors } from "../Errors";
 
 export class GetHeadersAPI {
     public static canUseAPI(): boolean { return GetHeaders.canUseAPI(); }
@@ -12,7 +12,7 @@ export class GetHeadersAPI {
                     resolve(asyncResult.value);
                 } else {
                     diagnostics.set("getAllInternetHeadersAsyncFailure", JSON.stringify(asyncResult));
-                    Errors.log(asyncResult.error, "getAllInternetHeadersAsync failed.\nFallback to Rest.\n" + JSON.stringify(asyncResult, null, 2), true);
+                    errors.log(asyncResult.error, "getAllInternetHeadersAsync failed.\nFallback to Rest.\n" + JSON.stringify(asyncResult, null, 2), true);
                     resolve("");
                 }
             });
@@ -21,7 +21,7 @@ export class GetHeadersAPI {
 
     public static async send(callbacks: HeaderCallbacks): Promise<string> {
         if (!GetHeaders.validItem() || !Office.context.mailbox.item) {
-            Errors.logMessage("No item selected (API)");
+            errors.logMessage("No item selected (API)");
             return "";
         }
 
@@ -36,7 +36,7 @@ export class GetHeadersAPI {
             return headers;
         }
         catch (e) {
-            Errors.log(e, "Failed in getAllInternetHeadersAsync");
+            errors.log(e, "Failed in getAllInternetHeadersAsync");
         }
 
         return "";

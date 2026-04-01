@@ -12,15 +12,16 @@ Originally named MHA (Microsoft Header Analyzer), now renamed to HeaderLab. MHA 
 
 ```bash
 npm ci                    # install dependencies
-npm run build             # production build (webpack), output to Pages/
+npm run build             # production build (vite), output to Pages/
 npm run build:dev         # development build
-npm run serve             # webpack dev server (port 44336)
+npm run dev               # vite dev server (port 44336)
 npm test                  # lint then run all tests (pretest runs lint)
 npm run test:debug        # verbose test output
-npx jest path/to/file     # run a single test file
-npx jest --testPathPattern="Received"  # run tests matching pattern
+npm run test:watch        # vitest in watch mode
+npx vitest run path/to/file  # run a single test file
 npm run lint              # eslint
 npm run lint:fix          # eslint with auto-fix
+npm run size              # check bundle size limits
 ```
 
 Node >= 18.12.0 required. CI uses Node 22.

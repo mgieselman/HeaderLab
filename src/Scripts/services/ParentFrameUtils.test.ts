@@ -1,9 +1,11 @@
 /**
- * @jest-environment jsdom
+ * @vitest-environment jsdom
  */
 
+import type { Mocked } from "vitest";
+
 import { diagnostics } from "./Diagnostics";
-import { Errors } from "./Errors";
+import { errors } from "./Errors";
 import { ParentFrameUtils } from "./ParentFrameUtils";
 
 // Mock the Office context for testing
@@ -23,15 +25,15 @@ interface Global {
 }
 
 // Mock dependencies
-jest.mock("./Diagnostics");
-jest.mock("./Errors");
+vi.mock("./Diagnostics");
+vi.mock("./Errors");
 
-const mockDiagnostics = diagnostics as jest.Mocked<typeof diagnostics>;
-const mockErrors = Errors as jest.Mocked<typeof Errors>;
+const mockDiagnostics = diagnostics as Mocked<typeof diagnostics>;
+const mockErrors = errors as Mocked<typeof errors>;
 
 describe("ParentFrameUtils", () => {
     beforeEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
         // Reset global Office mock
         (global as unknown as Global).Office = {
             context: {

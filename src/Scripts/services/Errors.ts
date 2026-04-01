@@ -1,21 +1,23 @@
-import { diagnostics } from "./Diagnostics";
+import { Diagnostics, diagnostics } from "./Diagnostics";
 import { Stack } from "./Stack";
 import { Strings } from "../core/Strings";
 
-let errorArray: string[] = [];
-
 export class Errors {
-    public static clear(): void { errorArray = []; }
+    private errorArray: string[] = [];
 
-    public static get() { return errorArray; }
+    constructor(private readonly diag: Diagnostics) {}
 
-    public static add(eventName: string, stack: string[], suppressTracking: boolean): void {
+    public clear(): void { this.errorArray = []; }
+
+    public get() { return this.errorArray; }
+
+    public add(eventName: string, stack: string[], suppressTracking: boolean): void {
         if (eventName || stack) {
             const stackString = Strings.joinArray(stack, "\n");
-            errorArray.push(Strings.joinArray([eventName, stackString], "\n"));
+            this.errorArray.push(Strings.joinArray([eventName, stackString], "\n"));
 
             if (!suppressTracking) {
-                diagnostics.trackEvent({ name: eventName },
+                this.diag.trackEvent({ name: eventName },
                     {
                         stack: stackString,
                         source: "Errors.add"
@@ -24,7 +26,7 @@ export class Errors {
         }
     }
 
-    public static isError(error: unknown): boolean {
+    public isError(error: unknown): boolean {
         if (!error) return false;
 
         // We can't afford to throw while checking if we're processing an error
@@ -34,7 +36,7 @@ export class Errors {
             if (typeof (error) === "number") return false;
             if (typeof error === "object" && "stack" in error) return true;
         } catch (e) {
-            diagnostics.trackEvent({ name: "isError exception with error", properties: { error: JSON.stringify(e) } });
+            this.diag.trackEvent({ name: "isError exception with error", properties: { error: JSON.stringify(e) } });
         }
 
         return false;
@@ -43,7 +45,7 @@ export class Errors {
     // error - an exception object
     // message - a string describing the error
     // suppressTracking - boolean indicating if we should suppress tracking
-    public static log(error: unknown, message: string, suppressTracking?: boolean): void {
+    public log(error: unknown, message: string, suppressTracking?: boolean): void {
         if (error && !suppressTracking) {
             const event = { name: "Errors.log" };
             const props = {
@@ -55,7 +57,7 @@ export class Errors {
                 errorMessage: ""
             };
 
-            if (Errors.isError(error) && (error as { exception?: unknown }).exception) {
+            if (this.isError(error) && (error as { exception?: unknown }).exception) {
                 props.source = "Error.log Exception";
                 event.name = "Exception";
             }
@@ -75,19 +77,19 @@ export class Errors {
                 }
             }
 
-            diagnostics.trackException(event, props);
+            this.diag.trackException(event, props);
         }
 
-        Stack.parse(error, message, function (eventName: string, stack: string[]): void {
-            Errors.add(eventName, stack, suppressTracking ?? false);
+        Stack.parse(error, message, (eventName: string, stack: string[]): void => {
+            this.add(eventName, stack, suppressTracking ?? false);
         });
     }
 
-    public static logMessage(message:string): void {
-        Errors.add(message, [], true);
+    public logMessage(message: string): void {
+        this.add(message, [], true);
     }
 
-    public static getErrorMessage(error: unknown): string {
+    public getErrorMessage(error: unknown): string {
         if (!error) return "";
         if (typeof (error) === "string") return error;
         if (typeof (error) === "number") return error.toString();
@@ -95,12 +97,14 @@ export class Errors {
         return JSON.stringify(error, null, 2);
     }
 
-    public static getErrorStack(error: unknown): string {
+    public getErrorStack(error: unknown): string {
         if (!error) return "";
         if (typeof (error) === "string") return "string thrown as error";
         if (typeof (error) === "number") return "number thrown as error";
-        if (!Errors.isError(error)) return "";
+        if (!this.isError(error)) return "";
         if (typeof error === "object" && error !== null && "stack" in error) return (error as Error).stack ?? "";
         return "";
     }
 }
+
+export const errors = new Errors(diagnostics);

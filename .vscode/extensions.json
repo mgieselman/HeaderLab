@@ -1,0 +1,7 @@
+{
+    "recommendations": [
+        "TeamsDevApp.ms-teams-vscode-extension",
+        "msoffice.microsoft-office-add-in-debugger",
+        "dbaeumer.vscode-eslint"
+    ]
+}

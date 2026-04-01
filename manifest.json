@@ -1,0 +1,150 @@
+{
+    "$schema": "https://developer.microsoft.com/json-schemas/teams/vDevPreview/MicrosoftTeams.schema.json",
+    "id": "129d48f1-5005-4d25-bc94-fd27c54344a1",
+    "version": "4.0.0",
+    "manifestVersion": "devPreview",
+    "name": {
+        "short": "HeaderLab",
+        "full": "HeaderLab — Email Header Analyzer"
+    },
+    "description": {
+        "short": "Analyze email transport headers",
+        "full": "Parses raw email transport headers and displays routing hops, delivery delays, antispam verdicts, authentication results (SPF/DKIM/DMARC), and rule-based diagnostics."
+    },
+    "developer": {
+        "name": "Stephen Griffin",
+        "websiteUrl": "https://github.com/microsoft/MHA",
+        "privacyUrl": "https://happy-pond-01840f710.4.azurestaticapps.net/privacy.html",
+        "termsOfUseUrl": "https://github.com/microsoft/MHA/blob/main/LICENSE"
+    },
+    "icons": {
+        "outline": "Resources/mhaLogo32.png",
+        "color": "Resources/mhaLogo192.png"
+    },
+    "accentColor": "#0078D4",
+    "defaultBlockUntilAdminAction": false,
+    "authorization": {
+        "permissions": {
+            "resourceSpecific": [
+                {
+                    "name": "MailboxItem.Read.User",
+                    "type": "Delegated"
+                }
+            ]
+        }
+    },
+    "webApplicationInfo": {
+        "id": "3b66646d-972e-49e4-a2b0-b37a78a00e11",
+        "resource": "api://happy-pond-01840f710.4.azurestaticapps.net/3b66646d-972e-49e4-a2b0-b37a78a00e11"
+    },
+    "extensions": [
+        {
+            "requirements": {
+                "scopes": ["mail"],
+                "capabilities": [
+                    {
+                        "name": "Mailbox",
+                        "minVersion": "1.3"
+                    }
+                ]
+            },
+            "runtimes": [
+                {
+                    "requirements": {
+                        "capabilities": [
+                            {
+                                "name": "Mailbox",
+                                "minVersion": "1.3"
+                            }
+                        ]
+                    },
+                    "id": "TaskPaneRuntime",
+                    "type": "general",
+                    "code": {
+                        "page": "https://happy-pond-01840f710.4.azurestaticapps.net/DesktopPane.html"
+                    },
+                    "lifetime": "short",
+                    "actions": [
+                        {
+                            "id": "TaskPaneRuntimeShow",
+                            "type": "openPage",
+                            "pinnable": true,
+                            "view": "dashboard"
+                        }
+                    ]
+                },
+                {
+                    "requirements": {
+                        "capabilities": [
+                            {
+                                "name": "Mailbox",
+                                "minVersion": "1.3"
+                            }
+                        ]
+                    },
+                    "id": "FunctionRuntime",
+                    "type": "general",
+                    "code": {
+                        "page": "https://happy-pond-01840f710.4.azurestaticapps.net/Functions.html"
+                    }
+                }
+            ],
+            "ribbons": [
+                {
+                    "contexts": ["mailRead"],
+                    "tabs": [
+                        {
+                            "builtInTabId": "TabDefault",
+                            "groups": [
+                                {
+                                    "id": "headerLabGroup",
+                                    "label": "HeaderLab",
+                                    "icons": [
+                                        {
+                                            "size": 16,
+                                            "url": "https://happy-pond-01840f710.4.azurestaticapps.net/Resources/mhaLogo.jpg"
+                                        },
+                                        {
+                                            "size": 32,
+                                            "url": "https://happy-pond-01840f710.4.azurestaticapps.net/Resources/mhaLogo.jpg"
+                                        },
+                                        {
+                                            "size": 80,
+                                            "url": "https://happy-pond-01840f710.4.azurestaticapps.net/Resources/mhaLogo.jpg"
+                                        }
+                                    ],
+                                    "controls": [
+                                        {
+                                            "id": "openPaneButton",
+                                            "type": "button",
+                                            "label": "View Headers",
+                                            "icons": [
+                                                {
+                                                    "size": 16,
+                                                    "url": "https://happy-pond-01840f710.4.azurestaticapps.net/Resources/mhaLogo.jpg"
+                                                },
+                                                {
+                                                    "size": 32,
+                                                    "url": "https://happy-pond-01840f710.4.azurestaticapps.net/Resources/mhaLogo.jpg"
+                                                },
+                                                {
+                                                    "size": 80,
+                                                    "url": "https://happy-pond-01840f710.4.azurestaticapps.net/Resources/mhaLogo.jpg"
+                                                }
+                                            ],
+                                            "supertip": {
+                                                "title": "Open a pane to view the available headers on the current message",
+                                                "description": "Retrieves the transport message headers of the current message and displays them in an easy-to-read format."
+                                            },
+                                            "actionId": "TaskPaneRuntimeShow"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

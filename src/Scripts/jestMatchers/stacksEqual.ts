@@ -1,7 +1,6 @@
-import { expect } from "@jest/globals";
-import type { MatcherFunction } from "expect";
+import { expect } from "vitest";
 
-// Strip stack of rows with jest.
+// Strip stack of rows with vitest.
 // Used to normalize cross environment differences strictly for testing purposes
 // Real stacks sent up will contain cross browser quirks
 function cleanStack(stack: string[]) {
@@ -11,7 +10,7 @@ function cleanStack(stack: string[]) {
             .replace(/\(.*[/\\](?=src[/\\]Scripts[/\\])/, "(") // Strip path prefix inside parens up to src/Scripts (any platform)
             .replace(/\//g, "\\") // Normalize forward slashes to backslashes
             .replace(/Function\.get \[as parse\]/, "Function.parse") // normalize function name
-            .replace(/.*jest.*/, "") // Don't care about jest internals
+            .replace(/.*(?:jest|vitest).*/, "") // Don't care about jest/vitest internals
             .replace(/.*node:internal.*/, "") // Don't care about node internals (vary by version)
             .replace(/:\d+:\d*\)/, ")") // remove column and line # since they may vary
         ;
@@ -20,8 +19,7 @@ function cleanStack(stack: string[]) {
     });
 }
 
-export const stacksEqual: MatcherFunction<[expected: string[]]> =
-    function (actualUnknown: unknown, expected: string[]) {
+export function stacksEqual(this: { equals: (a: unknown, b: unknown) => boolean }, actualUnknown: unknown, expected: string[]) {
         const actual = actualUnknown as string[];
         let passed = true;
         const messages: string[] = [];
@@ -55,8 +53,8 @@ export const stacksEqual: MatcherFunction<[expected: string[]]> =
 
 expect.extend({ stacksEqual, });
 
-declare module "expect" {
-    interface Matchers<R> {
-        stacksEqual(expected: string[]): R;
+declare module "vitest" {
+    interface Assertion<T> {
+        stacksEqual(expected: string[]): T;
     }
 }

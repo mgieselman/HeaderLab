@@ -167,14 +167,11 @@ Evaluate the existing architecture, design patterns, and technology choices acro
 | E | Group labels by section | Done — 6 typed groups with `as const` |
 | G | Add tsc --noEmit CI step | Done — added to jest.yml workflow |
 
-**Remaining:**
-| # | Proposal | Impact | Effort | Risk |
-|---|----------|--------|--------|------|
-| D | Make Diag/Errors injectable | Medium | Medium | Medium |
-| I | Raise coverage thresholds | Low | Trivial | None |
-| J | Add bundle size tracking | Low | Small | None |
+| D | Make Diag/Errors injectable | Done — Diagnostics class exported, Errors converted to instance with injected Diagnostics |
+| I | Raise coverage thresholds | Done — branches 44%, functions 56%, lines 50%, statements 49% |
+| J | Add bundle size tracking | Done — size-limit in CI, baseline ~267 kB brotli |
 
-Proposals D, I, and J should be done before or alongside Phase 4. Bundler migration (Vite) and test migration (Vitest) are now in Phase 4.
+All Phase 2 proposals complete.
 
 ## Phase 3: Build the New UI
 
@@ -416,25 +413,17 @@ Migrate from legacy Office Add-in tooling to the current Microsoft-recommended s
 - Re-evaluate `useDefineForClassFields: false` — this was set for Lit compatibility, which is no longer relevant after Phase 0. Set to `true` if no Office.js conflicts
 - Consider adding `"verbatimModuleSyntax": true` for stricter import/export handling
 
-### 4.6 Prerequisite: Remaining Phase 2 Proposals
+### 4.6 Completion Status
 
-Complete these before starting Phase 4 migrations:
+All Phase 4 steps completed:
 
-| # | Proposal | Effort | Why before Phase 4 |
-|---|----------|--------|-------------------|
-| D | Make Diag/Errors injectable | Medium | Singleton removal is easier before bundler migration changes import resolution |
-| I | Raise coverage thresholds | Trivial | Set baselines before test framework migration changes coverage tooling |
-| J | Add bundle size tracking | Small | Establish size baseline with webpack before migrating to Vite |
-
-### 4.7 Execution Order
-
-| Step | Depends on | Risk | Notes |
-|------|-----------|------|-------|
-| 2D | — | Medium | Do first — touches many files, easier to review in isolation |
-| 2I | — | None | Quick win — raise thresholds to match actual coverage |
-| 2J | — | None | Capture webpack bundle size as migration baseline |
-| 4.1 | 2D, 2I, 2J | Medium | Manifest format differences may require iteration |
-| 4.2 | 4.1 | Low | Swap tooling, update scripts |
-| 4.5 | 4.1 | Low | tsconfig changes needed before Vite migration |
-| 4.3 | 4.2, 4.5 | Medium | Office.js compatibility must be verified in WebView2 |
-| 4.4 | 4.3 | Low | Straightforward — Vitest is API-compatible with Jest |
+| Step | Status |
+|------|--------|
+| 2D | Done — Diagnostics class exported, Errors is instance class with injected Diagnostics |
+| 2I | Done — Coverage thresholds raised to match actual (44/56/50/49) |
+| 2J | Done — size-limit in CI, baseline ~267 kB brotli |
+| 4.1 | Done — manifest.json created (unified format) |
+| 4.2 | Done — office-addin-* packages removed, VS Code extensions.json added |
+| 4.3 | Done — Webpack replaced by Vite, build output to Pages/ |
+| 4.4 | Done — Jest replaced by Vitest, done() callbacks converted to promises |
+| 4.5 | Done — moduleResolution: bundler, useDefineForClassFields: true |
