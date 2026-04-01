@@ -18,7 +18,7 @@ import { buildTime } from "../buildTime";
 import { diagnostics } from "../Diag";
 import { mhaStrings } from "../mhaStrings";
 import { Strings } from "../Strings";
-import { MhaResults } from "./components/MhaResults";
+import { MhaResults } from "./components/MhaResults"; // Registers <mha-results> custom element
 import { DomUtils } from "./domUtils";
 import { ModeName, ThemeManager, ThemeName } from "./ThemeManager";
 
