@@ -1,30 +1,30 @@
-import { mhaStrings } from "../mhaStrings";
+import { labels } from "../labels";
 import { AntiSpamReport } from "./Antispam";
 import { Header } from "./Header";
 import { Row } from "./Row";
 
 export class ForefrontAntiSpamReport extends AntiSpamReport {
     public override readonly tableName: string = "forefrontAntiSpamReport";
-    public override readonly displayName: string = mhaStrings.mhaForefrontAntiSpamReport;
+    public override readonly displayName: string = labels.forefrontAntiSpamReport;
     public override readonly tag: string = "FFAS";
     private forefrontAntiSpamRows: Row[] = [
-        new Row("ARC", mhaStrings.mhaArc, "X-Forefront-Antispam-Report"),
-        new Row("CTRY", mhaStrings.mhaCountryRegion, "X-Forefront-Antispam-Report"),
-        new Row("LANG", mhaStrings.mhaLang, "X-Forefront-Antispam-Report"),
-        new Row("SCL", mhaStrings.mhaScl, "X-MS-Exchange-Organization-SCL"),
-        new Row("PCL", mhaStrings.mhaPcl, "X-Forefront-Antispam-Report"),
-        new Row("SFV", mhaStrings.mhaSfv, "X-Forefront-Antispam-Report"),
-        new Row("IPV", mhaStrings.mhaIpv, "X-Forefront-Antispam-Report"),
-        new Row("H", mhaStrings.mhaHelo, "X-Forefront-Antispam-Report"),
-        new Row("PTR", mhaStrings.mhaPtr, "X-Forefront-Antispam-Report"),
-        new Row("CIP", mhaStrings.mhaCip, "X-Forefront-Antispam-Report"),
-        new Row("CAT", mhaStrings.mhaCat, "X-Forefront-Antispam-Report"),
-        new Row("SFTY", mhaStrings.mhaSfty, "X-Forefront-Antispam-Report"),
-        new Row("SRV", mhaStrings.mhaSrv, "X-Forefront-Antispam-Report"),
-        new Row("X-CustomSpam", mhaStrings.mhaCustomSpam, "X-Forefront-Antispam-Report"),
-        new Row("SFS", mhaStrings.mhaSfs, "X-Forefront-Antispam-Report"),
-        new Row("source", mhaStrings.mhaSource, "X-Forefront-Antispam-Report"),
-        new Row("unparsed", mhaStrings.mhaUnparsed, "X-Forefront-Antispam-Report")
+        new Row("ARC", labels.arc, "X-Forefront-Antispam-Report"),
+        new Row("CTRY", labels.countryRegion, "X-Forefront-Antispam-Report"),
+        new Row("LANG", labels.lang, "X-Forefront-Antispam-Report"),
+        new Row("SCL", labels.scl, "X-MS-Exchange-Organization-SCL"),
+        new Row("PCL", labels.pcl, "X-Forefront-Antispam-Report"),
+        new Row("SFV", labels.sfv, "X-Forefront-Antispam-Report"),
+        new Row("IPV", labels.ipv, "X-Forefront-Antispam-Report"),
+        new Row("H", labels.helo, "X-Forefront-Antispam-Report"),
+        new Row("PTR", labels.ptr, "X-Forefront-Antispam-Report"),
+        new Row("CIP", labels.cip, "X-Forefront-Antispam-Report"),
+        new Row("CAT", labels.cat, "X-Forefront-Antispam-Report"),
+        new Row("SFTY", labels.sfty, "X-Forefront-Antispam-Report"),
+        new Row("SRV", labels.srv, "X-Forefront-Antispam-Report"),
+        new Row("X-CustomSpam", labels.customSpam, "X-Forefront-Antispam-Report"),
+        new Row("SFS", labels.sfs, "X-Forefront-Antispam-Report"),
+        new Row("source", labels.source, "X-Forefront-Antispam-Report"),
+        new Row("unparsed", labels.unparsed, "X-Forefront-Antispam-Report")
     ];
 
     public override add(header: Header): boolean {

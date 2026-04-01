@@ -3,7 +3,6 @@ import { type IPublicClientApplication, createNestablePublicClientApplication } 
 import { GetHeaders, HeaderCallbacks } from "./GetHeaders";
 import { diagnostics } from "../../Diag";
 import { Errors } from "../../Errors";
-import { mhaStrings } from "../../mhaStrings";
 import { naaClientId } from "../../naaClientId";
 
 interface GraphExtendedProperty {
@@ -107,7 +106,7 @@ export class GetHeadersGraph {
             if (!response.ok) {
                 diagnostics.set("graphGetHeadersFailure", response.status + " " + response.statusText);
                 if (response.status === 404) {
-                    callbacks.onError(null, mhaStrings.mhaMessageMissing, true);
+                    callbacks.onError(null, "Message not located.", true);
                 }
 
                 return "";
@@ -118,7 +117,7 @@ export class GetHeadersGraph {
             if (headers) {
                 return headers;
             } else {
-                callbacks.onError(null, mhaStrings.mhaHeadersMissing, true);
+                callbacks.onError(null, "Message was missing transport headers. If this is a sent item this may be expected.", true);
                 return "";
             }
         }
@@ -139,7 +138,7 @@ export class GetHeadersGraph {
             return "";
         }
 
-        callbacks.onStatus(mhaStrings.mhaRequestSent);
+        callbacks.onStatus("Retrieving headers from server.");
 
         try {
             const accessToken = await GetHeadersGraph.getAccessToken();

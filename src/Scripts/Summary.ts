@@ -1,4 +1,4 @@
-import { mhaStrings } from "./mhaStrings";
+import { labels } from "./labels";
 import { ArchivedRow } from "./row/ArchivedRow";
 import { CreationRow } from "./row/CreationRow";
 import { Header } from "./row/Header";
@@ -8,7 +8,7 @@ import { SummaryTable } from "./table/SummaryTable";
 
 export class Summary extends SummaryTable {
     public readonly tableName: string = "summary";
-    public readonly displayName: string = mhaStrings.mhaSummary;
+    public readonly displayName: string = labels.summary;
     public readonly tag: string = "SUM";
     private totalTimeInternal = "";
 
@@ -17,22 +17,22 @@ export class Summary extends SummaryTable {
             return "";
         }
 
-        return ` ${mhaStrings.mhaDeliveredStart} ${totalTime}${mhaStrings.mhaDeliveredEnd}`;
+        return ` ${labels.deliveredStart} ${totalTime}${labels.deliveredEnd}`;
     }
 
-    private dateRow = new CreationRow("Date", mhaStrings.mhaCreationTime);
+    private dateRow = new CreationRow("Date", labels.creationTime);
 
-    private archivedRow = new ArchivedRow("Archived-At", mhaStrings.mhaArchivedAt,);
+    private archivedRow = new ArchivedRow("Archived-At", labels.archivedAt,);
 
     private summaryRows: SummaryRow[] = [
-        new SummaryRow("Subject", mhaStrings.mhaSubject),
-        new SummaryRow("Message-ID", mhaStrings.mhaMessageId),
+        new SummaryRow("Subject", labels.subject),
+        new SummaryRow("Message-ID", labels.messageId),
         this.archivedRow,
         this.dateRow,
-        new SummaryRow("From", mhaStrings.mhaFrom),
-        new SummaryRow("Reply-To", mhaStrings.mhaReplyTo),
-        new SummaryRow("To", mhaStrings.mhaTo),
-        new SummaryRow("CC", mhaStrings.mhaCc)
+        new SummaryRow("From", labels.from),
+        new SummaryRow("Reply-To", labels.replyTo),
+        new SummaryRow("To", labels.to),
+        new SummaryRow("CC", labels.cc)
     ];
 
     public override exists(): boolean {

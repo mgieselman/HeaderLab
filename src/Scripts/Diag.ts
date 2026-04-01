@@ -3,12 +3,10 @@ import stackTrace from "stacktrace-js";
 
 import { aikey } from "./aikey";
 import { buildTime } from "./buildTime";
-import { mhaVersion } from "./mhaVersion";
 import { GetHeaders } from "./ui/getHeaders/GetHeaders";
 import { GetHeadersAPI } from "./ui/getHeaders/GetHeadersAPI";
 import { GetHeadersGraph } from "./ui/getHeaders/GetHeadersGraph";
-
-import "promise-polyfill/dist/polyfill";
+import { version } from "./version";
 
 // diagnostics module
 
@@ -176,7 +174,7 @@ class Diag {
             this.appDiagnostics["ui"] = "unified";
 
             this.appDiagnostics["Last Update"] = buildTime();
-            this.appDiagnostics["mhaVersion"] = mhaVersion();
+            this.appDiagnostics["version"] = version();
 
             if (window.Office) {
                 delete this.appDiagnostics["Office"];

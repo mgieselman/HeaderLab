@@ -4,71 +4,77 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Message Header Analyzer (MHA) - a Microsoft Outlook add-in and standalone web app that parses email transport headers into human-readable analysis. Built with TypeScript, Office.js, Fluent UI Web Components, and Framework7. Deployed to Azure Web Apps and available on Office AppSource.
+HeaderLab (package name: `mha`) is an email Message Header Analyzer. It parses raw email transport headers and displays routing hops, delivery delays, antispam verdicts, authentication results (SPF/DKIM/DMARC), and rule-based diagnostics. It runs both as a standalone web app and as an Outlook Office Add-in (via Office.js/Graph API).
 
-## Commands
+Originally named MHA (Microsoft Header Analyzer), now renamed to HeaderLab. MHA references have been removed from the data and retrieval layers. See `PLAN.md` for the UI rebuild plan and architecture modernization proposals.
+
+## Build & Dev Commands
 
 ```bash
-npm run build              # Production build (webpack, minified)
-npm run build:dev          # Development build
-npm run build:analyze      # Production build with bundle analysis report
-npm run dev-server         # Start webpack dev server at https://localhost:44336
-npm run watch              # Continuous build on file changes
-
-npm test                   # Lint + run all Jest tests (pretest runs lint)
-npm run test:debug         # Jest with verbose output
-npx jest path/to/file.test.ts  # Run a single test file
-
-npm run lint               # ESLint check
-npm run lint:fix           # ESLint auto-fix
-
-npm start                  # Launch add-in debug in Outlook (uses ManifestDebugLocal.xml)
-npm run validate           # Validate Office manifest
+npm ci                    # install dependencies
+npm run build             # production build (webpack), output to Pages/
+npm run build:dev         # development build
+npm run serve             # webpack dev server (port 44336)
+npm test                  # lint then run all tests (pretest runs lint)
+npm run test:debug        # verbose test output
+npx jest path/to/file     # run a single test file
+npx jest --testPathPattern="Received"  # run tests matching pattern
+npm run lint              # eslint
+npm run lint:fix          # eslint with auto-fix
 ```
 
-## Code Style (enforced by ESLint)
-
-- 4-space indent, double quotes, semicolons required, CRLF line endings
-- camelCase for variables/properties, PascalCase for types/enums
-- No `any` types allowed (`@typescript-eslint/no-explicit-any`)
-- Max 1 class per file
-- Import ordering enforced (builtin, external, internal, parent, sibling, index)
+Node >= 18.12.0 required. CI uses Node 22.
 
 ## Architecture
 
-### Data Flow
+### Data Layer (`src/Scripts/`)
 
-```
-Raw headers (Outlook API / EWS / REST / paste)
-  -> src/Scripts/ui/getHeaders/   # Header retrieval layer
-  -> src/Scripts/2047.ts          # RFC 2047 decoding
-  -> src/Scripts/HeaderModel.ts   # Central model: parses headers into structured data
-  -> src/Scripts/rules/           # Rules engine: validates headers, detects violations
-  -> src/Scripts/ui/Table.ts      # Renders analysis into DOM
-```
+The core is a pure data/parsing layer with no UI dependencies:
 
-### Key Directories
+- **`HeaderModel`** — central orchestrator. `HeaderModel.create(headers)` parses headers and runs rule analysis. Parsing dispatches each header to the first matching section (summary → antispam → received → other).
+- **`labels.ts`** — string constants for display labels (section names, field labels, status messages).
+- **`Strings.ts`** — HTML encoding, header-to-URL mapping (RFC links), clipboard utilities.
+- **`2047.ts`** — RFC 2047 MIME encoded-word decoder.
+- **Row types (`row/`)** — individual header parsers: `ReceivedRow`, `Antispam`, `ForefrontAntispam`, `SummaryRow`, `OtherRow`, etc. Each row type knows how to parse its specific header format.
+- **Table types (`table/`)** — collections of rows: `Received` (computes hop deltas/delays), `Other`, `SummaryTable`. `Received.computeDeltas()` calculates time differences between hops.
+- **Rules engine (`rules/`)** — validates parsed headers against rules defined in `src/data/rules.json`. Entry point is `rulesService.analyzeHeaders(model)`. Rule types: `SimpleValidationRule`, `AndValidationRule`, `HeaderSectionMissingRule`. Results are `ViolationGroup[]` on the model.
 
-- **`src/Scripts/ui/`** - Entry points and UI logic. Each entry point corresponds to a page/frame variant (mha, uiToggle, classicDesktopFrame, newDesktopFrame, newMobilePaneIosFrame, privacy). `getHeaders/` handles retrieval from different Outlook APIs.
-- **`src/Scripts/row/`** - Data models for parsed header sections (ReceivedRow, Antispam, ForefrontAntispam, CreationRow, ArchivedRow, OtherRow, SummaryRow). `Row.ts` is the base class.
-- **`src/Scripts/table/`** - Table rendering: DataTable, Received, Other, SummaryTable, TableSection, Column.
-- **`src/Scripts/rules/`** - Rules engine with `RulesService.ts` as entry point. Sub-directories: `engine/` (validation rule types: simple, AND, header-section-missing), `loaders/` (rule loading), `types/` (TypeScript interfaces).
-- **`src/Pages/`** - HTML templates consumed by HtmlWebpackPlugin.
-- **`src/data/rules.json`** - Rule definitions loaded at runtime.
+### Retrieval Layer (`src/Scripts/ui/getHeaders/`)
 
-### Webpack Entry Points
+Retrieves headers when running as an Outlook add-in:
+- **`GetHeaders`** — tries Office.js API first (`GetHeadersAPI`), falls back to Microsoft Graph (`GetHeadersGraph`).
+- Uses `HeaderCallbacks` interface to communicate status/errors to UI without importing UI modules.
 
-Defined in `webpack.config.js`. Six scripted pages, each mapping to `src/Scripts/ui/<name>.ts`. Output goes to `Pages/` with a version hash prefix. Path aliases: `@` -> `src/`, `@scripts` -> `src/Scripts/`, `@styles` -> `src/Content/`.
+### UI Layer (`src/Scripts/ui/`)
 
-### Testing
+Vanilla TypeScript + CSS custom properties, no framework. Two entry points:
 
-- Jest with jsdom environment, ts-jest transform
-- Test files are co-located with source (e.g., `Row.test.ts` next to `Row.ts`)
-- Coverage thresholds: 35% branches, 40% functions/lines/statements
-- Custom matchers in `src/Scripts/jestMatchers/`
+- **`app.ts`** — standalone mode: textarea input + Analyze/Clear/Copy/Sample buttons + results display.
+- **`addin.ts`** — Outlook add-in mode: auto-retrieves headers via `GetHeaders.send()`, no textarea.
 
-### Globals (via DefinePlugin)
+**Components (`components/`)**: `AppShell` (layout), `HeaderInput`, `TabNav`, `ResultsView`, section renderers (`SummarySection`, `RoutingSection`, `SecuritySection`, `OtherSection`, `DiagnosticsSection`, `OriginalSection`), `SettingsDialog`, `StatusBar`, `ViolationBadge`.
 
-- `__VERSION__` - build version hash
-- `__AIKEY__` - Application Insights instrumentation key
-- `__BUILDTIME__` - build timestamp
+**State (`state/`)**: `AppState` (observer pattern — holds model, active tab, status) and `ThemeManager` (light/dark/system persisted to localStorage via `data-theme` attribute).
+
+**CSS (`src/Content/`)**: `theme.css` (custom properties for light/dark/system/high-contrast), `layout.css` (responsive grid, 320px–desktop), `components.css` (buttons, cards, tables, badges, dialogs), `typography.css`.
+
+### Key Patterns
+
+- Header parsing order matters: `summary.add()` → `forefrontAntiSpamReport.add()` → `antiSpamReport.add()` → `receivedHeaders.add()` → `otherHeaders.add()`. First match wins.
+- `HeaderModel.create()` is async (static factory) because rule analysis loads rules from JSON.
+- Webpack globals: `__AIKEY__`, `__BUILDTIME__`, `__NAACLIENTID__`, `__VERSION__` are replaced at build time.
+- UI re-renders on `AppState.subscribe()` callbacks — no virtual DOM, sections are rebuilt on tab switch.
+- Build output must produce HTML files matching Manifest.xml: `mha.html`, `Default.html`, `DesktopPane.html`, `MobilePane.html`, `Functions.html`.
+
+## Code Style
+
+- 4-space indentation, double quotes, semicolons required, Windows line endings (CRLF)
+- camelCase for variables/methods, PascalCase for types/enums
+- Strict TypeScript: `noExplicitAny`, all strict checks enabled
+- Imports must be ordered: builtins → external → internal → sibling/parent → index (enforced by eslint `import/order`)
+- One class per file (`max-classes-per-file`)
+- Tests use Jest with jsdom environment; test files are colocated as `*.test.ts`
+
+## Deployment
+
+Deploys to Azure Static Web Apps from `Pages/` directory. Build output goes to `Pages/`. CI workflows in `.github/workflows/` run on push to `main`.

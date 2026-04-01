@@ -9,7 +9,7 @@ const config: Config = {
         "^.+\\.js$": "ts-jest",
     },
     transformIgnorePatterns: [
-        "node_modules/(?!(lit|lit-html|lit-element|@lit/reactive-element)/)"
+        "node_modules/"
     ],
     globals: {
         "__AIKEY__": "",

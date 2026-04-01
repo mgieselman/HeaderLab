@@ -1,5 +1,0 @@
-path_classifiers:
-    generated:
-        - exclude: Pages
-queries:
-    - exclude: js/node/unused-npm-dependency

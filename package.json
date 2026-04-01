@@ -9,7 +9,7 @@
   },
   "private": true,
   "scripts": {
-    "clean": "node tasks/clean.js",
+    "clean": "node -e \"const fs=require('fs');const p='Pages';fs.readdirSync(p).filter(f=>f!=='coverage'&&f!=='test').forEach(f=>fs.rmSync(p+'/'+f,{recursive:true,force:true}))\"",
     "watch": "webpack --watch --mode=development",
     "build": "webpack --mode=production",
     "build:dev": "webpack --mode=development",
@@ -23,8 +23,8 @@
     "validate": "office-addin-manifest validate Manifest.xml",
     "test": "jest --silent",
     "test:debug": "jest --verbose",
-    "lint": "eslint \"*.{js,ts}\" \"src/**/*\" \"tasks/**/*\"",
-    "lint:fix": "eslint --fix \"*.{js,ts}\" \"src/**/*\" \"tasks/**/*\"",
+    "lint": "eslint \"*.{js,ts}\" \"src/**/*\"",
+    "lint:fix": "eslint --fix \"*.{js,ts}\" \"src/**/*\"",
     "pretest": "npm run lint",
     "prebuild": "npm run clean"
   },
@@ -85,13 +85,10 @@
   },
   "dependencies": {
     "@azure/msal-browser": "^5.2.0",
-    "@fluentui/web-components": "^2.6.1",
     "@microsoft/applicationinsights-web": "^3.3.11",
     "@microsoft/office-js": "^1.1.110",
     "codepage": "^1.15.0",
     "dayjs": "^1.11.20",
-    "lit": "^3.3.2",
-    "promise-polyfill": "8.3.0",
     "stacktrace-js": "^2.0.2"
   },
   "overrides": {
