@@ -296,9 +296,9 @@ export class MhaResults extends LitElement {
     private renderInlineViolation(violation: RuleViolation) {
         return html`
             <span class="violation-inline">
-                <fluent-badge class="severity-badge" data-severity="${violation.rule.severity}">
+                <span class="severity-badge" data-severity="${violation.rule.severity}">
                     ${violation.rule.severity.toUpperCase()}
-                </fluent-badge>
+                </span>
                 <span class="violation-message" data-severity="${violation.rule.severity}">
                     ${" " + violation.rule.errorMessage}
                 </span>
@@ -311,9 +311,9 @@ export class MhaResults extends LitElement {
         return html`
             <div class="violation-card" data-severity="${violation.rule.severity}">
                 <div class="violation-card-header">
-                    <fluent-badge class="severity-badge" data-severity="${violation.rule.severity}">
+                    <span class="severity-badge" data-severity="${violation.rule.severity}">
                         ${violation.rule.severity.toUpperCase()}
-                    </fluent-badge>
+                    </span>
                     <span class="violation-message" data-severity="${violation.rule.severity}">
                         ${" " + violation.rule.errorMessage}
                     </span>
@@ -337,9 +337,9 @@ export class MhaResults extends LitElement {
                     ${this.viewModel.violationGroups.map(group => html`
                         <fluent-accordion-item>
                             <div slot="heading" class="violation-card-header">
-                                <fluent-badge class="severity-badge" data-severity="${group.severity}">
+                                <span class="severity-badge" data-severity="${group.severity}">
                                     ${group.severity.toUpperCase()}
-                                </fluent-badge>
+                                </span>
                                 <div class="violation-message" data-severity="${group.severity}">
                                     ${group.displayName}
                                 </div>
