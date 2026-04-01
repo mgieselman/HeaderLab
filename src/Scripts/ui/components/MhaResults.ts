@@ -96,17 +96,11 @@ export class MhaResults extends LitElement {
                         </fluent-card>
                     </div>
                 ` : nothing}
-                <div class="header-view" style="${this.activeTab === "summary-view" ? "display:block" : "display:none"}">
-                    ${this.renderSummary()}
-                </div>
-                <div class="header-view" style="${this.activeTab === "received-view" ? "display:block" : "display:none"}">
-                    ${this.renderReceived()}
-                </div>
-                <div class="header-view" style="${this.activeTab === "antispam-view" ? "display:block" : "display:none"}">
-                    ${this.renderAntispam()}
-                </div>
-                <div class="header-view" style="${this.activeTab === "other-view" ? "display:block" : "display:none"}">
-                    ${this.renderOther()}
+                <div class="header-view" style="display:block">
+                    ${this.activeTab === "summary-view" ? this.renderSummary()
+        : this.activeTab === "received-view" ? this.renderReceived()
+            : this.activeTab === "antispam-view" ? this.renderAntispam()
+                : this.renderOther()}
                 </div>
             </div>
         `;

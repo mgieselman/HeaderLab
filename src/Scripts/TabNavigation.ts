@@ -31,36 +31,20 @@ export class TabNavigation {
         const focusableElements = container.querySelectorAll(TabNavigation.focusableSelector);
 
         const htmlElements = Array.from(focusableElements)
-            .filter((el): el is HTMLElement => TabNavigation.isHTMLElement(el));
+            .filter((el): el is HTMLElement => el instanceof HTMLElement);
 
         return htmlElements.filter(TabNavigation.isFocusableElement);
-    }
-
-    private static isHTMLElement(el: Element): el is HTMLElement {
-        if (el instanceof HTMLElement) return true;
-
-        const element = el as Element;
-        const elementDoc = element.ownerDocument;
-        const docHTMLElement = elementDoc?.defaultView?.HTMLElement;
-        return !!(docHTMLElement && el instanceof docHTMLElement);
     }
 
     /**
      * Checks if an element is focusable based on various criteria.
      */
     public static isFocusableElement(el: Element): el is HTMLElement {
-        let isHTMLEl = el instanceof HTMLElement;
-        if (!isHTMLEl) {
-            const elementDoc = el.ownerDocument;
-            const docHTMLElement = elementDoc?.defaultView?.HTMLElement;
-            isHTMLEl = !!(docHTMLElement && el instanceof docHTMLElement);
-        }
-
-        if (!isHTMLEl) {
+        if (!(el instanceof HTMLElement)) {
             return false;
         }
 
-        const htmlEl = el as HTMLElement;
+        const htmlEl = el;
         if (htmlEl.hasAttribute("disabled")) {
             return false;
         }

@@ -24,12 +24,26 @@ interface FluentCheckbox extends HTMLElement {
     checked: boolean;
 }
 
+/** Close a fluent-dialog when clicking the backdrop (outside content).
+ *  Uses composedPath() because Fluent shadow DOM retargets e.target. */
+function addBackdropDismiss(dialog: FluentDialog): void {
+    dialog.addEventListener("click", (e) => {
+        const clickedInside = e.composedPath().some(el =>
+            el instanceof HTMLElement && el !== dialog && dialog.contains(el)
+        );
+        if (!clickedInside) {
+            dialog.hidden = true;
+        }
+    });
+}
+
 export class ParentFrame {
     private static headers = "";
     protected static telemetryCheckbox: FluentCheckbox | null = null;
 
     private static getResults(): MhaResults | null {
-        return document.querySelector("mha-results") as MhaResults | null;
+        const el = document.querySelector("mha-results");
+        return el instanceof MhaResults ? el : null;
     }
 
     private static render(): void {
@@ -89,6 +103,24 @@ export class ParentFrame {
         return ParentFrame.getResults()?.getModelString() ?? "";
     }
 
+    private static applySettings(dialog: FluentDialog): void {
+        if (ParentFrame.telemetryCheckbox) {
+            diagnostics.setSendTelemetry(ParentFrame.telemetryCheckbox.checked);
+        }
+
+        const themeGroup = document.getElementById("themeChoice") as FluentRadioGroup;
+        if (themeGroup?.value) {
+            ThemeManager.setTheme(themeGroup.value as ThemeName);
+        }
+
+        const modeGroup = document.getElementById("modeChoice") as FluentRadioGroup;
+        if (modeGroup?.value) {
+            ThemeManager.setMode(modeGroup.value as ModeName);
+        }
+
+        dialog.hidden = true;
+    }
+
     private static initFluent(): void {
         const header: Element | null = document.querySelector(".header-row");
         if (!header) return;
@@ -101,27 +133,8 @@ export class ParentFrame {
         dialogSettings.hidden = true;
         dialogDiagnostics.hidden = true;
 
-        // Close dialog on backdrop click — use composedPath to avoid
-        // swallowing clicks on fluent-radio/checkbox inside shadow DOM
-        dialogSettings.addEventListener("click", (e) => {
-            const path = e.composedPath();
-            const clickedInside = path.some(el =>
-                el instanceof HTMLElement && el !== dialogSettings && dialogSettings.contains(el)
-            );
-            if (!clickedInside) {
-                dialogSettings.hidden = true;
-            }
-        });
-
-        dialogDiagnostics.addEventListener("click", (e) => {
-            const path = e.composedPath();
-            const clickedInside = path.some(el =>
-                el instanceof HTMLElement && el !== dialogDiagnostics && dialogDiagnostics.contains(el)
-            );
-            if (!clickedInside) {
-                dialogDiagnostics.hidden = true;
-            }
-        });
+        addBackdropDismiss(dialogSettings);
+        addBackdropDismiss(dialogDiagnostics);
 
         document.addEventListener("keydown", (e) => {
             if (e.key === "Escape") {
@@ -136,21 +149,7 @@ export class ParentFrame {
                         activeElement.tagName.toLowerCase() === "fluent-checkbox");
 
                 if (isRadioOrCheckbox) {
-                    if (ParentFrame.telemetryCheckbox) {
-                        diagnostics.setSendTelemetry(ParentFrame.telemetryCheckbox.checked);
-                    }
-
-                    const themeGroup = document.getElementById("themeChoice") as FluentRadioGroup;
-                    if (themeGroup?.value) {
-                        ThemeManager.setTheme(themeGroup.value as ThemeName);
-                    }
-
-                    const modeGroup = document.getElementById("modeChoice") as FluentRadioGroup;
-                    if (modeGroup?.value) {
-                        ThemeManager.setMode(modeGroup.value as ModeName);
-                    }
-
-                    dialogSettings.hidden = true;
+                    ParentFrame.applySettings(dialogSettings);
                     e.preventDefault();
                 }
             }
@@ -170,24 +169,9 @@ export class ParentFrame {
             ParentFrame.setSendTelemetryUI(diagnostics.canSendTelemetry());
         }
 
-        // OK button: apply theme/mode/telemetry settings
         const okButton = document.getElementById("actionsSettings-OK");
         okButton?.addEventListener("click", () => {
-            if (ParentFrame.telemetryCheckbox) {
-                diagnostics.setSendTelemetry(ParentFrame.telemetryCheckbox.checked);
-            }
-
-            const themeGroup = document.getElementById("themeChoice") as FluentRadioGroup;
-            if (themeGroup?.value) {
-                ThemeManager.setTheme(themeGroup.value as ThemeName);
-            }
-
-            const modeGroup = document.getElementById("modeChoice") as FluentRadioGroup;
-            if (modeGroup?.value) {
-                ThemeManager.setMode(modeGroup.value as ModeName);
-            }
-
-            dialogSettings.hidden = true;
+            ParentFrame.applySettings(dialogSettings);
         });
 
         const diagButton = document.getElementById("actionsSettings-diag");
@@ -241,7 +225,6 @@ export class ParentFrame {
             copyButton.focus();
         });
 
-        // Initialize dialog tab navigation
         TabNavigation.initialize();
     }
 
@@ -255,12 +238,10 @@ export class ParentFrame {
         ThemeManager.initialize();
         ParentFrame.initFluent();
 
-        // Register for telemetry setting changes
         diagnostics.onSendTelemetryChanged((sendTelemetry) => {
             ParentFrame.setSendTelemetryUI(sendTelemetry);
         });
 
-        // Provide header diagnostics to break Diag → GetHeaders circular dependency
         diagnostics.setHeaderDiagProvider(() => {
             return {
                 permissionLevel: GetHeaders.permissionLevel(),
