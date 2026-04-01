@@ -8,9 +8,11 @@ function cleanStack(stack: string[]) {
     if (!stack) return null;
     return stack.map(function (item: string): string {
         return item
-            .replace(/[A-Z]:\\.*?\\MHA\\/, "") // Remove path prefix that start <drive letter>:\src\MHA
-            .replace(/MHA\\src/, "src") // Remove path prefix that start MHA\\src
-            .replace(/[A-Z]:\\.*?\\.*\\src\\/, "src\\") // Remove path prefix that start <drive letter>:\src\MHA
+            .replace(/[A-Z]:\\.*?\\MHA\\/, "") // Remove Windows path prefix <drive letter>:\...\MHA\
+            .replace(/MHA\\src/, "src") // Remove path prefix MHA\\src
+            .replace(/[A-Z]:\\.*?\\.*\\src\\/, "src\\") // Remove Windows path prefix <drive letter>:\...\src\
+            .replace(/\/.*?\/MHA\//, "") // Remove Unix path prefix /.../MHA/
+            .replace(/\//g, "\\") // Normalize forward slashes to backslashes
             .replace(/Function\.get \[as parse\]/, "Function.parse") // normalize function name
             .replace(/.*jest.*/, "") // Don't care about jest internals
             .replace(/:\d+:\d*\)/, ")") // remove column and line # since they may vary
