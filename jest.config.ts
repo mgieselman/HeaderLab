@@ -4,8 +4,13 @@ const config: Config = {
     testEnvironment: "jsdom",
     globalSetup: "./global-setup.js",
     transform: {
-        "^.+.tsx?$": ["ts-jest",{ diagnostics: { ignoreCodes: ["TS151001"] } }],
+        "^.+\\.tsx?$": ["ts-jest",{ diagnostics: { ignoreCodes: ["TS151001"] } }],
+        // Lit ships ESM-only — transform it so Jest (CommonJS) can load it
+        "^.+\\.js$": "ts-jest",
     },
+    transformIgnorePatterns: [
+        "node_modules/(?!(lit|lit-html|lit-element|@lit/reactive-element)/)"
+    ],
     globals: {
         "__AIKEY__": "",
         "__NAACLIENTID__": ""

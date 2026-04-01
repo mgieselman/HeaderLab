@@ -27,7 +27,7 @@ class Diag {
         this.appInsights.addTelemetryInitializer((envelope: ITelemetryItem): boolean => {
             if (!envelope || !envelope.data) return false;
             envelope.data["baseType"] = envelope.baseType;
-            envelope.data["baseType"] = envelope.baseData;
+            envelope.data["baseData"] = envelope.baseData;
             // This will get called for any appInsights tracking - we can augment or suppress logging from here
             // No appInsights logging for localhost/dev
             if (!this.sendTelemetry) {
