@@ -1,14 +1,32 @@
 @import url("themeColors.css");
 
 /* Shared Rule Violation Styles */
-/* This file contains common violation display styles used across all UI implementations */
-/* Uses color variables from themeColors.css for consistency */
+/* Uses --theme-* semantic tokens so violations adapt to all themes and dark mode */
 
-/* Violation Badges - Compact severity indicators */
+/* Severity system — sets local variables via [data-severity] */
+[data-severity="error"] {
+    --severity-bg: var(--theme-error-bg);
+    --severity-color: var(--theme-error);
+    --severity-border: var(--theme-error);
+}
+
+[data-severity="warning"] {
+    --severity-bg: var(--theme-warning-bg);
+    --severity-color: var(--theme-warning);
+    --severity-border: var(--theme-warning);
+}
+
+[data-severity="info"] {
+    --severity-bg: var(--theme-info-bg);
+    --severity-color: var(--theme-info);
+    --severity-border: var(--theme-info);
+}
+
+/* Severity badges */
 .severity-badge {
     display: inline-block;
-    padding: 2px 6px;
-    border-radius: 3px;
+    padding: 2px 8px;
+    border-radius: var(--theme-radius-sm);
     font-size: 11px;
     font-weight: 600;
     line-height: 1.2;
@@ -17,76 +35,45 @@
     margin-left: 4px;
 }
 
-/* Severity system - applies to all [data-severity] elements */
-[data-severity="error"] {
-    --severity-bg: var(--diagnostic-error-bg);
-    --severity-color: var(--diagnostic-error-text);
-    --severity-border: var(--diagnostic-error-border);
-    --severity-icon: "🔴";
-}
-
-[data-severity="warning"] {
-    --severity-bg: var(--diagnostic-warning-bg);
-    --severity-color: var(--diagnostic-warning-text);
-    --severity-border: var(--diagnostic-warning-border);
-    --severity-icon: "⚠️";
-}
-
-[data-severity="info"] {
-    --severity-bg: var(--diagnostic-info-bg);
-    --severity-color: var(--diagnostic-info-text);
-    --severity-border: var(--diagnostic-info-border);
-    --severity-icon: "ℹ️";
-}
-
-/* Apply severity colors to badges */
 .severity-badge[data-severity] {
     background: var(--severity-bg);
-    color: var(--text-primary);
+    color: var(--severity-color);
+    border: 1px solid var(--severity-border);
 }
 
-/* Severity icons in badges */
-.severity-badge[data-severity]::before {
-    content: var(--severity-icon);
-    margin-right: 4px;
-}
-
-/* Violation Messages */
+/* Violation messages */
 .violation-message {
     font-weight: 600;
+    font-family: var(--theme-font-body);
 }
 
-.violation-message[data-severity="error"] {
-    color: var(--diagnostic-error-text);
+.violation-message[data-severity] {
+    color: var(--severity-color);
 }
 
-.violation-message[data-severity="warning"] {
-    color: var(--diagnostic-warning-text);
-}
-
-.violation-message[data-severity="info"] {
-    color: var(--diagnostic-info-text);
-}
-
-/* Violation Card Components */
-.violation-card-header {
-    display: flex;
-    align-items: center;
-}
-
+/* Violation card */
 .violation-card {
     border-left: 3px solid var(--severity-border);
     background-color: var(--severity-bg);
+    border-radius: var(--theme-radius-sm);
+    padding: 8px 12px;
+    margin-bottom: 8px;
+}
+
+.violation-card-header {
+    display: flex;
+    align-items: center;
+    gap: 4px;
 }
 
 .violation-details {
     font-size: 12px;
-    color: var(--text-secondary);
+    color: var(--theme-text-secondary);
+    margin-top: 4px;
 }
 
-/* Violation Details */
 .violation-rule {
-    font-family: monospace;
+    font-family: var(--theme-font-mono);
     font-size: 12px;
     margin-bottom: 4px;
 }
@@ -96,23 +83,44 @@
     font-size: 12px;
 }
 
-/* Content Highlighting */
+/* Inline violation (shown next to section headers) */
+.violation-inline {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    vertical-align: middle;
+}
+
+/* Content highlighting */
 .highlight-violation {
-    background-color: var(--highlight-warning-bg);
+    background-color: var(--theme-highlight-bg);
+    color: var(--theme-highlight-text);
     padding: 2px 4px;
     border-radius: 2px;
     font-weight: 600;
 }
 
-/* Accessibility - Forced Colors Mode */
+/* Diagnostics accordion */
+.diagnostics-accordion {
+    border-radius: var(--theme-radius-md);
+    border: 1px solid var(--theme-border);
+    margin-top: 12px;
+}
+
+.diagnostic-content {
+    padding: 12px;
+    font-size: 13px;
+    line-height: 1.4;
+    color: var(--theme-text);
+}
+
+/* Accessibility — forced colors mode */
 @media (forced-colors: active) {
     .severity-badge {
         border: 1px solid ButtonText;
     }
 
-    .severity-badge[data-severity="error"],
-    .severity-badge[data-severity="warning"],
-    .severity-badge[data-severity="info"] {
+    .severity-badge[data-severity] {
         background: ButtonFace;
         color: ButtonText;
     }
