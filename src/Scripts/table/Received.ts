@@ -1,7 +1,7 @@
 import { DataTable } from "./DataTable";
+import { Dates } from "../Dates";
 import { DateWithNum } from "../DateWithNum";
-import { MHADates } from "../MHADates";
-import { mhaStrings } from "../mhaStrings";
+import { labels } from "../labels";
 import { Header } from "../row/Header";
 import { Match } from "../row/Match";
 import { ReceivedRow } from "../row/ReceivedRow";
@@ -11,7 +11,7 @@ export class Received extends DataTable {
     protected sortColumnInternal = "hop";
     protected sortOrderInternal = 1;
     public readonly tableName: string = "receivedHeaders";
-    public readonly displayName: string = mhaStrings.mhaReceivedHeaders;
+    public readonly displayName: string = labels.receivedHeaders;
 
     // Builds array of values for each header in receivedHeaderNames.
     // This algorithm should work regardless of the order of the headers, given:
@@ -47,7 +47,7 @@ export class Received extends DataTable {
             if (iDate !== -1 && receivedHeader.length !== iDate + 1) {
                 const dateField = receivedHeader.substring(iDate + 1);
                 receivedHeader = receivedHeader.substring(0, iDate);
-                const parsedDate: DateWithNum = MHADates.parseDate(dateField);
+                const parsedDate: DateWithNum = Dates.parseDate(dateField);
 
                 if (parsedDate) {
                     receivedFields["date"].value = parsedDate.date;
@@ -157,11 +157,11 @@ export class Received extends DataTable {
         let printedMinutes = false;
 
         if (Math.abs(diff) < 1000) {
-            return "0 " + mhaStrings.mhaSeconds;
+            return "0 " + labels.seconds;
         }
 
         if (diff < 0) {
-            time.push(mhaStrings.mhaNegative);
+            time.push(labels.negative);
             diff = -diff;
         }
 
@@ -169,9 +169,9 @@ export class Received extends DataTable {
             iDelay = Math.floor(diff / 1000 / 60);
             time.push(iDelay.toString(), " ");
             if (iDelay === 1) {
-                time.push(mhaStrings.mhaMinute);
+                time.push(labels.minute);
             } else {
-                time.push(mhaStrings.mhaMinutes);
+                time.push(labels.minutes);
             }
 
             diff -= iDelay * 1000 * 60;
@@ -186,9 +186,9 @@ export class Received extends DataTable {
             iDelay = Math.floor(diff / 1000);
             time.push(iDelay.toString(), " ");
             if (iDelay === 1) {
-                time.push(mhaStrings.mhaSecond);
+                time.push(labels.second);
             } else {
-                time.push(mhaStrings.mhaSeconds);
+                time.push(labels.seconds);
             }
         }
 

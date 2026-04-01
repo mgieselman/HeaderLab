@@ -1,7 +1,6 @@
 import { GetHeaders, HeaderCallbacks } from "./GetHeaders";
 import { diagnostics } from "../../Diag";
 import { Errors } from "../../Errors";
-import { mhaStrings } from "../../mhaStrings";
 
 export class GetHeadersAPI {
     public static canUseAPI(): boolean { return GetHeaders.canUseAPI(); }
@@ -30,7 +29,7 @@ export class GetHeadersAPI {
             return "";
         }
 
-        callbacks.onStatus(mhaStrings.mhaRequestSent);
+        callbacks.onStatus("Retrieving headers from server.");
 
         try {
             const headers = await GetHeadersAPI.getAllInternetHeaders(Office.context.mailbox.item);

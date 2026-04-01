@@ -1,89 +1,13 @@
 <!DOCTYPE html>
-<html lang="en-US">
+<html lang="en" data-theme="system">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="Message Header Analyzer - Analyze email headers for security and troubleshooting" />
-    <meta name="theme-color" content="#0072cc" />
-    <title>Message Header Analyzer</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HeaderLab</title>
+    <link rel="icon" href="favicon.ico">
     <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
 </head>
 <body>
-    <main id="uiToggleFrame">
-        <header class="header-row">
-            <nav class="action-bar" role="toolbar" aria-label="Main actions">
-                <button type="button" class="action-bar-btn" id="copyButton" aria-label="Copy analysis results" title="Copy">
-                    <span class="action-bar-icon" aria-hidden="true">&#x2398;</span>
-                </button>
-                <button type="button" class="action-bar-btn" id="settingsButton" aria-label="Open settings" title="Settings">
-                    <span class="action-bar-icon" aria-hidden="true">&#x2699;</span>
-                </button>
-            </nav>
-        </header>
-
-        <!-- Status message overlay -->
-        <div id="statusMessage" class="status-overlay status-overlay-fixed" role="status" aria-live="polite"></div>
-
-        <!-- Content area -->
-        <div class="content-wrap">
-            <div class="overlay" id="loading-overlay">
-                <div class="status-display">
-                    <div id="status-message"></div>
-                    <fluent-progress-ring class="status-spinner"></fluent-progress-ring>
-                </div>
-            </div>
-            <mha-results hidden></mha-results>
-        </div>
-
-        <!-- Settings Dialog -->
-        <fluent-dialog id="dialog-Settings" aria-label="Settings" hidden>
-            <header class="dialog-header">
-                <h2 id="settings-title">Settings</h2>
-            </header>
-            <section class="dialog-content">
-                <fieldset>
-                    <legend id="Label-Theme">Theme</legend>
-                    <fluent-radio-group orientation="vertical" id="themeChoice" name="themeChoice" aria-label="Choose visual theme" aria-labelledby="Label-Theme">
-                        <fluent-radio value="default">Default</fluent-radio>
-                        <fluent-radio value="fluent-refresh">Fluent Refresh</fluent-radio>
-                        <fluent-radio value="neon-grid">Neon Grid</fluent-radio>
-                    </fluent-radio-group>
-                </fieldset>
-                <fieldset>
-                    <legend id="Label-Mode">Appearance</legend>
-                    <fluent-radio-group orientation="vertical" id="modeChoice" name="modeChoice" aria-label="Choose color mode" aria-labelledby="Label-Mode">
-                        <fluent-radio value="system">System</fluent-radio>
-                        <fluent-radio value="light">Light</fluent-radio>
-                        <fluent-radio value="dark">Dark</fluent-radio>
-                    </fluent-radio-group>
-                </fieldset>
-                <fluent-checkbox id="telemetryInput">Send telemetry</fluent-checkbox>
-                <div class="privacy-link">
-                    <small>
-                        <a href="privacy.html" id="privacy-link" target="_blank" rel="noopener noreferrer" aria-label="View privacy policy (opens in new tab)">privacy policy</a>
-                    </small>
-                </div>
-            </section>
-            <footer class="dialog-actions">
-                <fluent-button id="actionsSettings-diag" aria-label="Open diagnostics">Diagnostics</fluent-button>
-                <fluent-button appearance="accent" id="actionsSettings-OK" aria-label="Save settings and close">OK</fluent-button>
-            </footer>
-        </fluent-dialog>
-
-        <!-- Diagnostics Dialog -->
-        <fluent-dialog id="dialog-Diagnostics" aria-label="Diagnostics" hidden>
-            <header class="dialog-header">
-                <h2 id="diagnostics-title">Diagnostics</h2>
-            </header>
-            <section class="dialog-content">
-                <div class="code-box">
-                    <pre tabindex="0" id="diagpre" aria-label="Diagnostic information"><code id="diagnostics"></code></pre>
-                </div>
-            </section>
-            <footer class="dialog-actions">
-                <fluent-button appearance="accent" id="actionsDiag-OK" aria-label="Close diagnostics">OK</fluent-button>
-            </footer>
-        </fluent-dialog>
-    </main>
+    <div id="app"></div>
 </body>
 </html>

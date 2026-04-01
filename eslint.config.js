@@ -111,9 +111,22 @@ export default [{
         "@typescript-eslint/naming-convention": ["error", {
             selector: "default",
             format: ["camelCase"],
+            leadingUnderscore: "allow",
+        }, {
+            selector: "parameter",
+            format: ["camelCase"],
+            leadingUnderscore: "allow",
         }, {
             selector: "variableLike",
             format: ["camelCase"],
+            filter: {
+                regex: "^(__filename|__dirname)$",
+                match: false
+            }
+        }, {
+            selector: "variable",
+            modifiers: ["const"],
+            format: ["camelCase", "UPPER_CASE"],
             filter: {
                 regex: "^(__filename|__dirname)$",
                 match: false
@@ -138,13 +151,13 @@ export default [{
             selector: "property",
             format: ["camelCase"],
             filter: {
-                regex: "^(@|import/|linebreak-style|max-classes-per-file|no-duplicate-imports|no-inner-declarations|no-unmodified-loop-condition|block-scoped-var|sort-imports|newlines-between|SwitchCase|no-undef|no-global-assign|Office|NodeJS|EventListenerOrEventListenerObject|AddEventListenerOptions|PermissionDescriptor|PermissionName|__[A-Z_]+__|\\^.+\\$)",
+                regex: "^(@|aria-|data-|import/|linebreak-style|max-classes-per-file|no-duplicate-imports|no-inner-declarations|no-unmodified-loop-condition|block-scoped-var|sort-imports|newlines-between|SwitchCase|no-undef|no-global-assign|Office|NodeJS|EventListenerOrEventListenerObject|AddEventListenerOptions|PermissionDescriptor|PermissionName|__[A-Z_]+__|\\^.+\\$)",
                 match: false
             }
         }, {
             selector: "property",
             filter: {
-                regex: "^(@|import/|linebreak-style|max-classes-per-file|no-duplicate-imports|no-inner-declarations|no-unmodified-loop-condition|block-scoped-var|sort-imports|newlines-between|SwitchCase|no-undef|no-global-assign|Office|NodeJS|EventListenerOrEventListenerObject|AddEventListenerOptions|PermissionDescriptor|PermissionName|__[A-Z_]+__|\\^.+\\$)",
+                regex: "^(@|aria-|data-|import/|linebreak-style|max-classes-per-file|no-duplicate-imports|no-inner-declarations|no-unmodified-loop-condition|block-scoped-var|sort-imports|newlines-between|SwitchCase|no-undef|no-global-assign|Office|NodeJS|EventListenerOrEventListenerObject|AddEventListenerOptions|PermissionDescriptor|PermissionName|__[A-Z_]+__|\\^.+\\$)",
                 match: true
             },
             format: null

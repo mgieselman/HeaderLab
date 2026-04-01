@@ -1,4 +1,4 @@
-import { mhaStrings } from "../mhaStrings";
+import { labels } from "../labels";
 import { Strings } from "../Strings";
 import { Header } from "./Header";
 import { Row } from "./Row";
@@ -6,15 +6,15 @@ import { SummaryTable } from "../table/SummaryTable";
 
 export class AntiSpamReport extends SummaryTable {
     public readonly tableName: string = "antiSpamReport";
-    public readonly displayName: string = mhaStrings.mhaAntiSpamReport;
+    public readonly displayName: string = labels.antiSpamReport;
     public readonly tag: string = "AS";
     private sourceInternal = "";
     private unparsedInternal = "";
     private antiSpamRows: Row[] = [
-        new Row("BCL", mhaStrings.mhaBcl, "X-Microsoft-Antispam"),
-        new Row("PCL", mhaStrings.mhaPcl, "X-Microsoft-Antispam"),
-        new Row("source", mhaStrings.mhaSource, "X-Microsoft-Antispam"),
-        new Row("unparsed", mhaStrings.mhaUnparsed, "X-Microsoft-Antispam")
+        new Row("BCL", labels.bcl, "X-Microsoft-Antispam"),
+        new Row("PCL", labels.pcl, "X-Microsoft-Antispam"),
+        new Row("source", labels.source, "X-Microsoft-Antispam"),
+        new Row("unparsed", labels.unparsed, "X-Microsoft-Antispam")
     ];
 
     public get rows(): Row[] { return this.antiSpamRows; }
