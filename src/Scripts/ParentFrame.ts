@@ -76,11 +76,17 @@ export class ParentFrame {
     private static async loadNewItem() {
         if (Office.context.mailbox.item) {
             ParentFrame.updateStatus(mhaStrings.mhaLoading);
-            await GetHeaders.send(function (headers: string, apiUsed: string): void {
-                ParentFrame.headers = headers;
-                diagnostics.set("API used", apiUsed);
-                ParentFrame.render();
-            });
+            await GetHeaders.send(
+                function (headers: string, apiUsed: string): void {
+                    ParentFrame.headers = headers;
+                    diagnostics.set("API used", apiUsed);
+                    ParentFrame.render();
+                },
+                {
+                    onError: (error, message, suppress) => ParentFrame.showError(error, message, suppress),
+                    onStatus: (text) => ParentFrame.updateStatus(text),
+                }
+            );
         }
     }
 
@@ -240,14 +246,6 @@ export class ParentFrame {
 
         diagnostics.onSendTelemetryChanged((sendTelemetry) => {
             ParentFrame.setSendTelemetryUI(sendTelemetry);
-        });
-
-        diagnostics.setHeaderDiagProvider(() => {
-            return {
-                permissionLevel: GetHeaders.permissionLevel(),
-                canUseAPI: GetHeaders.canUseAPI(),
-                sufficientPermission: GetHeaders.sufficientPermission(true),
-            };
         });
 
         try {

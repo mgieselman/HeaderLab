@@ -1,18 +1,7 @@
-import { GetHeaders } from "./GetHeaders";
+import { GetHeaders, HeaderCallbacks } from "./GetHeaders";
 import { diagnostics } from "../../Diag";
 import { Errors } from "../../Errors";
 import { mhaStrings } from "../../mhaStrings";
-import { ParentFrame } from "../../ParentFrame";
-
-/*
- * GetHeadersAPI.js
- *
- * This file has all the methods to get PR_TRANSPORT_MESSAGE_HEADERS
- * from the current message via getAllInternetHeadersAsync.
- *
- * Requirement Sets and Permissions
- * getAllInternetHeadersAsync requires 1.9 and ReadItem
- */
 
 export class GetHeadersAPI {
     public static canUseAPI(): boolean { return GetHeaders.canUseAPI(); }
@@ -31,7 +20,7 @@ export class GetHeadersAPI {
         });
     }
 
-    public static async send(): Promise<string> {
+    public static async send(callbacks: HeaderCallbacks): Promise<string> {
         if (!GetHeaders.validItem() || !Office.context.mailbox.item) {
             Errors.logMessage("No item selected (API)");
             return "";
@@ -41,7 +30,7 @@ export class GetHeadersAPI {
             return "";
         }
 
-        ParentFrame.updateStatus(mhaStrings.mhaRequestSent);
+        callbacks.onStatus(mhaStrings.mhaRequestSent);
 
         try {
             const headers = await GetHeadersAPI.getAllInternetHeaders(Office.context.mailbox.item);
