@@ -11,13 +11,15 @@
 <body>
     <main id="uiToggleFrame">
         <header class="header-row">
-            <nav class="toolbar" role="toolbar" aria-label="Main actions">
-                <fluent-button appearance="subtle" id="copyButton" aria-label="Copy message header">
-                    <span slot="start" class="fluent-icon" aria-hidden="true"><svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M8 2a2 2 0 00-2 2v10a2 2 0 002 2h6a2 2 0 002-2V4a2 2 0 00-2-2H8zM7 4a1 1 0 011-1h6a1 1 0 011 1v10a1 1 0 01-1 1H8a1 1 0 01-1-1V4zM4 6a2 2 0 00-2 2v6a4 4 0 004 4h4a2 2 0 002-2h-1a1 1 0 01-1 1H6a3 3 0 01-3-3V8a1 1 0 011-1V6z"/></svg></span>
-                </fluent-button>
-                <fluent-button appearance="subtle" id="settingsButton" aria-label="Open settings">
-                    <span slot="start" class="fluent-icon" aria-hidden="true"><svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M1.91 7.38l1.18-.47c.2-.55.47-1.07.8-1.55L3.5 4.1a.5.5 0 01.06-.57l1.07-1.07a.5.5 0 01.57-.06l1.26.39c.48-.33 1-.6 1.55-.8l.47-1.18A.5.5 0 019 .5h1.5a.5.5 0 01.47.31l.47 1.18c.55.2 1.07.47 1.55.8l1.26-.39a.5.5 0 01.57.06l1.07 1.07a.5.5 0 01.06.57l-.39 1.26c.33.48.6 1 .8 1.55l1.18.47a.5.5 0 01.31.47v1.5a.5.5 0 01-.31.47l-1.18.47c-.2.55-.47 1.07-.8 1.55l.39 1.26a.5.5 0 01-.06.57l-1.07 1.07a.5.5 0 01-.57.06l-1.26-.39c-.48.33-1 .6-1.55.8l-.47 1.18a.5.5 0 01-.47.31H9a.5.5 0 01-.47-.31l-.47-1.18c-.55-.2-1.07-.47-1.55-.8l-1.26.39a.5.5 0 01-.57-.06L3.61 14.1a.5.5 0 01-.06-.57l.39-1.26c-.33-.48-.6-1-.8-1.55l-1.18-.47A.5.5 0 011.65 9.8V8.3c0-.2.12-.39.31-.47zm1.34 1.75c.21.72.55 1.39 1 1.98l-.46 1.5.73.73 1.5-.46a5.53 5.53 0 001.98 1l.56 1.41h1.04l.56-1.41c.72-.21 1.39-.55 1.98-1l1.5.46.73-.73-.46-1.5c.45-.59.79-1.26 1-1.98l1.41-.56V7.55l-1.41-.56a5.53 5.53 0 00-1-1.98l.46-1.5-.73-.73-1.5.46a5.53 5.53 0 00-1.98-1L10.3 1.82H9.26l-.56 1.41c-.72.21-1.39.55-1.98 1l-1.5-.46-.73.73.46 1.5c-.45.59-.79 1.26-1 1.98l-1.41.56v1.04l1.41.56zM10 7a2.5 2.5 0 100 5 2.5 2.5 0 000-5zM8.5 9.5a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0z"/></svg></span>
-                </fluent-button>
+            <nav class="action-bar" role="toolbar" aria-label="Main actions">
+                <button type="button" class="action-bar-btn" id="copyButton" aria-label="Copy analysis results" title="Copy">
+                    <span class="action-bar-icon" aria-hidden="true">&#x2398;</span>
+                    <span class="action-bar-label">Copy</span>
+                </button>
+                <button type="button" class="action-bar-btn" id="settingsButton" aria-label="Open settings" title="Settings">
+                    <span class="action-bar-icon" aria-hidden="true">&#x2699;</span>
+                    <span class="action-bar-label">Settings</span>
+                </button>
             </nav>
         </header>
 

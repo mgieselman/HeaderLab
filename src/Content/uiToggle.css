@@ -13,16 +13,56 @@ body, html {
 
 .header-row {
     position: fixed;
-    top: 0px;
-    right: 0px;
+    top: 0;
+    right: 0;
     z-index: 10;
-    background: var(--theme-bg);
     display: flex;
-    align-items: flex-start;
-    min-height: var(--button-height);
-    width: auto;
-    height: var(--button-height);
-    contain: layout style;
+    align-items: stretch;
+    height: auto;
+}
+
+/* Action bar: labeled text buttons that act like a toolbar */
+.action-bar {
+    display: flex;
+    gap: 0;
+}
+
+.action-bar-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 12px;
+    border: none;
+    background: var(--theme-bg);
+    color: var(--theme-accent);
+    font-family: var(--theme-font-body);
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: background var(--theme-transition-fast), border-color var(--theme-transition-fast);
+}
+
+.action-bar-btn:hover {
+    background: var(--theme-surface-hover);
+}
+
+.action-bar-btn:active {
+    border-bottom-color: var(--theme-accent);
+}
+
+.action-bar-btn:focus-visible {
+    outline: var(--focus-outline);
+    outline-offset: -2px;
+}
+
+.action-bar-icon {
+    font-size: 16px;
+    line-height: 1;
+}
+
+.action-bar-label {
+    line-height: 1;
 }
 
 /* Status message overlay for copy feedback */
