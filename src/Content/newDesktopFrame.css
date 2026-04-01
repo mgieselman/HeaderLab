@@ -326,11 +326,6 @@
     gap: 8px;
     flex-direction: column;
     transition: border-color var(--theme-transition-fast);
-    border: 1px solid var(--theme-border-subtle);
-}
-
-.violation-card:hover {
-    border-color: var(--theme-border);
 }
 
 .violation-card:last-child {
