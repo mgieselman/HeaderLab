@@ -2,7 +2,7 @@ import { diagnostics } from "./Diag";
 import { Errors } from "./Errors";
 import { mhaStrings } from "./mhaStrings";
 import { Strings } from "./Strings";
-import { TabNavigation } from "./TabNavigation";
+import { initDialogTabNav } from "./TabNavigation";
 import { MhaResults } from "./ui/components/MhaResults";
 import { DomUtils } from "./ui/domUtils";
 import { GetHeaders } from "./ui/getHeaders/GetHeaders";
@@ -225,7 +225,7 @@ export class ParentFrame {
             copyButton.focus();
         });
 
-        TabNavigation.initialize();
+        initDialogTabNav();
     }
 
     private static setSendTelemetryUI(sendTelemetry: boolean) {

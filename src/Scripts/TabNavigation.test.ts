@@ -1,6 +1,6 @@
-import { TabNavigation } from "./TabNavigation";
+import { findTabStops, initDialogTabNav, isFocusableElement } from "./TabNavigation";
 
-describe("TabNavigation.findTabStops finds all focusable elements within the given element", () => {
+describe("findTabStops finds all focusable elements within the given element", () => {
     // Create a container element
     const container = document.createElement("div");
     container.innerHTML = `
@@ -19,7 +19,7 @@ describe("TabNavigation.findTabStops finds all focusable elements within the giv
     Object.defineProperty(HTMLElement.prototype, "offsetParent", { get() { return this.parentNode; } });
 
     // Call the function
-    const result = TabNavigation.findTabStops(container);
+    const result = findTabStops(container);
 
     test("Six focusable elements should be found", () => { expect(result.length).toBe(6); });
     test("Link should be included", () => {
@@ -59,83 +59,83 @@ describe("TabNavigation.findTabStops finds all focusable elements within the giv
         expect(hiddenDiv && result.includes(hiddenDiv)).toBeFalsy();
     });
     test("Should return empty array if the element is null", () => {
-        const result2 = TabNavigation.findTabStops(null);
+        const result2 = findTabStops(null);
         expect(result2.length).toBe(0);
     });
 });
 
-describe("TabNavigation.isFocusableElement correctly identifies focusable elements", () => {
+describe("isFocusableElement correctly identifies focusable elements", () => {
     test("Element is not an HTMLElement", () => {
         const element = document.createElementNS("https://www.w3.org/2000/svg", "svg");
-        expect(TabNavigation.isFocusableElement(element)).toBeFalsy();
+        expect(isFocusableElement(element)).toBeFalsy();
     });
 
     test("Element is disabled", () => {
         const element = document.createElement("button");
         element.setAttribute("disabled", "true");
-        expect(TabNavigation.isFocusableElement(element)).toBeFalsy();
+        expect(isFocusableElement(element)).toBeFalsy();
     });
 
     test("Element has negative tabIndex", () => {
         const element = document.createElement("div");
         element.tabIndex = -1;
-        expect(TabNavigation.isFocusableElement(element)).toBeFalsy();
+        expect(isFocusableElement(element)).toBeFalsy();
     });
 
     test("Element is not visible (offsetParent is null)", () => {
         const element = document.createElement("div");
         Object.defineProperty(element, "offsetParent", { get() { return null; } });
-        expect(TabNavigation.isFocusableElement(element)).toBeFalsy();
+        expect(isFocusableElement(element)).toBeFalsy();
     });
 
     test("Element without offsetParent is not focusable", () => {
         const element = document.createElement("button");
         expect(element.offsetParent).toBeNull();
-        expect(TabNavigation.isFocusableElement(element)).toBeFalsy();
+        expect(isFocusableElement(element)).toBeFalsy();
     });
 
     test("Element with positive tabIndex should be focusable", () => {
         const element = document.createElement("div");
         Object.defineProperty(element, "offsetParent", { value: document.body });
         element.tabIndex = 0;
-        expect(TabNavigation.isFocusableElement(element)).toBeTruthy();
+        expect(isFocusableElement(element)).toBeTruthy();
     });
 
     test("Anchor with href should be focusable", () => {
         const element = document.createElement("a");
         element.href = "https://example.com";
         Object.defineProperty(element, "offsetParent", { value: document.body });
-        expect(TabNavigation.isFocusableElement(element)).toBeTruthy();
+        expect(isFocusableElement(element)).toBeTruthy();
     });
 
     test("Button should be focusable", () => {
         const element = document.createElement("button");
         Object.defineProperty(element, "offsetParent", { value: document.body });
-        expect(TabNavigation.isFocusableElement(element)).toBeTruthy();
+        expect(isFocusableElement(element)).toBeTruthy();
     });
 
     test("Input should be focusable", () => {
         const element = document.createElement("input");
         Object.defineProperty(element, "offsetParent", { value: document.body });
-        expect(TabNavigation.isFocusableElement(element)).toBeTruthy();
+        expect(isFocusableElement(element)).toBeTruthy();
     });
 
     test("Select should be focusable", () => {
         const element = document.createElement("select");
         Object.defineProperty(element, "offsetParent", { value: document.body });
-        expect(TabNavigation.isFocusableElement(element)).toBeTruthy();
+        expect(isFocusableElement(element)).toBeTruthy();
     });
 
     test("Textarea should be focusable", () => {
         const element = document.createElement("textarea");
         Object.defineProperty(element, "offsetParent", { value: document.body });
-        expect(TabNavigation.isFocusableElement(element)).toBeTruthy();
+        expect(isFocusableElement(element)).toBeTruthy();
     });
 
     test("Fluent component should be focusable", () => {
         const element = document.createElement("fluent-button");
         Object.defineProperty(element, "offsetParent", { value: document.body });
-        expect(TabNavigation.isFocusableElement(element)).toBeTruthy();
+        expect(isFocusableElement(element)).toBeTruthy();
     });
 });
 
@@ -143,37 +143,37 @@ describe("TabNavigation Fluent UI components", () => {
     test("Should recognize fluent-radio as focusable", () => {
         const element = document.createElement("fluent-radio");
         Object.defineProperty(element, "offsetParent", { value: document.body });
-        expect(TabNavigation.isFocusableElement(element)).toBeTruthy();
+        expect(isFocusableElement(element)).toBeTruthy();
     });
 
     test("Should recognize fluent-checkbox as focusable", () => {
         const element = document.createElement("fluent-checkbox");
         Object.defineProperty(element, "offsetParent", { value: document.body });
-        expect(TabNavigation.isFocusableElement(element)).toBeTruthy();
+        expect(isFocusableElement(element)).toBeTruthy();
     });
 
     test("Should recognize fluent-dialog as focusable", () => {
         const element = document.createElement("fluent-dialog");
         Object.defineProperty(element, "offsetParent", { value: document.body });
-        expect(TabNavigation.isFocusableElement(element)).toBeTruthy();
+        expect(isFocusableElement(element)).toBeTruthy();
     });
 
     test("Should recognize fluent-text-field as focusable", () => {
         const element = document.createElement("fluent-text-field");
         Object.defineProperty(element, "offsetParent", { value: document.body });
-        expect(TabNavigation.isFocusableElement(element)).toBeTruthy();
+        expect(isFocusableElement(element)).toBeTruthy();
     });
 
     test("Should handle disabled fluent components", () => {
         const element = document.createElement("fluent-button");
         element.setAttribute("disabled", "true");
-        expect(TabNavigation.isFocusableElement(element)).toBeFalsy();
+        expect(isFocusableElement(element)).toBeFalsy();
     });
 });
 
 describe("TabNavigation initialization", () => {
     test("Should initialize without errors", () => {
-        expect(() => TabNavigation.initialize()).not.toThrow();
+        expect(() => initDialogTabNav()).not.toThrow();
     });
 });
 
@@ -183,48 +183,48 @@ describe("TabNavigation edge cases", () => {
         element.setAttribute("contenteditable", "true");
         element.tabIndex = 0; // contenteditable elements need explicit tabindex
         Object.defineProperty(element, "offsetParent", { value: document.body });
-        expect(TabNavigation.isFocusableElement(element)).toBeTruthy();
+        expect(isFocusableElement(element)).toBeTruthy();
     });
 
     test("Should reject contenteditable=false elements", () => {
         const element = document.createElement("div");
         element.setAttribute("contenteditable", "false");
         Object.defineProperty(element, "offsetParent", { value: document.body });
-        expect(TabNavigation.isFocusableElement(element)).toBeFalsy();
+        expect(isFocusableElement(element)).toBeFalsy();
     });
 
     test("Should handle anchor tags without href", () => {
         const element = document.createElement("a");
         Object.defineProperty(element, "offsetParent", { value: document.body });
-        expect(TabNavigation.isFocusableElement(element)).toBeFalsy();
+        expect(isFocusableElement(element)).toBeFalsy();
     });
 
     test("Should handle details elements", () => {
         const element = document.createElement("details");
         element.tabIndex = 0; // details elements might need explicit tabindex in JSDOM
         Object.defineProperty(element, "offsetParent", { value: document.body });
-        expect(TabNavigation.isFocusableElement(element)).toBeTruthy();
+        expect(isFocusableElement(element)).toBeTruthy();
     });
 
     test("Should handle elements with tabindex 1", () => {
         const element = document.createElement("div");
         element.tabIndex = 1;
         Object.defineProperty(element, "offsetParent", { value: document.body });
-        expect(TabNavigation.isFocusableElement(element)).toBeTruthy();
+        expect(isFocusableElement(element)).toBeTruthy();
     });
 
     test("Should handle elements with explicit tabindex=0", () => {
         const element = document.createElement("span");
         element.setAttribute("tabindex", "0");
         Object.defineProperty(element, "offsetParent", { value: document.body });
-        expect(TabNavigation.isFocusableElement(element)).toBeTruthy();
+        expect(isFocusableElement(element)).toBeTruthy();
     });
 
     test("Should handle elements with explicit negative tabindex", () => {
         const element = document.createElement("span");
         element.setAttribute("tabindex", "-1");
         Object.defineProperty(element, "offsetParent", { value: document.body });
-        expect(TabNavigation.isFocusableElement(element)).toBeFalsy();
+        expect(isFocusableElement(element)).toBeFalsy();
     });
 });
 
@@ -258,7 +258,7 @@ describe("TabNavigation comprehensive selector test", () => {
             }
         });
 
-        const result = TabNavigation.findTabStops(container);
+        const result = findTabStops(container);
 
         // Should find: a, button, input, textarea, select, details, div[tabindex="0"],
         // div[contenteditable], fluent-button, fluent-radio, fluent-checkbox, fluent-text-field
