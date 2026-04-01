@@ -2,7 +2,7 @@
  * Settings dialog: theme picker, telemetry toggle, privacy link.
  */
 
-import { diagnostics } from "../../Diag";
+import { diagnostics } from "../../services/Diagnostics";
 import { el } from "../rendering/dom";
 import { AppState } from "../state/AppState";
 import { ThemeMode } from "../state/ThemeManager";

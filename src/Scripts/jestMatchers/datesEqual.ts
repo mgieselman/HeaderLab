@@ -1,7 +1,7 @@
 import { expect } from "@jest/globals";
 import type { MatcherFunction } from "expect";
 
-import { DateWithNum } from "../DateWithNum";
+import { DateWithNum } from "../core/DateWithNum";
 import { ReceivedRow } from "../row/ReceivedRow";
 
 export const datesEqual: MatcherFunction<[expected: DateWithNum]> =

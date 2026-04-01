@@ -1,19 +1,19 @@
-import { labels } from "../labels";
 import { ReceivedField } from "./ReceivedField";
+import { receivedLabels } from "../core/labels";
 
 export class ReceivedRow {
     constructor(receivedHeader: string | null) {
         this.sourceHeader = new ReceivedField("", receivedHeader);
-        this.hop = new ReceivedField(labels.receivedHop);
-        this.from = new ReceivedField(labels.receivedFrom);
-        this.by = new ReceivedField(labels.receivedBy);
-        this.with = new ReceivedField(labels.receivedWith);
-        this.id = new ReceivedField(labels.receivedId);
-        this.for = new ReceivedField(labels.receivedFor);
-        this.via = new ReceivedField(labels.receivedVia);
-        this.date = new ReceivedField(labels.receivedDate);
-        this.delay = new ReceivedField(labels.receivedDelay);
-        this.percent = new ReceivedField(labels.receivedPercent, 0);
+        this.hop = new ReceivedField(receivedLabels.receivedHop);
+        this.from = new ReceivedField(receivedLabels.receivedFrom);
+        this.by = new ReceivedField(receivedLabels.receivedBy);
+        this.with = new ReceivedField(receivedLabels.receivedWith);
+        this.id = new ReceivedField(receivedLabels.receivedId);
+        this.for = new ReceivedField(receivedLabels.receivedFor);
+        this.via = new ReceivedField(receivedLabels.receivedVia);
+        this.date = new ReceivedField(receivedLabels.receivedDate);
+        this.delay = new ReceivedField(receivedLabels.receivedDelay);
+        this.percent = new ReceivedField(receivedLabels.receivedPercent, 0);
         this.delaySort = new ReceivedField("", -1);
         this.dateNum = new ReceivedField("");
     }

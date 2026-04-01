@@ -1,5 +1,5 @@
 ﻿import { DataTable } from "./DataTable";
-import { labels } from "../labels";
+import { otherLabels } from "../core/labels";
 import { Header } from "../row/Header";
 import { OtherRow } from "../row/OtherRow";
 
@@ -8,7 +8,7 @@ export class Other extends DataTable {
     protected sortColumnInternal = "number";
     protected sortOrderInternal = 1;
     public readonly tableName: string = "otherHeaders";
-    public readonly displayName: string = labels.otherHeaders;
+    public readonly displayName: string = otherLabels.otherHeaders;
 
     public get rows(): OtherRow[] { return this.otherRows; }
 

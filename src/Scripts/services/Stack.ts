@@ -1,9 +1,9 @@
 import { StackFrame, StackTraceOptions } from "stacktrace-js";
 import * as stackTrace from "stacktrace-js";
 
-import { diagnostics } from "./Diag";
+import { diagnostics } from "./Diagnostics";
 import { Errors } from "./Errors";
-import { Strings } from "./Strings";
+import { Strings } from "../core/Strings";
 
 export class Stack {
     public static options: StackTraceOptions = {offline: false, filter: Stack.filterStack};
@@ -12,7 +12,7 @@ export class Stack {
     private static filterStack(item: StackFrame):boolean {
         if (!item.fileName) return true;
         if (item.fileName.indexOf("stacktrace") !== -1) return false; // remove stacktrace.js frames
-        if (item.fileName.indexOf("stacks.ts") !== -1) return false; // remove stacks.ts frames
+        if (item.fileName.indexOf("Stack.ts") !== -1) return false; // remove Stack.ts frames
         //if (item.functionName === "ShowError") return false;
         //if (item.functionName === "showError") return false;
         //if (item.functionName === "Errors.log") return false; // Logs with Errors.log in them usually have location where it was called from - keep those

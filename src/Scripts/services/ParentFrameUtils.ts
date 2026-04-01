@@ -1,5 +1,5 @@
-import { diagnostics } from "../Diag";
-import { Errors } from "../Errors";
+import { diagnostics } from "./Diagnostics";
+import { Errors } from "./Errors";
 
 /**
  * Utility functions extracted from ParentFrame for better testability

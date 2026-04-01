@@ -4,7 +4,7 @@
  */
 
 import { HeaderSection, IValidationRule } from "./interfaces";
-import { HeaderModel } from "../../HeaderModel";
+import { HeaderModel } from "../../model/HeaderModel";
 
 /**
  * Grouped rule violations for better UI organization

@@ -1,20 +1,20 @@
-import { labels } from "../labels";
-import { Strings } from "../Strings";
 import { Header } from "./Header";
 import { Row } from "./Row";
+import { antispamLabels } from "../core/labels";
+import { Strings } from "../core/Strings";
 import { SummaryTable } from "../table/SummaryTable";
 
 export class AntiSpamReport extends SummaryTable {
     public readonly tableName: string = "antiSpamReport";
-    public readonly displayName: string = labels.antiSpamReport;
+    public readonly displayName: string = antispamLabels.antiSpamReport;
     public readonly tag: string = "AS";
     private sourceInternal = "";
     private unparsedInternal = "";
     private antiSpamRows: Row[] = [
-        new Row("BCL", labels.bcl, "X-Microsoft-Antispam"),
-        new Row("PCL", labels.pcl, "X-Microsoft-Antispam"),
-        new Row("source", labels.source, "X-Microsoft-Antispam"),
-        new Row("unparsed", labels.unparsed, "X-Microsoft-Antispam")
+        new Row("BCL", antispamLabels.bcl, "X-Microsoft-Antispam"),
+        new Row("PCL", antispamLabels.pcl, "X-Microsoft-Antispam"),
+        new Row("source", antispamLabels.source, "X-Microsoft-Antispam"),
+        new Row("unparsed", antispamLabels.unparsed, "X-Microsoft-Antispam")
     ];
 
     public get rows(): Row[] { return this.antiSpamRows; }

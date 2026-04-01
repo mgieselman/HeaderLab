@@ -1,7 +1,7 @@
 import { DataTable } from "./DataTable";
-import { Dates } from "../Dates";
-import { DateWithNum } from "../DateWithNum";
-import { labels } from "../labels";
+import { Dates } from "../core/Dates";
+import { DateWithNum } from "../core/DateWithNum";
+import { receivedLabels, timeLabels } from "../core/labels";
 import { Header } from "../row/Header";
 import { Match } from "../row/Match";
 import { ReceivedRow } from "../row/ReceivedRow";
@@ -11,7 +11,7 @@ export class Received extends DataTable {
     protected sortColumnInternal = "hop";
     protected sortOrderInternal = 1;
     public readonly tableName: string = "receivedHeaders";
-    public readonly displayName: string = labels.receivedHeaders;
+    public readonly displayName: string = receivedLabels.receivedHeaders;
 
     // Builds array of values for each header in receivedHeaderNames.
     // This algorithm should work regardless of the order of the headers, given:
@@ -157,11 +157,11 @@ export class Received extends DataTable {
         let printedMinutes = false;
 
         if (Math.abs(diff) < 1000) {
-            return "0 " + labels.seconds;
+            return "0 " + timeLabels.seconds;
         }
 
         if (diff < 0) {
-            time.push(labels.negative);
+            time.push(timeLabels.negative);
             diff = -diff;
         }
 
@@ -169,9 +169,9 @@ export class Received extends DataTable {
             iDelay = Math.floor(diff / 1000 / 60);
             time.push(iDelay.toString(), " ");
             if (iDelay === 1) {
-                time.push(labels.minute);
+                time.push(timeLabels.minute);
             } else {
-                time.push(labels.minutes);
+                time.push(timeLabels.minutes);
             }
 
             diff -= iDelay * 1000 * 60;
@@ -186,9 +186,9 @@ export class Received extends DataTable {
             iDelay = Math.floor(diff / 1000);
             time.push(iDelay.toString(), " ");
             if (iDelay === 1) {
-                time.push(labels.second);
+                time.push(timeLabels.second);
             } else {
-                time.push(labels.seconds);
+                time.push(timeLabels.seconds);
             }
         }
 

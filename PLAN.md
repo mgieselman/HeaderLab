@@ -154,31 +154,27 @@ Evaluate the existing architecture, design patterns, and technology choices acro
 - Use `webpack-bundle-analyzer` output or `size-limit` to track bundle size in CI.
 - Risk: none. Effort: small.
 
-### 2.5 Priority & Sequencing
+### 2.5 Completion Status
 
-**Must complete before Phase 3 (new UI):**
-| # | Proposal | Impact | Effort | Risk |
-|---|----------|--------|--------|------|
-| H | Remove unused dependencies | High | Trivial | Low |
-| G | Add tsc --noEmit CI step | Medium | Trivial | None |
-| A | Flatten Row hierarchy | Medium | Small | Low |
-| B | Extract DOM from ViolationUtils | Medium | Small | Low |
-| C | Simplify rule loading | Low | Small | Low |
+**Completed:**
+| # | Proposal | Status |
+|---|----------|--------|
+| F | Remove dead lint pattern | Done |
+| H | Remove unused dependencies | Done |
+| A | Flatten Row hierarchy | Done — SummaryRow takes options, ArchivedRow/CreationRow deleted |
+| B | Extract DOM from ViolationUtils | Done — highlightHtml moved to ViolationDom.ts |
+| C | Simplify rule loading | Done — async cached function, callback pattern removed |
+| E | Group labels by section | Done — 6 typed groups with `as const` |
+| G | Add tsc --noEmit CI step | Done — added to jest.yml workflow |
 
-**Can happen in parallel with or after Phase 3:**
+**Remaining:**
 | # | Proposal | Impact | Effort | Risk |
 |---|----------|--------|--------|------|
 | D | Make Diag/Errors injectable | Medium | Medium | Medium |
-| E | Group labels by section | Low | Small | Low |
 | I | Raise coverage thresholds | Low | Trivial | None |
 | J | Add bundle size tracking | Low | Small | None |
 
-**Deferred until after Phase 3 UI framework choice:**
-| # | Proposal | Impact | Effort | Risk |
-|---|----------|--------|--------|------|
-| — | Migrate webpack → Vite | High | Medium | Medium |
-| — | Migrate Jest → Vitest | Medium | Low | Low |
-| — | ESM-only output | Low | Low | Medium |
+Proposals D, I, and J should be done before or alongside Phase 4. Bundler migration (Vite) and test migration (Vitest) are now in Phase 4.
 
 ## Phase 3: Build the New UI
 
@@ -341,3 +337,104 @@ Evaluate the existing architecture, design patterns, and technology choices acro
 - Application Insights integration for page views, errors, and key events
 - Respects user opt-out preference
 - No telemetry on localhost/dev
+
+### 3.14 Tech Stack Decisions
+
+Recommendations from the standard Outlook add-in tech stack that were evaluated and intentionally **not adopted**:
+
+- **React / Fluent UI React v9**: HeaderLab is a focused single-purpose tool — vanilla TS + CSS custom properties keeps the bundle small and avoids framework churn. Fluent UI React is better suited for complex multi-page Office integrations built by larger teams.
+- **TanStack Query / State management library**: HeaderLab's data flow is synchronous parse-and-display. The existing `AppState` observer pattern is sufficient.
+- **Backend / Azure Functions**: HeaderLab is entirely client-side — headers are parsed locally with no server round-trips.
+
+## Phase 4: Modern Tooling & Manifest Migration
+
+Migrate from legacy Office Add-in tooling to the current Microsoft-recommended stack. This phase can begin after Phase 3 UI is functional.
+
+### 4.1 Unified Manifest (XML → JSON)
+
+**4.1.1 Convert Manifest.xml to unified JSON manifest**
+- Create `manifest.json` (unified format) replacing `Manifest.xml`
+- Map all existing XML manifest properties: permissions, form factors, URLs, icon references, SSO scopes
+- The unified manifest uses the same JSON schema as Teams and Copilot extensions — enables future cross-platform distribution
+
+**4.1.2 Convert debug manifests**
+- Replace `ManifestDebugLocal.xml` and `ManifestDebugServer.xml` with environment-specific overrides or a single debug configuration in the unified format
+- Update `npm start` / `npm run start:desktop` scripts to reference the new manifest
+
+**4.1.3 Remove XML manifests**
+- Delete `Manifest.xml`, `ManifestDebugLocal.xml`, `ManifestDebugServer.xml`
+- Remove `office-addin-manifest` devDependency and the `validate` script (unified manifest validation is handled by the Agents Toolkit)
+
+### 4.2 Dev Tooling Migration
+
+**4.2.1 Replace office-addin-* packages with M365 Agents Toolkit**
+- Remove devDependencies: `office-addin-debugging`, `office-addin-dev-certs`, `office-addin-dev-settings`, `office-addin-manifest`
+- Install and configure the Microsoft 365 Agents Toolkit (VS Code extension + CLI) for sideloading, debugging, and certificate management
+- Update `start`, `start:desktop`, and `stop` npm scripts to use the new toolkit commands
+
+**4.2.2 Update VS Code workspace configuration**
+- Add recommended extensions: M365 Agents Toolkit, Office Add-in Debugger
+- Add launch configurations for debugging the WebView2 instance
+
+### 4.3 Migrate Webpack → Vite
+
+**4.3.1 Create Vite config**
+- Replace `webpack.config.js` with `vite.config.ts`
+- Migrate DefinePlugin globals (`__AIKEY__`, `__BUILDTIME__`, `__VERSION__`, `__NAACLIENTID__`) to Vite's `define` option
+- Migrate HtmlWebpackPlugin page definitions to Vite's `rollupOptions.input` (multi-page app)
+- Migrate CopyWebpackPlugin to `vite-plugin-static-copy` or Vite's `public/` directory
+- Configure CSS extraction (replaces MiniCssExtractPlugin)
+
+**4.3.2 Verify Office.js compatibility**
+- Office.js expects specific script loading patterns — test that Vite's ESM dev server and production build both work in the Outlook WebView2 host
+- Test sideloading in Outlook desktop (Windows/Mac) and Outlook on the web
+- If Office.js requires a global script tag, configure Vite to inject it via `transformIndexHtml` plugin
+
+**4.3.3 Remove Webpack**
+- Remove devDependencies: `webpack`, `webpack-cli`, `webpack-dev-server`, `webpack-bundle-analyzer`, `ts-loader`, `fork-ts-checker-webpack-plugin`, `css-loader`, `style-loader`, `mini-css-extract-plugin`, `copy-webpack-plugin`, `html-webpack-plugin`, `exports-loader`, `source-map-loader`
+- Delete `webpack.config.js`
+- Update npm scripts: `build`, `build:dev`, `build:analyze`, `serve`, `watch`
+
+### 4.4 Migrate Jest → Vitest
+
+**4.4.1 Replace Jest with Vitest**
+- Remove devDependencies: `jest`, `jest-environment-jsdom`, `jest-html-reporters`, `ts-jest`, `@jest/globals`, `@types/jest`
+- Install `vitest` and `@vitest/coverage-v8`
+- Create `vitest.config.ts` (or merge into `vite.config.ts`)
+- Configure jsdom environment for DOM tests
+- Update test scripts in `package.json`
+
+**4.4.2 Update test files**
+- Replace `@jest/globals` imports with `vitest` imports (`describe`, `it`, `expect`)
+- Replace any Jest-specific matchers with Vitest equivalents
+- Remove `ts-jest` transform workarounds (Vitest handles ESM natively)
+
+### 4.5 TypeScript Config Updates
+
+**4.5.1 Modernize tsconfig.json**
+- Change `moduleResolution` from `"node"` to `"bundler"` (aligns with Vite)
+- Re-evaluate `useDefineForClassFields: false` — this was set for Lit compatibility, which is no longer relevant after Phase 0. Set to `true` if no Office.js conflicts
+- Consider adding `"verbatimModuleSyntax": true` for stricter import/export handling
+
+### 4.6 Prerequisite: Remaining Phase 2 Proposals
+
+Complete these before starting Phase 4 migrations:
+
+| # | Proposal | Effort | Why before Phase 4 |
+|---|----------|--------|-------------------|
+| D | Make Diag/Errors injectable | Medium | Singleton removal is easier before bundler migration changes import resolution |
+| I | Raise coverage thresholds | Trivial | Set baselines before test framework migration changes coverage tooling |
+| J | Add bundle size tracking | Small | Establish size baseline with webpack before migrating to Vite |
+
+### 4.7 Execution Order
+
+| Step | Depends on | Risk | Notes |
+|------|-----------|------|-------|
+| 2D | — | Medium | Do first — touches many files, easier to review in isolation |
+| 2I | — | None | Quick win — raise thresholds to match actual coverage |
+| 2J | — | None | Capture webpack bundle size as migration baseline |
+| 4.1 | 2D, 2I, 2J | Medium | Manifest format differences may require iteration |
+| 4.2 | 4.1 | Low | Swap tooling, update scripts |
+| 4.5 | 4.1 | Low | tsconfig changes needed before Vite migration |
+| 4.3 | 4.2, 4.5 | Medium | Office.js compatibility must be verified in WebView2 |
+| 4.4 | 4.3 | Low | Straightforward — Vitest is API-compatible with Jest |

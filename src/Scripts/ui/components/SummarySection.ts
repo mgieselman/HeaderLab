@@ -3,9 +3,9 @@
  */
 
 import { violationBadge } from "./ViolationBadge";
+import { Summary } from "../../model/Summary";
 import { ViolationGroup } from "../../rules/types/AnalysisTypes";
 import { getViolationsForRow } from "../../rules/ViolationUtils";
-import { Summary } from "../../Summary";
 import { clear, el } from "../rendering/dom";
 
 export function renderSummary(container: HTMLElement, summary: Summary, totalTime: string, violationGroups: ViolationGroup[]): void {

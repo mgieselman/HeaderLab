@@ -30,4 +30,5 @@ jobs:
           MHA_NAA_CLIENT_ID: ''
         run: |
           npm ci
+          npx tsc --noEmit
           npm test

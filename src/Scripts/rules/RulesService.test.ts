@@ -1,56 +1,40 @@
-import { HeaderModel } from "../HeaderModel";
-import { getRules, resetRulesState, ruleStore } from "./loaders/GetRules";
+import { HeaderModel } from "../model/HeaderModel";
+import { getRules, resetRulesState, RuleStore } from "./loaders/getRules";
 import { rulesService } from "./RulesService";
 
 // Mock the getRules function
-jest.mock("./loaders/GetRules", () => {
-    const actualModule = jest.requireActual("./loaders/GetRules");
+jest.mock("./loaders/getRules", () => {
+    const actualModule = jest.requireActual("./loaders/getRules");
     return {
         ...actualModule,
         getRules: jest.fn()
     };
 });
 
+const emptyRules: RuleStore = { simpleRuleSet: [], andRuleSet: [] };
+
 describe("RulesService", () => {
     beforeEach(() => {
-        // Reset mocks before each test - use mockReset to clear implementations too
-        const getMockedGetRules = getRules as jest.MockedFunction<typeof getRules>;
-        getMockedGetRules.mockReset();
-
-        // Set up a default mock implementation
-        getMockedGetRules.mockImplementation((callback) => {
-            if (callback) callback();
-            return Promise.resolve();
-        });
-
-        // Reset the RulesService singleton state
+        const mockedGetRules = getRules as jest.MockedFunction<typeof getRules>;
+        mockedGetRules.mockReset();
+        mockedGetRules.mockResolvedValue(emptyRules);
         rulesService.resetForTesting();
-
         resetRulesState();
     });
 
     describe("rule loading", () => {
         test("should load rules on first call", async () => {
-            const getMockedGetRules = getRules as jest.MockedFunction<typeof getRules>;
-            getMockedGetRules.mockImplementation((callback) => {
-                if (callback) callback();
-                return Promise.resolve();
-            });
-
+            const mockedGetRules = getRules as jest.MockedFunction<typeof getRules>;
             const headerModel = await HeaderModel.create();
 
             const result = await rulesService.analyzeHeaders(headerModel);
 
-            expect(getMockedGetRules).toHaveBeenCalled();
+            expect(mockedGetRules).toHaveBeenCalled();
             expect(result.success).toBe(true);
         });
 
         test("should only call getRules once for multiple analyses (memoization)", async () => {
-            const getMockedGetRules = getRules as jest.MockedFunction<typeof getRules>;
-            getMockedGetRules.mockImplementation((callback) => {
-                if (callback) callback();
-                return Promise.resolve();
-            });
+            const mockedGetRules = getRules as jest.MockedFunction<typeof getRules>;
 
             const headerModel1 = await HeaderModel.create();
             const headerModel2 = await HeaderModel.create();
@@ -58,17 +42,10 @@ describe("RulesService", () => {
             await rulesService.analyzeHeaders(headerModel1);
             await rulesService.analyzeHeaders(headerModel2);
 
-            // getRules should only be called once (memoized)
-            expect(getMockedGetRules).toHaveBeenCalledTimes(1);
+            expect(mockedGetRules).toHaveBeenCalledTimes(1);
         });
 
         test("should return success with empty violations when no rules", async () => {
-            const getMockedGetRules = getRules as jest.MockedFunction<typeof getRules>;
-            getMockedGetRules.mockImplementation((callback) => {
-                if (callback) callback();
-                return Promise.resolve();
-            });
-
             const headerModel = await HeaderModel.create();
 
             const result = await rulesService.analyzeHeaders(headerModel);
@@ -82,26 +59,24 @@ describe("RulesService", () => {
 
     describe("simple rule processing", () => {
         test("should process simple rules and find violations", async () => {
-            const getMockedGetRules = getRules as jest.MockedFunction<typeof getRules>;
-            getMockedGetRules.mockImplementation((callback) => {
-                // Set up simple rule
-                /* eslint-disable @typescript-eslint/naming-convention */
-                ruleStore.simpleRuleSet = [
+            const mockedGetRules = getRules as jest.MockedFunction<typeof getRules>;
+            /* eslint-disable @typescript-eslint/naming-convention */
+            mockedGetRules.mockResolvedValue({
+                simpleRuleSet: [
                     {
                         RuleType: "SimpleRule",
                         SectionToCheck: "Subject",
-                        PatternToCheckFor: "urgent",  // Pattern matches lowercase
+                        PatternToCheckFor: "urgent",
                         MessageWhenPatternFails: "Urgent keyword detected",
                         SectionsInHeaderToShowError: ["Subject"],
                         Severity: "warning"
                     }
-                ];
-                /* eslint-enable @typescript-eslint/naming-convention */
-                if (callback) callback();
-                return Promise.resolve();
+                ],
+                andRuleSet: []
             });
+            /* eslint-enable @typescript-eslint/naming-convention */
 
-            const headerModel = await HeaderModel.create("Subject: urgent: Please respond\r\n"); // lowercase to match
+            const headerModel = await HeaderModel.create("Subject: urgent: Please respond\r\n");
 
             const result = await rulesService.analyzeHeaders(headerModel);
 
@@ -111,10 +86,10 @@ describe("RulesService", () => {
         });
 
         test("should not find violations when patterns don't match", async () => {
-            const getMockedGetRules = getRules as jest.MockedFunction<typeof getRules>;
-            getMockedGetRules.mockImplementation((callback) => {
-                /* eslint-disable @typescript-eslint/naming-convention */
-                ruleStore.simpleRuleSet = [
+            const mockedGetRules = getRules as jest.MockedFunction<typeof getRules>;
+            /* eslint-disable @typescript-eslint/naming-convention */
+            mockedGetRules.mockResolvedValue({
+                simpleRuleSet: [
                     {
                         RuleType: "SimpleRule",
                         SectionToCheck: "Subject",
@@ -123,11 +98,10 @@ describe("RulesService", () => {
                         SectionsInHeaderToShowError: ["Subject"],
                         Severity: "error"
                     }
-                ];
-                /* eslint-enable @typescript-eslint/naming-convention */
-                if (callback) callback();
-                return Promise.resolve();
+                ],
+                andRuleSet: []
             });
+            /* eslint-enable @typescript-eslint/naming-convention */
 
             const headerModel = await HeaderModel.create("Subject: Clean email\r\n");
 
@@ -138,10 +112,10 @@ describe("RulesService", () => {
         });
 
         test("should detect missing headers", async () => {
-            const getMockedGetRules = getRules as jest.MockedFunction<typeof getRules>;
-            getMockedGetRules.mockImplementation((callback) => {
-                /* eslint-disable @typescript-eslint/naming-convention */
-                ruleStore.simpleRuleSet = [
+            const mockedGetRules = getRules as jest.MockedFunction<typeof getRules>;
+            /* eslint-disable @typescript-eslint/naming-convention */
+            mockedGetRules.mockResolvedValue({
+                simpleRuleSet: [
                     {
                         RuleType: "HeaderMissingRule",
                         SectionToCheck: "X-Forefront-Antispam-Report",
@@ -149,29 +123,26 @@ describe("RulesService", () => {
                         SectionsInHeaderToShowError: ["X-Forefront-Antispam-Report"],
                         Severity: "error"
                     }
-                ];
-                /* eslint-enable @typescript-eslint/naming-convention */
-                if (callback) callback();
-                return Promise.resolve();
+                ],
+                andRuleSet: []
             });
+            /* eslint-enable @typescript-eslint/naming-convention */
 
             const headerModel = await HeaderModel.create("Subject: Test\r\n");
 
             const result = await rulesService.analyzeHeaders(headerModel);
 
             expect(result.success).toBe(true);
-            // Missing header rules might not create violations in the same way
-            // but the analysis should complete successfully
         });
     });
 
     describe("AND rule processing", () => {
         test("should process AND rules when all conditions met", async () => {
-            const getMockedGetRules = getRules as jest.MockedFunction<typeof getRules>;
-            getMockedGetRules.mockImplementation((callback) => {
-                /* eslint-disable @typescript-eslint/naming-convention */
-                ruleStore.simpleRuleSet = [];
-                ruleStore.andRuleSet = [
+            const mockedGetRules = getRules as jest.MockedFunction<typeof getRules>;
+            /* eslint-disable @typescript-eslint/naming-convention */
+            mockedGetRules.mockResolvedValue({
+                simpleRuleSet: [],
+                andRuleSet: [
                     {
                         Message: "Spam sent to inbox",
                         SectionsInHeaderToShowError: ["SFV"],
@@ -195,11 +166,9 @@ describe("RulesService", () => {
                             }
                         ]
                     }
-                ];
-                /* eslint-enable @typescript-eslint/naming-convention */
-                if (callback) callback();
-                return Promise.resolve();
+                ]
             });
+            /* eslint-enable @typescript-eslint/naming-convention */
 
             const headers =
                 "X-Forefront-Antispam-Report: SFV:SPM;CIP:1.2.3.4\r\n" +
@@ -212,7 +181,6 @@ describe("RulesService", () => {
             expect(result.success).toBe(true);
             expect(result.violations.length).toBeGreaterThan(0);
 
-            // Check that violations have parent AND rule context
             const hasParentMessage = result.violations.some(v => v.parentMessage === "Spam sent to inbox");
             expect(hasParentMessage).toBe(true);
         });
@@ -220,10 +188,10 @@ describe("RulesService", () => {
 
     describe("violation grouping", () => {
         test("should group violations by rule message", async () => {
-            const getMockedGetRules = getRules as jest.MockedFunction<typeof getRules>;
-            getMockedGetRules.mockImplementation((callback) => {
-                /* eslint-disable @typescript-eslint/naming-convention */
-                ruleStore.simpleRuleSet = [
+            const mockedGetRules = getRules as jest.MockedFunction<typeof getRules>;
+            /* eslint-disable @typescript-eslint/naming-convention */
+            mockedGetRules.mockResolvedValue({
+                simpleRuleSet: [
                     {
                         RuleType: "SimpleRule",
                         SectionToCheck: "From",
@@ -232,11 +200,10 @@ describe("RulesService", () => {
                         SectionsInHeaderToShowError: ["From", "To"],
                         Severity: "error"
                     }
-                ];
-                /* eslint-enable @typescript-eslint/naming-convention */
-                if (callback) callback();
-                return Promise.resolve();
+                ],
+                andRuleSet: []
             });
+            /* eslint-enable @typescript-eslint/naming-convention */
 
             const headerModel = await HeaderModel.create("From: test@example.com\r\nTo: recipient@test.com\r\n");
 
@@ -244,17 +211,16 @@ describe("RulesService", () => {
 
             expect(result.success).toBe(true);
             if (result.violations.length > 0) {
-                // All violations with same rule should be in same group
                 const groups = result.violationGroups.filter(g => g.displayName === "Test pattern");
                 expect(groups.length).toBeLessThanOrEqual(1);
             }
         });
 
         test("should preserve violation severity levels", async () => {
-            const getMockedGetRules = getRules as jest.MockedFunction<typeof getRules>;
-            getMockedGetRules.mockImplementation((callback) => {
-                /* eslint-disable @typescript-eslint/naming-convention */
-                ruleStore.simpleRuleSet = [
+            const mockedGetRules = getRules as jest.MockedFunction<typeof getRules>;
+            /* eslint-disable @typescript-eslint/naming-convention */
+            mockedGetRules.mockResolvedValue({
+                simpleRuleSet: [
                     {
                         RuleType: "SimpleRule",
                         SectionToCheck: "Subject",
@@ -271,11 +237,10 @@ describe("RulesService", () => {
                         SectionsInHeaderToShowError: ["Subject"],
                         Severity: "warning"
                     }
-                ];
-                /* eslint-enable @typescript-eslint/naming-convention */
-                if (callback) callback();
-                return Promise.resolve();
+                ],
+                andRuleSet: []
             });
+            /* eslint-enable @typescript-eslint/naming-convention */
 
             const headerModel = await HeaderModel.create("Subject: error warning\r\n");
 
@@ -293,13 +258,10 @@ describe("RulesService", () => {
 
     describe("error handling", () => {
         test("should handle getRules errors gracefully", async () => {
-            // Suppress expected console.error output in this test
             const consoleErrorSpy = jest.spyOn(console, "error").mockImplementation(() => { });
 
-            const getMockedGetRules = getRules as jest.MockedFunction<typeof getRules>;
-            getMockedGetRules.mockImplementation(() => {
-                throw new Error("Failed to load rules");
-            });
+            const mockedGetRules = getRules as jest.MockedFunction<typeof getRules>;
+            mockedGetRules.mockRejectedValue(new Error("Failed to load rules"));
 
             const headerModel = await HeaderModel.create();
 
@@ -315,64 +277,38 @@ describe("RulesService", () => {
         });
 
         test("should handle sections with malformed data", async () => {
-            const getMockedGetRules = getRules as jest.MockedFunction<typeof getRules>;
-            getMockedGetRules.mockImplementation((callback) => {
-                /* eslint-disable @typescript-eslint/naming-convention */
-                ruleStore.simpleRuleSet = [
-                    {
-                        RuleType: "SimpleRule",
-                        SectionToCheck: "Subject",
-                        PatternToCheckFor: "test",
-                        MessageWhenPatternFails: "Test error",
-                        SectionsInHeaderToShowError: ["Subject"],
-                        Severity: "error"
-                    }
-                ];
-                /* eslint-enable @typescript-eslint/naming-convention */
-                ruleStore.andRuleSet = [];
-                if (callback) callback();
-                return Promise.resolve();
-            });
-
             const headerModel = await HeaderModel.create();
-            // Add malformed items to sections (missing required properties)
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             (headerModel.summary.rows as any).push({ invalid: "data" });
 
             const result = await rulesService.analyzeHeaders(headerModel);
 
-            // Should still succeed despite malformed data
             expect(result.success).toBe(true);
         });
 
         test("should handle missing rule properties", async () => {
-            const getMockedGetRules = getRules as jest.MockedFunction<typeof getRules>;
-            getMockedGetRules.mockImplementation((callback) => {
-                /* eslint-disable @typescript-eslint/naming-convention */
-                // Create a rule with missing MessageWhenPatternFails
-                ruleStore.simpleRuleSet = [
+            const mockedGetRules = getRules as jest.MockedFunction<typeof getRules>;
+            /* eslint-disable @typescript-eslint/naming-convention */
+            mockedGetRules.mockResolvedValue({
+                simpleRuleSet: [
                     {
                         RuleType: "SimpleRule",
                         SectionToCheck: "Subject",
                         PatternToCheckFor: "test",
-                        MessageWhenPatternFails: "", // Empty message
+                        MessageWhenPatternFails: "",
                         SectionsInHeaderToShowError: ["Subject"],
                         Severity: "error"
                     }
-                ];
-                /* eslint-enable @typescript-eslint/naming-convention */
-                ruleStore.andRuleSet = [];
-                if (callback) callback();
-                return Promise.resolve();
+                ],
+                andRuleSet: []
             });
+            /* eslint-enable @typescript-eslint/naming-convention */
 
             const headerModel = await HeaderModel.create("Subject: test\r\n");
 
             const result = await rulesService.analyzeHeaders(headerModel);
 
-            // Should succeed but handle the empty message gracefully
             expect(result.success).toBe(true);
-            // Violations might still be created with empty messages
             if (result.violationGroups.length > 0) {
                 const group = result.violationGroups[0];
                 if (group) {
@@ -382,34 +318,29 @@ describe("RulesService", () => {
         });
 
         test("should handle errors during rule evaluation", async () => {
-            // Suppress expected console.error output in this test
             const consoleErrorSpy = jest.spyOn(console, "error").mockImplementation(() => { });
 
-            const getMockedGetRules = getRules as jest.MockedFunction<typeof getRules>;
-            getMockedGetRules.mockImplementation((callback) => {
-                // Create a rule that might cause evaluation issues
-                /* eslint-disable @typescript-eslint/naming-convention */
-                ruleStore.simpleRuleSet = [
+            const mockedGetRules = getRules as jest.MockedFunction<typeof getRules>;
+            /* eslint-disable @typescript-eslint/naming-convention */
+            mockedGetRules.mockResolvedValue({
+                simpleRuleSet: [
                     {
                         RuleType: "SimpleRule",
                         SectionToCheck: "Subject",
-                        PatternToCheckFor: "(?:invalid", // Potentially problematic pattern
+                        PatternToCheckFor: "(?:invalid",
                         MessageWhenPatternFails: "Test error",
                         SectionsInHeaderToShowError: ["Subject"],
                         Severity: "error"
                     }
-                ];
-                /* eslint-enable @typescript-eslint/naming-convention */
-                ruleStore.andRuleSet = [];
-                if (callback) callback();
-                return Promise.resolve();
+                ],
+                andRuleSet: []
             });
+            /* eslint-enable @typescript-eslint/naming-convention */
 
             const headerModel = await HeaderModel.create();
 
             const result = await rulesService.analyzeHeaders(headerModel);
 
-            // Should handle gracefully - either succeed with no violations or fail gracefully
             expect(result).toBeDefined();
             expect(result.violations).toBeInstanceOf(Array);
             expect(result.violationGroups).toBeInstanceOf(Array);
@@ -418,17 +349,13 @@ describe("RulesService", () => {
         });
 
         test("should handle concurrent analysis requests", async () => {
-            const getMockedGetRules = getRules as jest.MockedFunction<typeof getRules>;
+            const mockedGetRules = getRules as jest.MockedFunction<typeof getRules>;
             let callCount = 0;
-            getMockedGetRules.mockImplementation((callback) => {
+            mockedGetRules.mockImplementation(() => {
                 callCount++;
-                ruleStore.simpleRuleSet = [];
-                ruleStore.andRuleSet = [];
-                if (callback) callback();
-                return Promise.resolve();
+                return Promise.resolve(emptyRules);
             });
 
-            // Reset and run multiple analyses concurrently
             rulesService.resetForTesting();
 
             const headerModel1 = await HeaderModel.create();
@@ -441,23 +368,21 @@ describe("RulesService", () => {
                 rulesService.analyzeHeaders(headerModel3)
             ]);
 
-            // All should succeed
             expect(results).toHaveLength(3);
             results.forEach(result => {
                 expect(result.success).toBe(true);
             });
 
-            // getRules should only be called once due to memoization
             expect(callCount).toBe(1);
         });
     });
 
     describe("violation ordering", () => {
         test("should return violations in consistent order", async () => {
-            const getMockedGetRules = getRules as jest.MockedFunction<typeof getRules>;
-            getMockedGetRules.mockImplementation((callback) => {
-                /* eslint-disable @typescript-eslint/naming-convention */
-                ruleStore.simpleRuleSet = [
+            const mockedGetRules = getRules as jest.MockedFunction<typeof getRules>;
+            /* eslint-disable @typescript-eslint/naming-convention */
+            const rules: RuleStore = {
+                simpleRuleSet: [
                     {
                         RuleType: "SimpleRule",
                         SectionToCheck: "Subject",
@@ -482,21 +407,18 @@ describe("RulesService", () => {
                         SectionsInHeaderToShowError: ["Subject"],
                         Severity: "error"
                     }
-                ];
-                /* eslint-enable @typescript-eslint/naming-convention */
-                ruleStore.andRuleSet = [];
-                if (callback) callback();
-                return Promise.resolve();
-            });
+                ],
+                andRuleSet: []
+            };
+            /* eslint-enable @typescript-eslint/naming-convention */
+            mockedGetRules.mockResolvedValue(rules);
 
             const headerModel = await HeaderModel.create("Subject: rule1 rule2 rule3\r\n");
 
-            // Run analysis multiple times
             const result1 = await rulesService.analyzeHeaders(headerModel);
             rulesService.resetForTesting();
             const result2 = await rulesService.analyzeHeaders(headerModel);
 
-            // Violations should be in same order across runs
             expect(result1.violations.length).toBe(result2.violations.length);
             expect(result1.violations.length).toBeGreaterThan(0);
 
@@ -510,10 +432,10 @@ describe("RulesService", () => {
         });
 
         test("should order violation groups by severity (error > warning > info)", async () => {
-            const getMockedGetRules = getRules as jest.MockedFunction<typeof getRules>;
-            getMockedGetRules.mockImplementation((callback) => {
-                /* eslint-disable @typescript-eslint/naming-convention */
-                ruleStore.simpleRuleSet = [
+            const mockedGetRules = getRules as jest.MockedFunction<typeof getRules>;
+            /* eslint-disable @typescript-eslint/naming-convention */
+            mockedGetRules.mockResolvedValue({
+                simpleRuleSet: [
                     {
                         RuleType: "SimpleRule",
                         SectionToCheck: "Subject",
@@ -538,12 +460,10 @@ describe("RulesService", () => {
                         SectionsInHeaderToShowError: ["Subject"],
                         Severity: "warning"
                     }
-                ];
-                /* eslint-enable @typescript-eslint/naming-convention */
-                ruleStore.andRuleSet = [];
-                if (callback) callback();
-                return Promise.resolve();
+                ],
+                andRuleSet: []
             });
+            /* eslint-enable @typescript-eslint/naming-convention */
 
             const headerModel = await HeaderModel.create("Subject: error warning info\r\n");
 
@@ -551,7 +471,6 @@ describe("RulesService", () => {
 
             expect(result.violationGroups.length).toBe(3);
 
-            // Verify violations exist for all severities
             const errorGroup = result.violationGroups.find(g => g.severity === "error");
             const warningGroup = result.violationGroups.find(g => g.severity === "warning");
             const infoGroup = result.violationGroups.find(g => g.severity === "info");
@@ -559,17 +478,13 @@ describe("RulesService", () => {
             expect(errorGroup).toBeDefined();
             expect(warningGroup).toBeDefined();
             expect(infoGroup).toBeDefined();
-
-            // Note: Current implementation uses Map which maintains insertion order
-            // This test documents the current behavior - groups are in the order they're encountered
-            // If sorting by severity is required in the future, this test will catch the need
         });
 
         test("should maintain consistent violation order within same severity level", async () => {
-            const getMockedGetRules = getRules as jest.MockedFunction<typeof getRules>;
-            getMockedGetRules.mockImplementation((callback) => {
-                /* eslint-disable @typescript-eslint/naming-convention */
-                ruleStore.simpleRuleSet = [
+            const mockedGetRules = getRules as jest.MockedFunction<typeof getRules>;
+            /* eslint-disable @typescript-eslint/naming-convention */
+            mockedGetRules.mockResolvedValue({
+                simpleRuleSet: [
                     {
                         RuleType: "SimpleRule",
                         SectionToCheck: "Subject",
@@ -594,12 +509,10 @@ describe("RulesService", () => {
                         SectionsInHeaderToShowError: ["Subject"],
                         Severity: "warning"
                     }
-                ];
-                /* eslint-enable @typescript-eslint/naming-convention */
-                ruleStore.andRuleSet = [];
-                if (callback) callback();
-                return Promise.resolve();
+                ],
+                andRuleSet: []
             });
+            /* eslint-enable @typescript-eslint/naming-convention */
 
             const headerModel = await HeaderModel.create("Subject: alpha beta gamma\r\n");
 
@@ -607,34 +520,30 @@ describe("RulesService", () => {
 
             expect(result.violations.length).toBe(3);
 
-            // All violations should have the same severity
             const allSameSeverity = result.violations.every(v => v.rule.severity === "warning");
             expect(allSameSeverity).toBe(true);
 
-            // Order should be consistent (maintains insertion/encounter order)
             const messages = result.violations.map(v => v.rule.errorMessage);
             expect(messages).toEqual(["Alpha rule", "Beta rule", "Gamma rule"]);
         });
 
         test("should handle empty violations array", async () => {
-            const getMockedGetRules = getRules as jest.MockedFunction<typeof getRules>;
-            getMockedGetRules.mockImplementation((callback) => {
-                ruleStore.simpleRuleSet = [
+            const mockedGetRules = getRules as jest.MockedFunction<typeof getRules>;
+            /* eslint-disable @typescript-eslint/naming-convention */
+            mockedGetRules.mockResolvedValue({
+                simpleRuleSet: [
                     {
-                        /* eslint-disable @typescript-eslint/naming-convention */
                         RuleType: "SimpleRule",
                         SectionToCheck: "Subject",
                         PatternToCheckFor: "nonexistent",
                         MessageWhenPatternFails: "Not found",
                         SectionsInHeaderToShowError: ["Subject"],
                         Severity: "error"
-                        /* eslint-enable @typescript-eslint/naming-convention */
                     }
-                ];
-                ruleStore.andRuleSet = [];
-                if (callback) callback();
-                return Promise.resolve();
+                ],
+                andRuleSet: []
             });
+            /* eslint-enable @typescript-eslint/naming-convention */
 
             const headerModel = await HeaderModel.create("Subject: clean subject\r\n");
 
@@ -646,10 +555,10 @@ describe("RulesService", () => {
         });
 
         test("should preserve violation order across multiple header sections", async () => {
-            const getMockedGetRules = getRules as jest.MockedFunction<typeof getRules>;
-            getMockedGetRules.mockImplementation((callback) => {
-                /* eslint-disable @typescript-eslint/naming-convention */
-                ruleStore.simpleRuleSet = [
+            const mockedGetRules = getRules as jest.MockedFunction<typeof getRules>;
+            /* eslint-disable @typescript-eslint/naming-convention */
+            mockedGetRules.mockResolvedValue({
+                simpleRuleSet: [
                     {
                         RuleType: "SimpleRule",
                         SectionToCheck: "Subject",
@@ -666,22 +575,18 @@ describe("RulesService", () => {
                         SectionsInHeaderToShowError: ["From"],
                         Severity: "error"
                     }
-                ];
-                /* eslint-enable @typescript-eslint/naming-convention */
-                ruleStore.andRuleSet = [];
-                if (callback) callback();
-                return Promise.resolve();
+                ],
+                andRuleSet: []
             });
+            /* eslint-enable @typescript-eslint/naming-convention */
 
             const headerModel = await HeaderModel.create("Subject: test\r\nFrom: test@example.com\r\n");
 
             const result = await rulesService.analyzeHeaders(headerModel);
 
-            // Violations should be present for both sections
             expect(result.violations.length).toBeGreaterThan(0);
             expect(result.violationGroups.length).toBeGreaterThan(0);
 
-            // Each violation should have affected sections
             result.violations.forEach(violation => {
                 expect(violation.affectedSections).toBeDefined();
                 expect(violation.affectedSections.length).toBeGreaterThan(0);

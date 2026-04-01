@@ -1,5 +1,5 @@
-import { Strings } from "../Strings";
 import { Row } from "./Row";
+import { Strings } from "../core/Strings";
 
 export class OtherRow extends Row {
     constructor(number: number, header: string, value: string) {
