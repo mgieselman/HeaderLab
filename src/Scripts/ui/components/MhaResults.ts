@@ -1,5 +1,4 @@
-import { LitElement, css, html, nothing } from "lit";
-import { customElement, state } from "lit/decorators.js";
+import { LitElement, html, nothing } from "lit";
 import { unsafeHTML } from "lit/directives/unsafe-html.js";
 
 import { HeaderModel } from "../../HeaderModel";
@@ -13,14 +12,23 @@ import { escapeAndHighlight, getViolationsForRow } from "../../rules/ViolationUt
 /**
  * Main results component: renders tabbed header analysis output.
  * Replaces UnifiedRenderer + HTML templates with reactive Lit rendering.
+ *
+ * Note: decorators (@customElement, @state) are not used because ts-loader
+ * with transpileOnly strips them. Manual registration at bottom of file.
  */
-@customElement("mha-results")
 export class MhaResults extends LitElement {
-    @state() private activeTab = "summary-view";
-    @state() private viewModel: HeaderModel | null = null;
-    @state() private errorMessage = "";
-    @state() private showOriginalHeaders = false;
-    // Use native HTMLElement.hidden — no decorator needed
+    // Declare reactive state properties (replaces @state() decorators)
+    static override properties = {
+        activeTab: { state: true },
+        viewModel: { state: true },
+        errorMessage: { state: true },
+        showOriginalHeaders: { state: true },
+    };
+
+    private activeTab = "summary-view";
+    private viewModel: HeaderModel | null = null;
+    private errorMessage = "";
+    private showOriginalHeaders = false;
 
     // Opt out of shadow DOM so existing CSS applies
     protected override createRenderRoot(): HTMLElement {
@@ -381,10 +389,10 @@ export class MhaResults extends LitElement {
     private get arrowDownIcon() {
         return html`<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10 2.5a.5.5 0 01.5.5v11.8l3.64-3.65a.5.5 0 01.72.71l-4.5 4.5a.5.5 0 01-.72 0l-4.5-4.5a.5.5 0 01.72-.71l3.64 3.65V3a.5.5 0 01.5-.5z"/></svg>`;
     }
-
-    // Unused but declared to satisfy CSS
-    static override styles = css``;
 }
+
+// Manual custom element registration (ts-loader transpileOnly strips decorators)
+customElements.define("mha-results", MhaResults);
 
 declare global {
     interface HTMLElementTagNameMap {
