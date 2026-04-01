@@ -42,7 +42,7 @@ describe("GetRules", () => {
             const completionCallback = jest.fn();
             await getRules(completionCallback);
 
-            expect(mockFetch).toHaveBeenCalledWith("/Pages/data/rules.json");
+            expect(mockFetch).toHaveBeenCalledWith("/data/rules.json");
             expect(ruleStore.simpleRuleSet).toHaveLength(1);
             expect(ruleStore.simpleRuleSet[0]!.SectionToCheck).toBe("Subject");
             expect(completionCallback).toHaveBeenCalled();
@@ -178,7 +178,7 @@ describe("GetRules", () => {
 
             // Verify memoization: fetch called only once (not twice)
             expect(mockFetch).toHaveBeenCalledTimes(1);
-            expect(mockFetch).toHaveBeenCalledWith("/Pages/data/rules.json");
+            expect(mockFetch).toHaveBeenCalledWith("/data/rules.json");
 
             // Both callbacks should still be invoked (even on cached path)
             expect(callback1).toHaveBeenCalledTimes(1);
