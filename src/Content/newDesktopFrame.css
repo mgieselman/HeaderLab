@@ -318,58 +318,27 @@
     font-family: var(--font-family);
 }
 
-/* Desktop-specific overrides for violation card header */
-.violation-card-header {
-    align-items: flex-start;
-}
-
-.violation-message {
-    padding: 4px;
-}
-
-/* Inline mode - compact display for Summary headers */
-.violation-inline {
-    display: flex;
-    font-size: 0.75rem;
-    font-weight: 400;
-    margin-top: 4px;
-}
-
-/* Card mode - full display for popovers and accordions */
+/* Violation card layout overrides for desktop */
 .violation-card {
     display: flex;
     font-size: 0.75rem;
     font-weight: 400;
-    gap: 12px;
-    border-radius: 8px;
-    transition: all 0.2s ease;
+    gap: 8px;
     flex-direction: column;
-    border: 1px solid var(--border-light-gray);
+    transition: border-color var(--theme-transition-fast);
+    border: 1px solid var(--theme-border-subtle);
 }
 
 .violation-card:hover {
-    border-color: var(--border-gray);
+    border-color: var(--theme-border);
 }
 
 .violation-card:last-child {
     margin-bottom: 0;
 }
 
-/* Desktop-specific: show violation details in cards */
-.violation-card .violation-details {
-    display: block;
-    padding: 0px;
-}
-
-.diagnostic-content {
-    padding: 12px;
-    font-size: 13px;
-    line-height: 1.4;
-}
-
-.diagnostics-accordion {
-    border-radius: 6px;
-    border: 1px solid var(--border-gray);
+.violation-message {
+    padding: 4px;
 }
 
 .popover-row .cell-content-wrapper {
