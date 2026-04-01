@@ -100,11 +100,37 @@
     font-weight: 600;
 }
 
-/* Diagnostics accordion */
+/* Diagnostics accordion — override Fluent shadow DOM defaults */
 .diagnostics-accordion {
     border-radius: var(--theme-radius-md);
     border: 1px solid var(--theme-border);
     margin-top: 12px;
+    --neutral-fill-rest: var(--theme-surface);
+    --neutral-fill-stealth-rest: var(--theme-surface);
+    --neutral-foreground-rest: var(--theme-text);
+    --neutral-stroke-divider-rest: var(--theme-border);
+    --neutral-layer-1: var(--theme-surface);
+    --neutral-layer-2: var(--theme-bg-secondary);
+}
+
+fluent-accordion-item {
+    background: var(--theme-surface);
+    color: var(--theme-text);
+}
+
+fluent-accordion-item::part(heading) {
+    background: var(--theme-surface);
+    color: var(--theme-text);
+}
+
+fluent-accordion-item::part(button) {
+    color: var(--theme-text);
+    font-family: var(--theme-font-body);
+}
+
+fluent-accordion-item::part(region) {
+    background: var(--theme-bg-secondary);
+    color: var(--theme-text);
 }
 
 .diagnostic-content {
