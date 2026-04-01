@@ -34,7 +34,8 @@ provideFluentDesignSystem().register(
 );
 
 function getResults(): MhaResults | null {
-    return document.querySelector("mha-results") as MhaResults | null;
+    const el = document.querySelector("mha-results");
+    return el instanceof MhaResults ? el : null;
 }
 
 function showStatusMessage(message: string): void {
