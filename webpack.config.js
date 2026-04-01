@@ -412,7 +412,6 @@ export default async (env, options) => {
 
         // Production-specific optimization
         config.optimization.usedExports = true;
-        config.optimization.sideEffects = false;
     } else {
         console.log("🛠️ Applying development optimizations...");
         // Development-specific optimizations
