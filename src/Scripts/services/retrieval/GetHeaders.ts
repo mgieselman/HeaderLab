@@ -101,9 +101,21 @@ export class GetHeaders {
 
             if (pendingDetailedError !== null) {
                 const retrievalError = pendingDetailedError as RetrievalError;
+                let message = retrievalError.message;
+
+                if (message === "Office API header request failed." && !GetHeadersGraph.canUseGraph()) {
+                    const diagnosticsData = diagnostics.get();
+                    const noGraphReason = diagnosticsData["noGraphReason"];
+                    if (typeof noGraphReason === "string" && noGraphReason.length > 0) {
+                        message += " Graph fallback unavailable: " + noGraphReason + ".";
+                    } else {
+                        message += " Graph fallback unavailable.";
+                    }
+                }
+
                 callbacks.onError(
                     retrievalError.error,
-                    retrievalError.message,
+                    message,
                     retrievalError.suppressTracking
                 );
                 return;
