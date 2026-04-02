@@ -102,15 +102,15 @@
                                     "icons": [
                                         {
                                             "size": 16,
-                                            "url": "https://happy-pond-01840f710.4.azurestaticapps.net/Resources/headerlabLogo.jpg"
+                                            "url": "https://happy-pond-01840f710.4.azurestaticapps.net/Resources/headerlabLogo16.png"
                                         },
                                         {
                                             "size": 32,
-                                            "url": "https://happy-pond-01840f710.4.azurestaticapps.net/Resources/headerlabLogo.jpg"
+                                            "url": "https://happy-pond-01840f710.4.azurestaticapps.net/Resources/headerlabLogo32.png"
                                         },
                                         {
                                             "size": 80,
-                                            "url": "https://happy-pond-01840f710.4.azurestaticapps.net/Resources/headerlabLogo.jpg"
+                                            "url": "https://happy-pond-01840f710.4.azurestaticapps.net/Resources/headerlabLogo80.png"
                                         }
                                     ],
                                     "controls": [
@@ -121,15 +121,15 @@
                                             "icons": [
                                                 {
                                                     "size": 16,
-                                                    "url": "https://happy-pond-01840f710.4.azurestaticapps.net/Resources/headerlabLogo.jpg"
+                                                    "url": "https://happy-pond-01840f710.4.azurestaticapps.net/Resources/headerlabLogo16.png"
                                                 },
                                                 {
                                                     "size": 32,
-                                                    "url": "https://happy-pond-01840f710.4.azurestaticapps.net/Resources/headerlabLogo.jpg"
+                                                    "url": "https://happy-pond-01840f710.4.azurestaticapps.net/Resources/headerlabLogo32.png"
                                                 },
                                                 {
                                                     "size": 80,
-                                                    "url": "https://happy-pond-01840f710.4.azurestaticapps.net/Resources/headerlabLogo.jpg"
+                                                    "url": "https://happy-pond-01840f710.4.azurestaticapps.net/Resources/headerlabLogo80.png"
                                                 }
                                             ],
                                             "supertip": {

@@ -12,8 +12,8 @@
   <DefaultLocale>en-US</DefaultLocale>
   <DisplayName DefaultValue="HeaderLab Debug Server" />
   <Description DefaultValue="HeaderLab Debug Server" />
-  <IconUrl DefaultValue="https://mha-test3ff4.azurewebsites.net/Resources/headerlabLogo64.jpg" />
-  <HighResolutionIconUrl DefaultValue="https://mha-test3ff4.azurewebsites.net/Resources/headerlabLogo128.jpg" />
+  <IconUrl DefaultValue="https://mha-test3ff4.azurewebsites.net/Resources/headerlabLogo64.png" />
+  <HighResolutionIconUrl DefaultValue="https://mha-test3ff4.azurewebsites.net/Resources/headerlabLogo192.png" />
   <SupportUrl DefaultValue="https://github.com/mgieselman/headerlab/issues" />
   <Hosts>
     <Host Name="Mailbox" />
@@ -93,9 +93,9 @@
     <Resources>
       <bt:Images>
         <!-- HeaderLab icon -->
-        <bt:Image id="headerlab-icon-16" DefaultValue="https://mha-test3ff4.azurewebsites.net/Resources/headerlabLogo.jpg"/>
-        <bt:Image id="headerlab-icon-32" DefaultValue="https://mha-test3ff4.azurewebsites.net/Resources/headerlabLogo.jpg"/>
-        <bt:Image id="headerlab-icon-80" DefaultValue="https://mha-test3ff4.azurewebsites.net/Resources/headerlabLogo.jpg"/>
+        <bt:Image id="headerlab-icon-16" DefaultValue="https://mha-test3ff4.azurewebsites.net/Resources/headerlabLogo16.png"/>
+        <bt:Image id="headerlab-icon-32" DefaultValue="https://mha-test3ff4.azurewebsites.net/Resources/headerlabLogo32.png"/>
+        <bt:Image id="headerlab-icon-80" DefaultValue="https://mha-test3ff4.azurewebsites.net/Resources/headerlabLogo80.png"/>
       </bt:Images>
       <bt:Urls>
         <bt:Url id="functionFile" DefaultValue="https://mha-test3ff4.azurewebsites.net/Pages/Functions.html"/>
@@ -187,9 +187,9 @@
       <Resources>
         <bt:Images>
           <!-- HeaderLab icon -->
-          <bt:Image id="headerlab-icon-16" DefaultValue="https://mha-test3ff4.azurewebsites.net/Resources/headerlabLogo.jpg"/>
-          <bt:Image id="headerlab-icon-32" DefaultValue="https://mha-test3ff4.azurewebsites.net/Resources/headerlabLogo.jpg"/>
-          <bt:Image id="headerlab-icon-80" DefaultValue="https://mha-test3ff4.azurewebsites.net/Resources/headerlabLogo.jpg"/>
+          <bt:Image id="headerlab-icon-16" DefaultValue="https://mha-test3ff4.azurewebsites.net/Resources/headerlabLogo16.png"/>
+          <bt:Image id="headerlab-icon-32" DefaultValue="https://mha-test3ff4.azurewebsites.net/Resources/headerlabLogo32.png"/>
+          <bt:Image id="headerlab-icon-80" DefaultValue="https://mha-test3ff4.azurewebsites.net/Resources/headerlabLogo80.png"/>
         </bt:Images>
         <bt:Urls>
           <bt:Url id="functionFile" DefaultValue="https://mha-test3ff4.azurewebsites.net/Pages/Functions.html"/>
