@@ -353,6 +353,7 @@ Migrate from legacy Office Add-in tooling to the current Microsoft-recommended s
 - Create `manifest.json` (unified format) replacing `Manifest.xml`
 - Map all existing XML manifest properties: permissions, form factors, URLs, icon references, SSO scopes
 - The unified manifest uses the same JSON schema as Teams and Copilot extensions — enables future cross-platform distribution
+- Note: `manifestVersion` is set to `"devPreview"` — change to the stable version before Office Store submission
 
 **4.1.2 Convert debug manifests**
 - Replace `ManifestDebugLocal.xml` and `ManifestDebugServer.xml` with environment-specific overrides or a single debug configuration in the unified format
