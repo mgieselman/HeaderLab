@@ -6,7 +6,7 @@ import { Header } from "./Header";
 describe("forefront antiSpam Tests", () => {
     const header =
         "CIP:208.75.123.162;CTRY:US;LANG:en;SCL:0;SRV:;IPV:NLI;SFV:NSPM;H:ccm27.constantcontact.com;PTR:ccm27.constantcontact.com;CAT:NONE;SFTY:;SFS:;DIR:INB;SFP:;";
-    const unparsed = "DIR:INB;SFP:;";
+    const unparsed = "";
     const forefrontAntiSpamRows = [
         {
             "header": "ARC",
@@ -114,6 +114,13 @@ describe("forefront antiSpam Tests", () => {
             "valueUrl": "<a href = 'https://docs.microsoft.com/en-us/microsoft-365/security/office-365-security/anti-spam-message-headers' target = '_blank'>X-Forefront-Antispam-Report</a>"
         },
         {
+            "header": "DIR",
+            "headerName": "X-Forefront-Antispam-Report",
+            "label": "Directionality",
+            "value": "INB",
+            "valueUrl": "<a href = 'https://docs.microsoft.com/en-us/microsoft-365/security/office-365-security/anti-spam-message-headers' target = '_blank'>INB</a>"
+        },
+        {
             "header": "source",
             "headerName": "X-Forefront-Antispam-Report",
             "label": "Source header",
@@ -125,7 +132,7 @@ describe("forefront antiSpam Tests", () => {
             "headerName": "X-Forefront-Antispam-Report",
             "label": "Unknown fields",
             "value": unparsed,
-            "valueUrl": "<a href = 'https://docs.microsoft.com/en-us/microsoft-365/security/office-365-security/anti-spam-message-headers' target = '_blank'>DIR:INB;SFP:;</a>"
+            "valueUrl": "<a href = 'https://docs.microsoft.com/en-us/microsoft-365/security/office-365-security/anti-spam-message-headers' target = '_blank'>X-Forefront-Antispam-Report</a>"
         }
     ];
 
@@ -144,7 +151,7 @@ describe("forefront antiSpam Tests", () => {
 
 describe("forefront antiSpam spam", () => {
     const header = "CIP:40.107.68.131;IPV:NLI;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(2980300002)(199004)(189003)(53386004)(6916009)(21480400003)(6606003)(102836004)(6506007)(7116003)(14454004)(5660300001)(25786009)(567704001)(7636002)(7736002)(74316002)(26005)(6436002)(61614004)(606006)(8676002)(63106013)(5640700003)(8636004)(5000100001)(1096003)(246002)(33656002)(58800400003)(336012)(84326002)(7696005)(221733001)(356004)(66060400003)(2501003)(2351001)(106466001)(66066001)(3480700005)(106002)(16586007)(71190400001)(86362001)(568964002)(16003)(99286004)(236005)(3846002)(9686003)(6116002)(54896002)(6306002)(5024004)(2476003)(19627405001)(22186003)(99936001)(3672435006)(476003)(126002)(486006)(55016002)(28085005);DIR:INB;SFP:;SCL:1;SRVR:DM5PR1501MB1992;H:NAM04-BN3-obe.outbound.protection.outlook.com;FPR:;SPF:Pass;LANG:en;PTR:mail-eopbgr680131.outbound.protection.outlook.com;A:1;MX:1;";
-    const unparsed = "EFV:NLI;DIR:INB;SFP:;SRVR:DM5PR1501MB1992;FPR:;SPF:Pass;A:1;MX:1;";
+    const unparsed = "EFV:NLI;SRVR:DM5PR1501MB1992;SPF:Pass;A:1;MX:1;";
     const forefrontAntiSpamRows = [
         {
             "header": "ARC",
@@ -252,6 +259,13 @@ describe("forefront antiSpam spam", () => {
             "valueUrl": "<a href = 'https://docs.microsoft.com/en-us/microsoft-365/security/office-365-security/anti-spam-message-headers' target = '_blank'>(2980300002)(199004)(189003)(53386004)(6916009)(21480400003)(6606003)(102836004)(6506007)(7116003)(14454004)(5660300001)(25786009)(567704001)(7636002)(7736002)(74316002)(26005)(6436002)(61614004)(606006)(8676002)(63106013)(5640700003)(8636004)(5000100001)(1096003)(246002)(33656002)(58800400003)(336012)(84326002)(7696005)(221733001)(356004)(66060400003)(2501003)(2351001)(106466001)(66066001)(3480700005)(106002)(16586007)(71190400001)(86362001)(568964002)(16003)(99286004)(236005)(3846002)(9686003)(6116002)(54896002)(6306002)(5024004)(2476003)(19627405001)(22186003)(99936001)(3672435006)(476003)(126002)(486006)(55016002)(28085005)</a>"
         },
         {
+            "header": "DIR",
+            "headerName": "X-Forefront-Antispam-Report",
+            "label": "Directionality",
+            "value": "INB",
+            "valueUrl": "<a href = 'https://docs.microsoft.com/en-us/microsoft-365/security/office-365-security/anti-spam-message-headers' target = '_blank'>INB</a>"
+        },
+        {
             "header": "source",
             "headerName": "X-Forefront-Antispam-Report",
             "label": "Source header",
@@ -263,7 +277,7 @@ describe("forefront antiSpam spam", () => {
             "headerName": "X-Forefront-Antispam-Report",
             "label": "Unknown fields",
             "value": unparsed,
-            "valueUrl": "<a href = 'https://docs.microsoft.com/en-us/microsoft-365/security/office-365-security/anti-spam-message-headers' target = '_blank'>EFV:NLI;DIR:INB;SFP:;SRVR:DM5PR1501MB1992;FPR:;SPF:Pass;A:1;MX:1;</a>"
+            "valueUrl": "<a href = 'https://docs.microsoft.com/en-us/microsoft-365/security/office-365-security/anti-spam-message-headers' target = '_blank'>EFV:NLI;SRVR:DM5PR1501MB1992;SPF:Pass;A:1;MX:1;</a>"
         }
     ];
 
