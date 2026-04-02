@@ -1,7 +1,7 @@
 import type { MockedFunction } from "vitest";
 
 import { HeaderModel } from "../model/HeaderModel";
-import { getRules, resetRulesState, RuleStore } from "./loaders/getRules";
+import { RuleStore, getRules, resetRulesState } from "./loaders/getRules";
 import { rulesService } from "./RulesService";
 
 // Mock the getRules function
