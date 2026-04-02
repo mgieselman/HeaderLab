@@ -37,6 +37,7 @@ export class GetHeadersAPI {
         }
         catch (e) {
             errors.log(e, "Failed in getAllInternetHeadersAsync");
+            callbacks.onError(e, "Office API header request failed.");
         }
 
         return "";
