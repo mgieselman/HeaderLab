@@ -33,7 +33,7 @@ export function renderDiagnostics(container: HTMLElement, violationGroups: Viola
 
     // Violation groups
     for (const group of violationGroups) {
-        const details = el("details", { class: "hl-details", open: true });
+        const details = el("details", { class: `hl-details hl-details--${group.severity}`, open: true });
 
         const summary = el("summary", null);
         summary.appendChild(violationBadge(group.severity));
