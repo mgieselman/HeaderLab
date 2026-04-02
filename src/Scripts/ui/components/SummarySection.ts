@@ -69,10 +69,9 @@ function renderInsightList(insights: Insight[]): HTMLElement {
     const sorted = [...insights].sort((a, b) => (order[a.severity] ?? 9) - (order[b.severity] ?? 9));
 
     for (const insight of sorted) {
-        const dot = el("span", { class: `hl-insight__dot hl-insight__dot--${insight.severity}` });
         const label = el("span", { class: "hl-insight__label" }, insight.label);
         const detail = el("span", { class: "hl-insight__detail" }, ` \u2014 ${insight.detail}`);
-        const item = el("li", { class: `hl-insight hl-insight--${insight.severity}` }, dot, label, detail);
+        const item = el("li", { class: `hl-insight hl-insight--${insight.severity}` }, label, detail);
         list.appendChild(item);
     }
 
