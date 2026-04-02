@@ -1,6 +1,6 @@
-# Build and deploy MHA to Azure Static Web Apps
+# Build and deploy HeaderLab to Azure Static Web Apps
 
-name: Build and Deploy MHA
+name: Build and Deploy HeaderLab
 
 on:
   push:
@@ -36,7 +36,7 @@ jobs:
         env:
           SCM_COMMIT_ID: ${{ github.sha }}
           APPINSIGHTS_INSTRUMENTATIONKEY: ${{ secrets.APPINSIGHTS_INSTRUMENTATIONKEY }}
-          MHA_NAA_CLIENT_ID: ${{ secrets.MHA_NAA_CLIENT_ID }}
+          HEADERLAB_NAA_CLIENT_ID: ${{ secrets.HEADERLAB_NAA_CLIENT_ID }}
         run: |
           npm ci
           npm run build --if-present

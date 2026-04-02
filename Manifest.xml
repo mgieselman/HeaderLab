@@ -10,11 +10,11 @@
   <Version>4.0</Version>
   <ProviderName>Stephen Griffin</ProviderName>
   <DefaultLocale>en-US</DefaultLocale>
-  <DisplayName DefaultValue="MHA (Graph/NAA)" />
-  <Description DefaultValue="Microsoft Message Header Analyzer" />
+  <DisplayName DefaultValue="HeaderLab (Graph/NAA)" />
+    <Description DefaultValue="Analyze message headers with HeaderLab using Graph API and NAA" />
   <IconUrl DefaultValue="https://happy-pond-01840f710.4.azurestaticapps.net/Resources/mhaLogo64.jpg" />
   <HighResolutionIconUrl DefaultValue="https://happy-pond-01840f710.4.azurestaticapps.net/Resources/mhaLogo128.jpg" />
-  <SupportUrl DefaultValue="https://github.com/microsoft/MHA/issues" />
+  <SupportUrl DefaultValue="https://github.com/mgieselman/headerlab/issues" />
   <Hosts>
     <Host Name="Mailbox" />
   </Hosts>
@@ -65,22 +65,22 @@
           <!-- Message read form -->
           <ExtensionPoint xsi:type="MessageReadCommandSurface">
             <OfficeTab id="TabDefault">
-              <Group id="mhaCmdGroup">
+              <Group id="headerlabCmdGroup">
                 <Label resid="groupLabel" />
                 <!-- Task pane button -->
-                <Control xsi:type="Button" id="mhaOpenPaneButton">
-                  <Label resid="mhaOpenPaneBtnLabel" />
+                <Control xsi:type="Button" id="headerlabOpenPaneButton">
+                  <Label resid="headerlabOpenPaneBtnLabel" />
                   <Supertip>
-                    <Title resid="mhaOpenPaneBtnTipTitle" />
-                    <Description resid="mhaOpenPaneBtnTipDescription" />
+                    <Title resid="headerlabOpenPaneBtnTipTitle" />
+                    <Description resid="headerlabOpenPaneBtnTipDescription" />
                   </Supertip>
                   <Icon>
-                    <bt:Image size="16" resid="mha-icon-16" />
-                    <bt:Image size="32" resid="mha-icon-32" />
-                    <bt:Image size="80" resid="mha-icon-80" />
+                    <bt:Image size="16" resid="headerlab-icon-16" />
+                    <bt:Image size="32" resid="headerlab-icon-32" />
+                    <bt:Image size="80" resid="headerlab-icon-80" />
                   </Icon>
                   <Action xsi:type="ShowTaskpane">
-                    <SourceLocation resid="mhaTaskPaneUrl" />
+                    <SourceLocation resid="headerlabTaskPaneUrl" />
                   </Action>
                 </Control>
               </Group>
@@ -92,22 +92,22 @@
 
     <Resources>
       <bt:Images>
-        <!-- MHA icon -->
-        <bt:Image id="mha-icon-16" DefaultValue="https://happy-pond-01840f710.4.azurestaticapps.net/Resources/mhaLogo.jpg"/>
-        <bt:Image id="mha-icon-32" DefaultValue="https://happy-pond-01840f710.4.azurestaticapps.net/Resources/mhaLogo.jpg"/>
-        <bt:Image id="mha-icon-80" DefaultValue="https://happy-pond-01840f710.4.azurestaticapps.net/Resources/mhaLogo.jpg"/>
+        <!-- HeaderLab icon -->
+        <bt:Image id="headerlab-icon-16" DefaultValue="https://happy-pond-01840f710.4.azurestaticapps.net/Resources/mhaLogo.jpg"/>
+        <bt:Image id="headerlab-icon-32" DefaultValue="https://happy-pond-01840f710.4.azurestaticapps.net/Resources/mhaLogo.jpg"/>
+        <bt:Image id="headerlab-icon-80" DefaultValue="https://happy-pond-01840f710.4.azurestaticapps.net/Resources/mhaLogo.jpg"/>
       </bt:Images>
       <bt:Urls>
         <bt:Url id="functionFile" DefaultValue="https://happy-pond-01840f710.4.azurestaticapps.net/Functions.html"/>
-        <bt:Url id="mhaTaskPaneUrl" DefaultValue="https://happy-pond-01840f710.4.azurestaticapps.net/Default.html"/>
+        <bt:Url id="headerlabTaskPaneUrl" DefaultValue="https://happy-pond-01840f710.4.azurestaticapps.net/Default.html"/>
       </bt:Urls>
       <bt:ShortStrings>
         <bt:String id="groupLabel" DefaultValue=" "/>
-        <bt:String id="mhaOpenPaneBtnLabel" DefaultValue="View Headers"/>
-        <bt:String id="mhaOpenPaneBtnTipTitle" DefaultValue="Open a pane to view the available headers on the current message"/>
+        <bt:String id="headerlabOpenPaneBtnLabel" DefaultValue="View Headers"/>
+        <bt:String id="headerlabOpenPaneBtnTipTitle" DefaultValue="Open a pane to view the available headers on the current message"/>
       </bt:ShortStrings>
       <bt:LongStrings>
-        <bt:String id="mhaOpenPaneBtnTipDescription" DefaultValue="Retrieves the transport message headers of the current message and displays them in an easy-to-read format." />
+        <bt:String id="headerlabOpenPaneBtnTipDescription" DefaultValue="Retrieves the transport message headers of the current message and displays them in an easy-to-read format." />
       </bt:LongStrings>
     </Resources>
 
@@ -129,22 +129,22 @@
             <!-- Message read form -->
             <ExtensionPoint xsi:type="MessageReadCommandSurface">
               <OfficeTab id="TabDefault">
-                <Group id="mhaCmdGroup">
+                <Group id="headerlabCmdGroup">
                   <Label resid="groupLabel" />
                   <!-- Task pane button -->
-                  <Control xsi:type="Button" id="mhaOpenPaneButton">
-                    <Label resid="mhaOpenPaneBtnLabel" />
+                  <Control xsi:type="Button" id="headerlabOpenPaneButton">
+                    <Label resid="headerlabOpenPaneBtnLabel" />
                     <Supertip>
-                      <Title resid="mhaOpenPaneBtnTipTitle" />
-                      <Description resid="mhaOpenPaneBtnTipDescription" />
+                      <Title resid="headerlabOpenPaneBtnTipTitle" />
+                      <Description resid="headerlabOpenPaneBtnTipDescription" />
                     </Supertip>
                     <Icon>
-                      <bt:Image size="16" resid="mha-icon-16" />
-                      <bt:Image size="32" resid="mha-icon-32" />
-                      <bt:Image size="80" resid="mha-icon-80" />
+                      <bt:Image size="16" resid="headerlab-icon-16" />
+                      <bt:Image size="32" resid="headerlab-icon-32" />
+                      <bt:Image size="80" resid="headerlab-icon-80" />
                     </Icon>
                     <Action xsi:type="ShowTaskpane">
-                      <SourceLocation resid="mhaDesktopPaneUrl" />
+                      <SourceLocation resid="headerlabDesktopPaneUrl" />
                       <SupportsPinning>true</SupportsPinning>
                     </Action>
                   </Control>
@@ -160,22 +160,22 @@
               <Group id="mobileMsgRead">
                 <Label resid="groupLabel" />
                 <Control xsi:type="MobileButton" id="mblOpenPaneButton">
-                  <Label resid="mhaOpenPaneBtnLabel" />
+                  <Label resid="headerlabOpenPaneBtnLabel" />
                   <Icon xsi:type="bt:MobileIconList">
-                    <bt:Image size="25" scale="1" resid="mha-icon-32" />
-                    <bt:Image size="25" scale="2" resid="mha-icon-32" />
-                    <bt:Image size="25" scale="3" resid="mha-icon-32" />
+                    <bt:Image size="25" scale="1" resid="headerlab-icon-32" />
+                    <bt:Image size="25" scale="2" resid="headerlab-icon-32" />
+                    <bt:Image size="25" scale="3" resid="headerlab-icon-32" />
 
-                    <bt:Image size="32" scale="1" resid="mha-icon-32" />
-                    <bt:Image size="32" scale="2" resid="mha-icon-32" />
-                    <bt:Image size="32" scale="3" resid="mha-icon-32" />
+                    <bt:Image size="32" scale="1" resid="headerlab-icon-32" />
+                    <bt:Image size="32" scale="2" resid="headerlab-icon-32" />
+                    <bt:Image size="32" scale="3" resid="headerlab-icon-32" />
 
-                    <bt:Image size="48" scale="1" resid="mha-icon-32" />
-                    <bt:Image size="48" scale="2" resid="mha-icon-32" />
-                    <bt:Image size="48" scale="3" resid="mha-icon-32" />
+                    <bt:Image size="48" scale="1" resid="headerlab-icon-32" />
+                    <bt:Image size="48" scale="2" resid="headerlab-icon-32" />
+                    <bt:Image size="48" scale="3" resid="headerlab-icon-32" />
                   </Icon>
                   <Action xsi:type="ShowTaskpane">
-                    <SourceLocation resid="mhaMobilePaneUrl" />
+                    <SourceLocation resid="headerlabMobilePaneUrl" />
                   </Action>
                 </Control>
               </Group>
@@ -186,23 +186,23 @@
 
       <Resources>
         <bt:Images>
-          <!-- MHA icon -->
-          <bt:Image id="mha-icon-16" DefaultValue="https://happy-pond-01840f710.4.azurestaticapps.net/Resources/mhaLogo.jpg"/>
-          <bt:Image id="mha-icon-32" DefaultValue="https://happy-pond-01840f710.4.azurestaticapps.net/Resources/mhaLogo.jpg"/>
-          <bt:Image id="mha-icon-80" DefaultValue="https://happy-pond-01840f710.4.azurestaticapps.net/Resources/mhaLogo.jpg"/>
+          <!-- HeaderLab icon -->
+          <bt:Image id="headerlab-icon-16" DefaultValue="https://happy-pond-01840f710.4.azurestaticapps.net/Resources/mhaLogo.jpg"/>
+          <bt:Image id="headerlab-icon-32" DefaultValue="https://happy-pond-01840f710.4.azurestaticapps.net/Resources/mhaLogo.jpg"/>
+          <bt:Image id="headerlab-icon-80" DefaultValue="https://happy-pond-01840f710.4.azurestaticapps.net/Resources/mhaLogo.jpg"/>
         </bt:Images>
         <bt:Urls>
           <bt:Url id="functionFile" DefaultValue="https://happy-pond-01840f710.4.azurestaticapps.net/Functions.html"/>
-          <bt:Url id="mhaDesktopPaneUrl" DefaultValue="https://happy-pond-01840f710.4.azurestaticapps.net/DesktopPane.html"/>
-          <bt:Url id="mhaMobilePaneUrl" DefaultValue="https://happy-pond-01840f710.4.azurestaticapps.net/MobilePane.html"/>
+          <bt:Url id="headerlabDesktopPaneUrl" DefaultValue="https://happy-pond-01840f710.4.azurestaticapps.net/DesktopPane.html"/>
+          <bt:Url id="headerlabMobilePaneUrl" DefaultValue="https://happy-pond-01840f710.4.azurestaticapps.net/MobilePane.html"/>
         </bt:Urls>
         <bt:ShortStrings>
           <bt:String id="groupLabel" DefaultValue=" "/>
-          <bt:String id="mhaOpenPaneBtnLabel" DefaultValue="View Headers"/>
-          <bt:String id="mhaOpenPaneBtnTipTitle" DefaultValue="Open a pane to view the available headers on the current message"/>
+          <bt:String id="headerlabOpenPaneBtnLabel" DefaultValue="View Headers"/>
+          <bt:String id="headerlabOpenPaneBtnTipTitle" DefaultValue="Open a pane to view the available headers on the current message"/>
         </bt:ShortStrings>
         <bt:LongStrings>
-          <bt:String id="mhaOpenPaneBtnTipDescription" DefaultValue="Retrieves the transport message headers of the current message and displays them in an easy-to-read format." />
+          <bt:String id="headerlabOpenPaneBtnTipDescription" DefaultValue="Retrieves the transport message headers of the current message and displays them in an easy-to-read format." />
         </bt:LongStrings>
       </Resources>
       <WebApplicationInfo>

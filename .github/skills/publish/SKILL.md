@@ -38,7 +38,7 @@ The script performs these steps in order:
    - `git add -A`
    - `git commit -m <message>`
 5. Push to `origin/main`.
-6. Poll GitHub Actions push runs (`Test`, `Build and Deploy MHA`) until complete.
+6. Poll GitHub Actions push runs (`Test`, `Build and Deploy HeaderLab`) until complete.
 
 ## Success Criteria
 

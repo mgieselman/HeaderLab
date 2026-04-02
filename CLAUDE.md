@@ -79,7 +79,7 @@ Vanilla TypeScript + CSS custom properties, no framework. Two entry points:
 - `HeaderModel.create()` is async (static factory) because rule analysis loads rules from JSON.
 - Vite globals: `__AIKEY__`, `__BUILDTIME__`, `__NAACLIENTID__`, `__VERSION__` are replaced at build time via `define` in `vite.config.ts`.
 - UI re-renders on `AppState.subscribe()` callbacks — no virtual DOM, sections are rebuilt on tab switch.
-- Build output must produce HTML files matching `manifest.json`: `mha.html`, `Default.html`, `DesktopPane.html`, `MobilePane.html`, `Functions.html`.
+- Build output must produce HTML files matching `manifest.json`: `headerlab.html`, `Default.html`, `DesktopPane.html`, `MobilePane.html`, `Functions.html`.
 
 ## Code Style
 

@@ -27,7 +27,7 @@ jobs:
 
       - name: Install, lint, test
         env:
-          MHA_NAA_CLIENT_ID: ''
+          HEADERLAB_NAA_CLIENT_ID: ''
         run: |
           npm ci
           npx tsc --noEmit
