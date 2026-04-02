@@ -1,4 +1,4 @@
-﻿import "../jestMatchers/arrayEqual";
+﻿import "../matchers/arrayEqual";
 
 import { AntiSpamReport } from "./AntiSpamReport";
 

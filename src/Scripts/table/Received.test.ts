@@ -1,4 +1,4 @@
-﻿import "../jestMatchers/receivedEqual";
+﻿import "../matchers/receivedEqual";
 
 import { Received } from "./Received";
 import { Header } from "../row/Header";

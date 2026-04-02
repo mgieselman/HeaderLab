@@ -17,7 +17,7 @@ export class Stack {
         //if (item.functionName === "showError") return false;
         //if (item.functionName === "errors.log") return false; // Logs with errors.log in them usually have location where it was called from - keep those
         //if (item.functionName === "GetStack") return false;
-        if (item.functionName === "errors.isError") return false; // Not called from anywhere interesting
+        if (item.functionName === "isError") return false; // Not called from anywhere interesting
         if (item.functionName?.indexOf("Promise._immediateFn") !== -1) return false; // only shows in IE stacks
         return true;
     }

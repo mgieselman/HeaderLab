@@ -1,4 +1,4 @@
-﻿import "../jestMatchers/datesEqual";
+﻿import "../matchers/datesEqual";
 
 import { Received } from "./Received";
 

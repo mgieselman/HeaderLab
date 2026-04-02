@@ -31,7 +31,7 @@ Node >= 18.12.0 required. CI uses Node 22.
 Code is organized under `src/Scripts/` into layers with dependencies flowing downward:
 
 ### `config/` — Build-time constants
-Webpack DefinePlugin wrappers: `aikey`, `buildTime`, `version`, `naaClientId`. No internal imports.
+Vite `define` wrappers: `aikey`, `buildTime`, `version`, `naaClientId`. No internal imports.
 
 ### `core/` — Pure domain utilities
 Foundational modules imported broadly across all layers:
@@ -51,11 +51,11 @@ Collections of rows: `Received` (computes hop deltas/delays), `Other`, `SummaryT
 - **`Summary`** — summary metadata rows (Subject, From, Date, etc.), tightly coupled to HeaderModel.
 
 ### `rules/` — Validation engine
-Validates parsed headers against rules defined in `src/data/rules.json`. Entry point: `rulesService.analyzeHeaders(model)`. Rule types: `SimpleValidationRule`, `AndValidationRule`, `HeaderSectionMissingRule`. Results are `ViolationGroup[]` on the model. Sub-directories: `engine/`, `loaders/`, `types/`.
+Validates parsed headers against rules defined in `public/data/rules.json`. Entry point: `rulesService.analyzeHeaders(model)`. Rule types: `SimpleValidationRule`, `AndValidationRule`, `HeaderSectionMissingRule`. Results are `ViolationGroup[]` on the model. Sub-directories: `engine/`, `loaders/`, `types/`.
 
 ### `services/` — Infrastructure
-- **`Diagnostics.ts`** — Application Insights telemetry (singleton `diagnostics`).
-- **`Errors.ts`** / **`Stack.ts`** — Error collection, stack trace parsing.
+- **`Diagnostics.ts`** — Application Insights telemetry (exported class + `diagnostics` singleton).
+- **`Errors.ts`** / **`Stack.ts`** — Error collection (instance class with injected `Diagnostics`), stack trace parsing.
 - **`ParentFrameUtils.ts`** — Query string parsing, diagnostics string generation.
 - **`retrieval/`** — Header retrieval for Outlook add-in mode. `GetHeaders` tries Office.js API first (`GetHeadersAPI`), falls back to Microsoft Graph (`GetHeadersGraph`). Uses `HeaderCallbacks` interface to decouple from UI.
 
@@ -77,9 +77,9 @@ Vanilla TypeScript + CSS custom properties, no framework. Two entry points:
 
 - Header parsing order matters: `summary.add()` → `forefrontAntiSpamReport.add()` → `antiSpamReport.add()` → `receivedHeaders.add()` → `otherHeaders.add()`. First match wins.
 - `HeaderModel.create()` is async (static factory) because rule analysis loads rules from JSON.
-- Webpack globals: `__AIKEY__`, `__BUILDTIME__`, `__NAACLIENTID__`, `__VERSION__` are replaced at build time.
+- Vite globals: `__AIKEY__`, `__BUILDTIME__`, `__NAACLIENTID__`, `__VERSION__` are replaced at build time via `define` in `vite.config.ts`.
 - UI re-renders on `AppState.subscribe()` callbacks — no virtual DOM, sections are rebuilt on tab switch.
-- Build output must produce HTML files matching Manifest.xml: `mha.html`, `Default.html`, `DesktopPane.html`, `MobilePane.html`, `Functions.html`.
+- Build output must produce HTML files matching `manifest.json`: `mha.html`, `Default.html`, `DesktopPane.html`, `MobilePane.html`, `Functions.html`.
 
 ## Code Style
 
@@ -88,7 +88,7 @@ Vanilla TypeScript + CSS custom properties, no framework. Two entry points:
 - Strict TypeScript: `noExplicitAny`, all strict checks enabled
 - Imports must be ordered: builtins → external → internal → sibling/parent → index (enforced by eslint `import/order`)
 - One class per file (`max-classes-per-file`)
-- Tests use Jest with jsdom environment; test files are colocated as `*.test.ts`
+- Tests use Vitest with jsdom environment; test files are colocated as `*.test.ts`
 
 ## Deployment
 

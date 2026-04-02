@@ -1,2 +1,2 @@
 // Set UTC timezone for all tests
-process.env.TZ = "UTC";
+process.env["TZ"] = "UTC";

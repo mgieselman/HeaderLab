@@ -1,4 +1,4 @@
-import  "../jestMatchers/stacksEqual";
+import  "../matchers/stacksEqual";
 
 import { errors } from "./Errors";
 import { Stack } from "./Stack";

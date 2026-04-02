@@ -1,12 +1,12 @@
 [
     {
-        "path": "Pages/assets/AppState.*.js",
+        "path": "Pages/assets/*.js",
         "limit": "2.6 MB",
-        "name": "app bundle (shared chunk)"
+        "name": "all JS bundles"
     },
     {
-        "path": "Pages/assets/AppState.*.css",
+        "path": "Pages/assets/*.css",
         "limit": "15 KB",
-        "name": "CSS"
+        "name": "all CSS"
     }
 ]
