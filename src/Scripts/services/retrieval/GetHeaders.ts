@@ -60,7 +60,7 @@ export class GetHeaders {
     public static async send(
         headersLoadedCallback: (_headers: string, apiUsed: string) => void,
         callbacks: HeaderCallbacks
-    ) {
+    ): Promise<void> {
         if (!GetHeaders.validItem()) {
             callbacks.onError(null, "No item selected", true);
             return;
@@ -74,16 +74,18 @@ export class GetHeaders {
         try {
             let headers: string = await GetHeadersAPI.send(callbacks);
             if (headers !== "") {
-                headersLoadedCallback(headers, "API");
+                await headersLoadedCallback(headers, "API");
                 return;
             }
 
             errors.logMessage("API failed, trying Graph");
             headers = await GetHeadersGraph.send(callbacks);
             if (headers !== "") {
-                headersLoadedCallback(headers, "Graph");
+                await headersLoadedCallback(headers, "Graph");
                 return;
             }
+
+            callbacks.onError(null, "Failed to retrieve headers.", true);
         } catch (e) {
             callbacks.onError(e, "Could not send header request");
         }

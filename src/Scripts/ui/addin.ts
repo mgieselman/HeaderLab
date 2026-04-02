@@ -46,21 +46,26 @@ function initAddin(): void {
         state.setLoading(true);
         state.setStatus(statusLabels.loading);
 
-        await GetHeaders.send(
-            async (headers: string, apiUsed: string) => {
-                diagnostics.set("API used", apiUsed);
-                try {
-                    const model = await HeaderModel.create(headers);
-                    state.setModel(model);
-                    state.setStatus(statusLabels.analyzed);
-                } catch (e) {
-                    state.setError("Failed to analyze headers: " + (e instanceof Error ? e.message : String(e)));
-                } finally {
-                    state.setLoading(false);
-                }
-            },
-            callbacks
-        );
+        try {
+            await GetHeaders.send(
+                async (headers: string, apiUsed: string) => {
+                    diagnostics.set("API used", apiUsed);
+                    try {
+                        const model = await HeaderModel.create(headers);
+                        state.setModel(model);
+                        state.setStatus(statusLabels.analyzed);
+                    } catch (e) {
+                        state.setError("Failed to analyze headers: " + (e instanceof Error ? e.message : String(e)));
+                    } finally {
+                        state.setLoading(false);
+                    }
+                },
+                callbacks
+            );
+        } catch (e) {
+            state.setError("Failed to retrieve headers: " + (e instanceof Error ? e.message : String(e)));
+            state.setLoading(false);
+        }
     }
 
     // Initial retrieval
