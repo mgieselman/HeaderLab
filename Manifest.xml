@@ -8,9 +8,9 @@
   xsi:type="MailApp">
   <Id>129d48f1-5005-4d25-bc94-fd27c54344a1</Id>
   <Version>4.0</Version>
-  <ProviderName>Stephen Griffin</ProviderName>
+  <ProviderName>Matt Gieselman</ProviderName>
   <DefaultLocale>en-US</DefaultLocale>
-  <DisplayName DefaultValue="HeaderLab (Graph/NAA)" />
+  <DisplayName DefaultValue="HeaderLab" />
     <Description DefaultValue="Analyze message headers with HeaderLab using Graph API and NAA" />
   <IconUrl DefaultValue="https://happy-pond-01840f710.4.azurestaticapps.net/Resources/headerlabLogo64.jpg" />
   <HighResolutionIconUrl DefaultValue="https://happy-pond-01840f710.4.azurestaticapps.net/Resources/headerlabLogo128.jpg" />
@@ -72,7 +72,7 @@
                   <Label resid="headerlabOpenPaneBtnLabel" />
                   <Supertip>
                     <Title resid="headerlabOpenPaneBtnTipTitle" />
-                    <Description resid="headerlabOpenPaneBtnTipDescription" />
+                    <Description resid="openPaneTipDesc" />
                   </Supertip>
                   <Icon>
                     <bt:Image size="16" resid="headerlab-icon-16" />
@@ -107,7 +107,7 @@
         <bt:String id="headerlabOpenPaneBtnTipTitle" DefaultValue="Open a pane to view the available headers on the current message"/>
       </bt:ShortStrings>
       <bt:LongStrings>
-        <bt:String id="headerlabOpenPaneBtnTipDescription" DefaultValue="Retrieves the transport message headers of the current message and displays them in an easy-to-read format." />
+        <bt:String id="openPaneTipDesc" DefaultValue="Retrieves the transport message headers of the current message and displays them in an easy-to-read format." />
       </bt:LongStrings>
     </Resources>
 
@@ -136,7 +136,7 @@
                     <Label resid="headerlabOpenPaneBtnLabel" />
                     <Supertip>
                       <Title resid="headerlabOpenPaneBtnTipTitle" />
-                      <Description resid="headerlabOpenPaneBtnTipDescription" />
+                      <Description resid="openPaneTipDesc" />
                     </Supertip>
                     <Icon>
                       <bt:Image size="16" resid="headerlab-icon-16" />
@@ -202,13 +202,15 @@
           <bt:String id="headerlabOpenPaneBtnTipTitle" DefaultValue="Open a pane to view the available headers on the current message"/>
         </bt:ShortStrings>
         <bt:LongStrings>
-          <bt:String id="headerlabOpenPaneBtnTipDescription" DefaultValue="Retrieves the transport message headers of the current message and displays them in an easy-to-read format." />
+          <bt:String id="openPaneTipDesc" DefaultValue="Retrieves the transport message headers of the current message and displays them in an easy-to-read format." />
         </bt:LongStrings>
       </Resources>
       <WebApplicationInfo>
         <Id>3b66646d-972e-49e4-a2b0-b37a78a00e11</Id>
         <Resource>api://happy-pond-01840f710.4.azurestaticapps.net/3b66646d-972e-49e4-a2b0-b37a78a00e11</Resource>
         <Scopes>
+          <Scope>profile</Scope>
+          <Scope>openid</Scope>
           <Scope>Mail.Read</Scope>
         </Scopes>
       </WebApplicationInfo>

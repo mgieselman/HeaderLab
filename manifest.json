@@ -12,7 +12,7 @@
         "full": "Parses raw email transport headers and displays routing hops, delivery delays, antispam verdicts, authentication results (SPF/DKIM/DMARC), and rule-based diagnostics."
     },
     "developer": {
-        "name": "Stephen Griffin",
+        "name": "Matt Gieselman",
         "websiteUrl": "https://github.com/mgieselman/headerlab",
         "privacyUrl": "https://happy-pond-01840f710.4.azurestaticapps.net/privacy.html",
         "termsOfUseUrl": "https://github.com/mgieselman/headerlab/blob/main/LICENSE"

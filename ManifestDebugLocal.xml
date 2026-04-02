@@ -72,7 +72,7 @@
                   <Label resid="headerlabOpenPaneBtnLabel" />
                   <Supertip>
                     <Title resid="headerlabOpenPaneBtnTipTitle" />
-                    <Description resid="headerlabOpenPaneBtnTipDescription" />
+                    <Description resid="openPaneTipDesc" />
                   </Supertip>
                   <Icon>
                     <bt:Image size="16" resid="headerlab-icon-16" />
@@ -107,7 +107,7 @@
         <bt:String id="headerlabOpenPaneBtnTipTitle" DefaultValue="Open a pane to view the available headers on the current message - Debug build on localhost::44336"/>
       </bt:ShortStrings>
       <bt:LongStrings>
-        <bt:String id="headerlabOpenPaneBtnTipDescription" DefaultValue="Retrieves the transport message headers of the current message and displays them in an easy-to-read format. Debug build on localhost::44336" />
+        <bt:String id="openPaneTipDesc" DefaultValue="Retrieves the transport message headers of the current message and displays them in an easy-to-read format. Debug build on localhost::44336" />
       </bt:LongStrings>
     </Resources>
 
@@ -136,7 +136,7 @@
                     <Label resid="headerlabOpenPaneBtnLabel" />
                     <Supertip>
                       <Title resid="headerlabOpenPaneBtnTipTitle" />
-                      <Description resid="headerlabOpenPaneBtnTipDescription" />
+                      <Description resid="openPaneTipDesc" />
                     </Supertip>
                     <Icon>
                       <bt:Image size="16" resid="headerlab-icon-16" />
@@ -202,13 +202,15 @@
           <bt:String id="headerlabOpenPaneBtnTipTitle" DefaultValue="Open a pane to view the available headers on the current message - Debug build on localhost::44336"/>
         </bt:ShortStrings>
         <bt:LongStrings>
-          <bt:String id="headerlabOpenPaneBtnTipDescription" DefaultValue="Retrieves the transport message headers of the current message and displays them in an easy-to-read format. Debug build on localhost::44336" />
+          <bt:String id="openPaneTipDesc" DefaultValue="Retrieves the transport message headers of the current message and displays them in an easy-to-read format. Debug build on localhost::44336" />
         </bt:LongStrings>
       </Resources>
       <WebApplicationInfo>
         <Id>3b66646d-972e-49e4-a2b0-b37a78a00e11</Id>
         <Resource>api://localhost:44336/3b66646d-972e-49e4-a2b0-b37a78a00e11</Resource>
         <Scopes>
+          <Scope>profile</Scope>
+          <Scope>openid</Scope>
           <Scope>Mail.Read</Scope>
         </Scopes>
       </WebApplicationInfo>
