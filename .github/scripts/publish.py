@@ -93,25 +93,27 @@ def commit_if_needed(message: str | None) -> None:
         fail("Commit failed.", return_code)
 
 
-def push_main() -> None:
+def push_main() -> str:
     print("Pushing to origin/main...")
     run(["git", "push", "origin", "main"])
+    result = run(["git", "rev-parse", "HEAD"], capture=True)
+    return (result.stdout or "").strip()
 
 
-def get_recent_push_runs() -> List[dict[str, Any]]:
+def get_recent_push_runs(commit_sha: str) -> List[dict[str, Any]]:
     result = run(
         [
             "gh",
             "run",
             "list",
-            "--branch",
-            "main",
+            "--commit",
+            commit_sha,
             "--event",
             "push",
             "--limit",
-            "20",
+            "10",
             "--json",
-            "databaseId,name,status,conclusion,displayTitle,createdAt",
+            "databaseId,name,status,conclusion,displayTitle,createdAt,headSha",
         ],
         capture=True,
     )
@@ -125,20 +127,29 @@ def get_recent_push_runs() -> List[dict[str, Any]]:
     return filtered
 
 
-def monitor_ci() -> None:
+def monitor_ci(commit_sha: str) -> None:
     print("Monitoring GitHub Actions workflows...")
     deadline = time.time() + TIMEOUT_SECONDS
+    expected = set(WORKFLOW_NAMES)
 
     while time.time() < deadline:
-        runs = get_recent_push_runs()
+        runs = get_recent_push_runs(commit_sha)
         if not runs:
-            print("No recent push workflows found yet. Waiting...")
+            print(f"No push workflows found yet for commit {commit_sha[:7]}. Waiting...")
             time.sleep(POLL_SECONDS)
             continue
+
+        observed_names = {str(r.get("name", "")).strip().lower() for r in runs}
+        missing = expected - observed_names
 
         print("Current workflow status:")
         for run_data in runs:
             print(f"- {run_data.get('name')}: {run_data.get('status')} / {run_data.get('conclusion')}")
+
+        if missing:
+            print("Still waiting for workflows: " + ", ".join(sorted(missing)))
+            time.sleep(POLL_SECONDS)
+            continue
 
         incomplete = [r for r in runs if r.get("status") != "completed"]
         if incomplete:
@@ -173,8 +184,8 @@ def main() -> None:
     ensure_main_branch()
     validate_local()
     commit_if_needed(args.message)
-    push_main()
-    monitor_ci()
+    pushed_sha = push_main()
+    monitor_ci(pushed_sha)
     print("Publish complete.")
 
 
