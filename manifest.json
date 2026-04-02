@@ -18,8 +18,8 @@
         "termsOfUseUrl": "https://github.com/mgieselman/headerlab/blob/main/LICENSE"
     },
     "icons": {
-        "outline": "Resources/mhaLogo32.png",
-        "color": "Resources/mhaLogo192.png"
+        "outline": "Resources/headerlabLogo32.png",
+        "color": "Resources/headerlabLogo192.png"
     },
     "accentColor": "#0078D4",
     "defaultBlockUntilAdminAction": false,
@@ -102,15 +102,15 @@
                                     "icons": [
                                         {
                                             "size": 16,
-                                            "url": "https://happy-pond-01840f710.4.azurestaticapps.net/Resources/mhaLogo.jpg"
+                                            "url": "https://happy-pond-01840f710.4.azurestaticapps.net/Resources/headerlabLogo.jpg"
                                         },
                                         {
                                             "size": 32,
-                                            "url": "https://happy-pond-01840f710.4.azurestaticapps.net/Resources/mhaLogo.jpg"
+                                            "url": "https://happy-pond-01840f710.4.azurestaticapps.net/Resources/headerlabLogo.jpg"
                                         },
                                         {
                                             "size": 80,
-                                            "url": "https://happy-pond-01840f710.4.azurestaticapps.net/Resources/mhaLogo.jpg"
+                                            "url": "https://happy-pond-01840f710.4.azurestaticapps.net/Resources/headerlabLogo.jpg"
                                         }
                                     ],
                                     "controls": [
@@ -121,15 +121,15 @@
                                             "icons": [
                                                 {
                                                     "size": 16,
-                                                    "url": "https://happy-pond-01840f710.4.azurestaticapps.net/Resources/mhaLogo.jpg"
+                                                    "url": "https://happy-pond-01840f710.4.azurestaticapps.net/Resources/headerlabLogo.jpg"
                                                 },
                                                 {
                                                     "size": 32,
-                                                    "url": "https://happy-pond-01840f710.4.azurestaticapps.net/Resources/mhaLogo.jpg"
+                                                    "url": "https://happy-pond-01840f710.4.azurestaticapps.net/Resources/headerlabLogo.jpg"
                                                 },
                                                 {
                                                     "size": 80,
-                                                    "url": "https://happy-pond-01840f710.4.azurestaticapps.net/Resources/mhaLogo.jpg"
+                                                    "url": "https://happy-pond-01840f710.4.azurestaticapps.net/Resources/headerlabLogo.jpg"
                                                 }
                                             ],
                                             "supertip": {

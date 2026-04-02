@@ -12,8 +12,8 @@
   <DefaultLocale>en-US</DefaultLocale>
   <DisplayName DefaultValue="HeaderLab (Graph/NAA)" />
     <Description DefaultValue="Analyze message headers with HeaderLab using Graph API and NAA" />
-  <IconUrl DefaultValue="https://happy-pond-01840f710.4.azurestaticapps.net/Resources/mhaLogo64.jpg" />
-  <HighResolutionIconUrl DefaultValue="https://happy-pond-01840f710.4.azurestaticapps.net/Resources/mhaLogo128.jpg" />
+  <IconUrl DefaultValue="https://happy-pond-01840f710.4.azurestaticapps.net/Resources/headerlabLogo64.jpg" />
+  <HighResolutionIconUrl DefaultValue="https://happy-pond-01840f710.4.azurestaticapps.net/Resources/headerlabLogo128.jpg" />
   <SupportUrl DefaultValue="https://github.com/mgieselman/headerlab/issues" />
   <Hosts>
     <Host Name="Mailbox" />
@@ -93,9 +93,9 @@
     <Resources>
       <bt:Images>
         <!-- HeaderLab icon -->
-        <bt:Image id="headerlab-icon-16" DefaultValue="https://happy-pond-01840f710.4.azurestaticapps.net/Resources/mhaLogo.jpg"/>
-        <bt:Image id="headerlab-icon-32" DefaultValue="https://happy-pond-01840f710.4.azurestaticapps.net/Resources/mhaLogo.jpg"/>
-        <bt:Image id="headerlab-icon-80" DefaultValue="https://happy-pond-01840f710.4.azurestaticapps.net/Resources/mhaLogo.jpg"/>
+        <bt:Image id="headerlab-icon-16" DefaultValue="https://happy-pond-01840f710.4.azurestaticapps.net/Resources/headerlabLogo.jpg"/>
+        <bt:Image id="headerlab-icon-32" DefaultValue="https://happy-pond-01840f710.4.azurestaticapps.net/Resources/headerlabLogo.jpg"/>
+        <bt:Image id="headerlab-icon-80" DefaultValue="https://happy-pond-01840f710.4.azurestaticapps.net/Resources/headerlabLogo.jpg"/>
       </bt:Images>
       <bt:Urls>
         <bt:Url id="functionFile" DefaultValue="https://happy-pond-01840f710.4.azurestaticapps.net/Functions.html"/>
@@ -187,9 +187,9 @@
       <Resources>
         <bt:Images>
           <!-- HeaderLab icon -->
-          <bt:Image id="headerlab-icon-16" DefaultValue="https://happy-pond-01840f710.4.azurestaticapps.net/Resources/mhaLogo.jpg"/>
-          <bt:Image id="headerlab-icon-32" DefaultValue="https://happy-pond-01840f710.4.azurestaticapps.net/Resources/mhaLogo.jpg"/>
-          <bt:Image id="headerlab-icon-80" DefaultValue="https://happy-pond-01840f710.4.azurestaticapps.net/Resources/mhaLogo.jpg"/>
+          <bt:Image id="headerlab-icon-16" DefaultValue="https://happy-pond-01840f710.4.azurestaticapps.net/Resources/headerlabLogo.jpg"/>
+          <bt:Image id="headerlab-icon-32" DefaultValue="https://happy-pond-01840f710.4.azurestaticapps.net/Resources/headerlabLogo.jpg"/>
+          <bt:Image id="headerlab-icon-80" DefaultValue="https://happy-pond-01840f710.4.azurestaticapps.net/Resources/headerlabLogo.jpg"/>
         </bt:Images>
         <bt:Urls>
           <bt:Url id="functionFile" DefaultValue="https://happy-pond-01840f710.4.azurestaticapps.net/Functions.html"/>
