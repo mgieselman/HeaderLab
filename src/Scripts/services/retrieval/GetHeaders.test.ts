@@ -1,6 +1,7 @@
 import { GetHeaders } from "./GetHeaders";
 import { GetHeadersAPI } from "./GetHeadersAPI";
 import { GetHeadersGraph } from "./GetHeadersGraph";
+import { diagnostics } from "../Diagnostics";
 
 describe("GetHeaders.send", () => {
     afterEach(() => {
@@ -63,6 +64,7 @@ describe("GetHeaders.send", () => {
     test("does not overwrite detailed API error with generic retrieval message", async () => {
         vi.spyOn(GetHeaders, "validItem").mockReturnValue(true);
         vi.spyOn(GetHeaders, "sufficientPermission").mockReturnValue(true);
+        vi.spyOn(GetHeadersGraph, "canUseGraph").mockReturnValue(true);
         vi.spyOn(GetHeadersAPI, "send").mockImplementation(async (callbacks) => {
             callbacks.onError(new Error("test"), "Office API header request failed.");
             return "";
@@ -77,6 +79,31 @@ describe("GetHeaders.send", () => {
 
         expect(headersLoadedCallback).not.toHaveBeenCalled();
         expect(onError).toHaveBeenCalledWith(expect.any(Error), "Office API header request failed.", undefined);
+    });
+
+    test("adds Graph fallback reason when API request fails and Graph is unavailable", async () => {
+        vi.spyOn(GetHeaders, "validItem").mockReturnValue(true);
+        vi.spyOn(GetHeaders, "sufficientPermission").mockReturnValue(true);
+        vi.spyOn(GetHeadersGraph, "canUseGraph").mockReturnValue(false);
+        vi.spyOn(diagnostics, "get").mockReturnValue({ "noGraphReason": "NestedAppAuth 1.1 not supported" });
+        vi.spyOn(GetHeadersAPI, "send").mockImplementation(async (callbacks) => {
+            callbacks.onError(new Error("test"), "Office API header request failed.", true);
+            return "";
+        });
+        vi.spyOn(GetHeadersGraph, "send").mockResolvedValue("");
+
+        const headersLoadedCallback = vi.fn();
+        const onStatus = vi.fn();
+        const onError = vi.fn();
+
+        await GetHeaders.send(headersLoadedCallback, { onStatus, onError });
+
+        expect(headersLoadedCallback).not.toHaveBeenCalled();
+        expect(onError).toHaveBeenCalledWith(
+            expect.any(Error),
+            "Office API header request failed. Graph fallback unavailable: NestedAppAuth 1.1 not supported.",
+            true
+        );
     });
 
     test("does not surface API error when Graph fallback succeeds", async () => {
