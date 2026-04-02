@@ -1,5 +1,5 @@
 /**
- * Summary section: insight badges at top, then key metadata fields as label/value pairs with RFC links.
+ * Summary section: insight list at top, then key metadata fields as label/value pairs with RFC links.
  */
 
 import { violationBadge } from "./ViolationBadge";
@@ -20,10 +20,10 @@ export function renderSummary(container: HTMLElement, model: HeaderModel): void 
         return;
     }
 
-    // --- Insight badges ---
+    // --- Insight list ---
     const insights = generateInsights(model);
     if (insights.length > 0) {
-        container.appendChild(renderInsightPanel(insights));
+        container.appendChild(renderInsightList(insights));
     }
 
     // --- Key-value grid ---
@@ -61,20 +61,20 @@ export function renderSummary(container: HTMLElement, model: HeaderModel): void 
     container.appendChild(grid);
 }
 
-function renderInsightPanel(insights: Insight[]): HTMLElement {
-    const panel = el("div", { class: "hl-insights" });
+function renderInsightList(insights: Insight[]): HTMLElement {
+    const list = el("ul", { class: "hl-insights" });
 
     // Order: error first, then warning, success, info
     const order: Record<string, number> = { error: 0, warning: 1, success: 2, info: 3 };
     const sorted = [...insights].sort((a, b) => (order[a.severity] ?? 9) - (order[b.severity] ?? 9));
 
     for (const insight of sorted) {
-        const badge = el("span", {
-            class: `hl-insight hl-insight--${insight.severity}`,
-            title: insight.detail,
-        }, insight.label);
-        panel.appendChild(badge);
+        const dot = el("span", { class: `hl-insight__dot hl-insight__dot--${insight.severity}` });
+        const label = el("span", { class: "hl-insight__label" }, insight.label);
+        const detail = el("span", { class: "hl-insight__detail" }, ` \u2014 ${insight.detail}`);
+        const item = el("li", { class: `hl-insight hl-insight--${insight.severity}` }, dot, label, detail);
+        list.appendChild(item);
     }
 
-    return panel;
+    return list;
 }

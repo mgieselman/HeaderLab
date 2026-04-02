@@ -106,7 +106,7 @@ function catDescription(cat: string): InsightDesc | null {
         case "HSPM": return { severity: "error", label: "High-confidence spam", detail: "High-confidence spam message" };
         case "MALW": return { severity: "error", label: "Malware", detail: "Message contains malware" };
         case "PHSH": return { severity: "error", label: "Phishing", detail: "Message identified as phishing" };
-        case "SPM": return { severity: "error", label: "Spam", detail: "Categorized as spam by protection policy" };
+        case "SPM": return { severity: "error", label: "Categorized as spam", detail: "Categorized as spam by protection policy" };
         case "SPOOF": return { severity: "error", label: "Spoofed", detail: "Message detected as spoofed" };
         case "UIMP": return { severity: "error", label: "User impersonation", detail: "Detected as user impersonation" };
         case "AMP": return { severity: "error", label: "Anti-malware", detail: "Message contains anti-malware threat" };

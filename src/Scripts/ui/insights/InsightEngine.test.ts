@@ -152,9 +152,9 @@ describe("InsightEngine", () => {
             const model = await HeaderModel.create(spamHeaders);
             const insights = generateInsights(model);
 
-            // CAT:SPM generates a "Spam" label from catDescription
-            const catInsight = insights.find(i => i.category === "spam" && i.detail.includes("protection polic"));
+            const catInsight = findInsight(insights, "Categorized as spam");
             expect(catInsight).toBeDefined();
+            expect(catInsight?.detail).toContain("protection policy");
         });
 
         test("generates BCL warning for high bulk level", async () => {
