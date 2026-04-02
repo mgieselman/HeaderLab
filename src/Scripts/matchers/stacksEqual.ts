@@ -20,36 +20,36 @@ function cleanStack(stack: string[]) {
 }
 
 export function stacksEqual(this: { equals: (a: unknown, b: unknown) => boolean }, actualUnknown: unknown, expected: string[]) {
-        const actual = actualUnknown as string[];
-        let passed = true;
-        const messages: string[] = [];
+    const actual = actualUnknown as string[];
+    let passed = true;
+    const messages: string[] = [];
 
-        const actualStack = cleanStack(actual);
-        const expectedStack = cleanStack(expected);
+    const actualStack = cleanStack(actual);
+    const expectedStack = cleanStack(expected);
 
-        if (actualStack === undefined || actualStack === null) {
-            passed = false;
-            messages.push("actual is undefined");
-        } else if (expectedStack === undefined || expectedStack === null) {
-            passed = false;
-            messages.push("expected is undefined");
+    if (actualStack === undefined || actualStack === null) {
+        passed = false;
+        messages.push("actual is undefined");
+    } else if (expectedStack === undefined || expectedStack === null) {
+        passed = false;
+        messages.push("expected is undefined");
+    }
+    else {
+        passed = this.equals(actualStack, expectedStack);
+        if (!passed) {
+            messages.push("Stacks do not match");
+            messages.push("Actual stack:");
+            actualStack.forEach((actualItem) => { messages.push("\t" + actualItem); });
+            messages.push("Expected stack:");
+            expectedStack.forEach((expectedItem) => { messages.push("\t" + expectedItem); });
         }
-        else {
-            passed = this.equals(actualStack, expectedStack);
-            if (!passed) {
-                messages.push("Stacks do not match");
-                messages.push("Actual stack:");
-                actualStack.forEach((actualItem) => { messages.push("\t" + actualItem); });
-                messages.push("Expected stack:");
-                expectedStack.forEach((expectedItem) => { messages.push("\t" + expectedItem); });
-            }
-        }
+    }
 
-        return {
-            pass: passed,
-            message: () => messages.join("\n"),
-        };
+    return {
+        pass: passed,
+        message: () => messages.join("\n"),
     };
+};
 
 expect.extend({ stacksEqual, });
 

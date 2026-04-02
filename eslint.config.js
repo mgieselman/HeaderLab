@@ -20,16 +20,25 @@ const compat = new FlatCompat({
 });
 
 export default [{
-    ignores: ["Pages/**"],
+    ignores: ["Pages/**", "vite.config.ts", "vitest.config.ts", "vitest.setup.ts"],
 }, {
     files: ["**/*.ts","**/*.js"],
 }, ...compat.extends("eslint:recommended", "plugin:@typescript-eslint/recommended"), {
-    // Jest test files configuration
+    // Vitest test files configuration
     files: ["**/*.test.{js,ts}", "**/*.spec.{js,ts}", "**/test/**", "**/tests/**"],
     languageOptions: {
         globals: {
             ...globals.browser,
-            ...globals.jest,
+            vi: "readonly",
+            vitest: "readonly",
+            describe: "readonly",
+            it: "readonly",
+            test: "readonly",
+            expect: "readonly",
+            beforeEach: "readonly",
+            afterEach: "readonly",
+            beforeAll: "readonly",
+            afterAll: "readonly",
         },
     },
 }, {
@@ -45,7 +54,7 @@ export default [{
             ...globals.browser,
             // Office.js globals
             Office: "readonly",
-            // Webpack defined globals (replaced at build time)
+            // Vite defined globals (replaced at build time)
             __AIKEY__: "readonly",
             __BUILDTIME__: "readonly",
             __NAACLIENTID__: "readonly",
