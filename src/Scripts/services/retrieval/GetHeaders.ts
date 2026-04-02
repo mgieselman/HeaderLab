@@ -12,6 +12,12 @@ export interface HeaderCallbacks {
     onStatus: (statusText: string) => void;
 }
 
+interface RetrievalError {
+    error: unknown;
+    message: string;
+    suppressTracking: boolean | undefined;
+}
+
 export class GetHeaders {
     public static permissionLevel(): number {
         if (typeof (Office) === "undefined") return 0;
@@ -61,12 +67,11 @@ export class GetHeaders {
         headersLoadedCallback: (_headers: string, apiUsed: string) => void | Promise<void>,
         callbacks: HeaderCallbacks
     ): Promise<void> {
-        let detailedErrorReported = false;
+        let pendingDetailedError: RetrievalError | null = null;
         const wrappedCallbacks: HeaderCallbacks = {
             onStatus: (statusText: string) => callbacks.onStatus(statusText),
             onError: (error: unknown, message: string, suppressTracking?: boolean) => {
-                detailedErrorReported = true;
-                callbacks.onError(error, message, suppressTracking);
+                pendingDetailedError = { error, message, suppressTracking };
             },
         };
 
@@ -94,9 +99,17 @@ export class GetHeaders {
                 return;
             }
 
-            if (!detailedErrorReported) {
-                callbacks.onError(null, "Failed to retrieve headers.", true);
+            if (pendingDetailedError !== null) {
+                const retrievalError = pendingDetailedError as RetrievalError;
+                callbacks.onError(
+                    retrievalError.error,
+                    retrievalError.message,
+                    retrievalError.suppressTracking
+                );
+                return;
             }
+
+            callbacks.onError(null, "Failed to retrieve headers.", true);
         } catch (e) {
             callbacks.onError(e, "Could not send header request");
         }

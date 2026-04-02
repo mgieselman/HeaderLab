@@ -5,7 +5,7 @@ import { errors } from "../Errors";
 export class GetHeadersAPI {
     public static canUseAPI(): boolean { return GetHeaders.canUseAPI(); }
 
-    private static async getAllInternetHeaders(item: Office.MessageRead): Promise<string> {
+    private static async getAllInternetHeaders(item: Office.MessageRead, callbacks: HeaderCallbacks): Promise<string> {
         return new Promise((resolve) => {
             item.getAllInternetHeadersAsync((asyncResult) => {
                 if (asyncResult.status === Office.AsyncResultStatus.Succeeded) {
@@ -13,6 +13,7 @@ export class GetHeadersAPI {
                 } else {
                     diagnostics.set("getAllInternetHeadersAsyncFailure", JSON.stringify(asyncResult));
                     errors.log(asyncResult.error, "getAllInternetHeadersAsync failed.\nFallback to Rest.\n" + JSON.stringify(asyncResult, null, 2), true);
+                    callbacks.onError(asyncResult.error, "Office API header request failed.", true);
                     resolve("");
                 }
             });
@@ -32,7 +33,7 @@ export class GetHeadersAPI {
         callbacks.onStatus("Retrieving headers from server.");
 
         try {
-            const headers = await GetHeadersAPI.getAllInternetHeaders(Office.context.mailbox.item);
+            const headers = await GetHeadersAPI.getAllInternetHeaders(Office.context.mailbox.item, callbacks);
             return headers;
         }
         catch (e) {

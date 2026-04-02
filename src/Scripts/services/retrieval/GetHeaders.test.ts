@@ -79,6 +79,25 @@ describe("GetHeaders.send", () => {
         expect(onError).toHaveBeenCalledWith(expect.any(Error), "Office API header request failed.", undefined);
     });
 
+    test("does not surface API error when Graph fallback succeeds", async () => {
+        vi.spyOn(GetHeaders, "validItem").mockReturnValue(true);
+        vi.spyOn(GetHeaders, "sufficientPermission").mockReturnValue(true);
+        vi.spyOn(GetHeadersAPI, "send").mockImplementation(async (callbacks) => {
+            callbacks.onError(new Error("test"), "Office API header request failed.", true);
+            return "";
+        });
+        vi.spyOn(GetHeadersGraph, "send").mockResolvedValue("Received: from graph");
+
+        const headersLoadedCallback = vi.fn();
+        const onStatus = vi.fn();
+        const onError = vi.fn();
+
+        await GetHeaders.send(headersLoadedCallback, { onStatus, onError });
+
+        expect(headersLoadedCallback).toHaveBeenCalledWith("Received: from graph", "Graph");
+        expect(onError).not.toHaveBeenCalled();
+    });
+
     test("does not overwrite Graph auth token error with generic retrieval message", async () => {
         vi.spyOn(GetHeaders, "validItem").mockReturnValue(true);
         vi.spyOn(GetHeaders, "sufficientPermission").mockReturnValue(true);
