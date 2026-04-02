@@ -228,9 +228,15 @@
 /* Collapsible / Details */
 .hl-details {
     border: 1px solid var(--color-border);
+    border-left-width: 3px;
     border-radius: var(--radius-sm);
     margin-bottom: 0.5rem;
 }
+
+.hl-details--error { border-left-color: var(--color-error); }
+.hl-details--warning { border-left-color: var(--color-warning); }
+.hl-details--info { border-left-color: var(--color-info); }
+.hl-details--success { border-left-color: var(--color-success); }
 
 .hl-details summary {
     padding: 0.5rem 0.75rem;
@@ -372,26 +378,26 @@
     align-items: center;
     gap: 0.75rem;
     padding: 0.75rem 1rem;
-    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
+    border-left-width: 3px;
+    border-radius: var(--radius-sm);
     margin-bottom: 1rem;
     font-size: 0.9rem;
+    font-weight: 600;
 }
 
 .hl-diagnostics-banner--error {
-    background: var(--color-error-bg);
-    border: 1px solid var(--color-error);
+    border-left-color: var(--color-error);
     color: var(--color-error);
 }
 
 .hl-diagnostics-banner--warning {
-    background: var(--color-warning-bg);
-    border: 1px solid var(--color-warning);
+    border-left-color: var(--color-warning);
     color: var(--color-warning);
 }
 
 .hl-diagnostics-banner--info {
-    background: var(--color-info-bg);
-    border: 1px solid var(--color-info);
+    border-left-color: var(--color-info);
     color: var(--color-info);
 }
 
@@ -401,9 +407,9 @@
     align-items: flex-start;
     gap: 0.5rem;
     padding: 0.75rem 1rem;
-    background: var(--color-error-bg);
-    border: 1px solid var(--color-error);
-    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
+    border-left: 3px solid var(--color-error);
+    border-radius: var(--radius-sm);
     margin-bottom: 0.75rem;
     color: var(--color-error);
     font-size: 0.9rem;
