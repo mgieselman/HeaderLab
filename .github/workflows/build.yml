@@ -39,8 +39,7 @@ jobs:
           HEADERLAB_NAA_CLIENT_ID: ${{ secrets.HEADERLAB_NAA_CLIENT_ID }}
         run: |
           if [ -z "${HEADERLAB_NAA_CLIENT_ID}" ]; then
-            echo "HEADERLAB_NAA_CLIENT_ID secret is required for Graph/NAA support." >&2
-            exit 1
+            echo "Warning: HEADERLAB_NAA_CLIENT_ID is not set. Graph/NAA fallback will be unavailable." >&2
           fi
           npm ci
           npm run build --if-present
