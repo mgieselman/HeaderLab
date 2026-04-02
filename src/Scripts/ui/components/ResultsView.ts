@@ -21,7 +21,7 @@ export function renderResults(container: HTMLElement, state: AppState): void {
 
     switch (state.activeTab) {
         case "summary":
-            renderSummary(container, model.summary, model.summary.totalTime, model.violationGroups);
+            renderSummary(container, model);
             break;
         case "routing":
             renderRouting(container, model.receivedHeaders);

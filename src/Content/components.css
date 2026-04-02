@@ -166,6 +166,47 @@
     color: var(--color-success);
 }
 
+/* Insight badges */
+.hl-insights {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.375rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.hl-insight {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: default;
+}
+
+.hl-insight--error {
+    background: var(--color-error-bg);
+    color: var(--color-error);
+}
+
+.hl-insight--warning {
+    background: var(--color-warning-bg);
+    color: var(--color-warning);
+}
+
+.hl-insight--success {
+    background: var(--color-success-bg);
+    color: var(--color-success);
+}
+
+.hl-insight--info {
+    background: var(--color-info-bg);
+    color: var(--color-info);
+}
+
 /* Violation highlight */
 .highlight-violation {
     background: var(--color-highlight);
