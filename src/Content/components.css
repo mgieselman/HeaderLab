@@ -473,12 +473,25 @@
     gap: 0.5rem;
     margin-bottom: 0.375rem;
     font-weight: 600;
+    color: var(--color-text);
 }
 
 .hl-other-item__number {
     color: var(--color-accent);
     min-width: 1.5rem;
     font-weight: 700;
+}
+
+.hl-other-item__name {
+    color: var(--color-text);
+}
+
+.hl-other-item__name a {
+    color: inherit;
+}
+
+.hl-other-item__name a:hover {
+    color: var(--color-text);
 }
 
 .hl-other-item__value {
