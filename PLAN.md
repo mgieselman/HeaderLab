@@ -13,7 +13,7 @@
 - Delete `src/Scripts/TabNavigation.ts` and `src/Scripts/TabNavigation.test.ts`
 
 **0.2 Delete HTML pages**
-- Delete all files in `src/Pages/` (mha.html, uitoggle.html, privacy.html, and all redirect pages)
+- Delete all files in `src/Pages/` (headerlab.html, uitoggle.html, privacy.html, and all redirect pages)
 
 **0.3 Delete CSS**
 - Delete all files in `src/Content/` (fluentCommon.css, newDesktopFrame.css, standalone.css, uiToggle.css, rulesCommon.css, themeColors.css, privacy.css, and theme files)

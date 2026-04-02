@@ -13,9 +13,9 @@
     },
     "developer": {
         "name": "Stephen Griffin",
-        "websiteUrl": "https://github.com/microsoft/MHA",
+        "websiteUrl": "https://github.com/mgieselman/headerlab",
         "privacyUrl": "https://happy-pond-01840f710.4.azurestaticapps.net/privacy.html",
-        "termsOfUseUrl": "https://github.com/microsoft/MHA/blob/main/LICENSE"
+        "termsOfUseUrl": "https://github.com/mgieselman/headerlab/blob/main/LICENSE"
     },
     "icons": {
         "outline": "Resources/mhaLogo32.png",

@@ -1,5 +1,5 @@
 {
-  "name": "mha",
+  "name": "headerlab",
   "version": "1.0.0",
   "description": "HeaderLab — Email Header Analyzer",
   "type": "module",
@@ -28,7 +28,7 @@
   "keywords": [],
   "repository": {
     "type": "git",
-    "url": "https://github.com/microsoft/MHA.git"
+    "url": "https://github.com/mgieselman/headerlab.git"
   },
   "author": "Stephen Griffin",
   "license": "MIT",
@@ -38,9 +38,9 @@
     "dev_server_port": 44336
   },
   "bugs": {
-    "url": "https://github.com/microsoft/MHA/issues"
+    "url": "https://github.com/mgieselman/headerlab/issues"
   },
-  "homepage": "https://github.com/microsoft/MHA#readme",
+  "homepage": "https://github.com/mgieselman/headerlab#readme",
   "devDependencies": {
     "@eslint/compat": "^2.0.3",
     "@eslint/eslintrc": "^3.3.5",

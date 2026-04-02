@@ -88,7 +88,7 @@ export default [{
             SwitchCase: 1,
         }],
 
-        "linebreak-style": ["error", "windows"],
+        "linebreak-style": "off",
         quotes: ["error", "double"],
         semi: ["error", "always"],
         "max-classes-per-file": ["error", 1],

@@ -5,6 +5,7 @@
 import { statusLabels } from "../../core/labels";
 import { Strings } from "../../core/Strings";
 import { HeaderModel } from "../../model/HeaderModel";
+import { buildAnalysisJson, buildAnalystReport } from "../analysisExport";
 import { el } from "../rendering/dom";
 import { sampleHeaders } from "../sampleData";
 import { AppState } from "../state/AppState";
@@ -53,15 +54,42 @@ export function createHeaderInput(state: AppState): HTMLElement {
     const copyBtn = el("button", {
         class: "hl-btn",
         onclick: async () => {
+            const resultsPanel = document.querySelector(".hl-results") as HTMLElement | null;
+            const text = resultsPanel?.innerText?.trim();
+            if (!text) {
+                state.setStatus(statusLabels.nothingToCopy);
+                return;
+            }
+            await Strings.copyToClipboard(text);
+            state.setStatus(statusLabels.copied);
+        },
+    }, "Copy");
+
+    const copyJsonBtn = el("button", {
+        class: "hl-btn",
+        onclick: async () => {
             const model = state.headerModel;
             if (!model || !model.hasData) {
                 state.setStatus(statusLabels.nothingToCopy);
                 return;
             }
-            await Strings.copyToClipboard(model.toString());
-            state.setStatus(statusLabels.copied);
+            await Strings.copyToClipboard(buildAnalysisJson(model));
+            state.setStatus("JSON copied to clipboard!");
         },
-    }, "Copy");
+    }, "Copy JSON");
+
+    const copyReportBtn = el("button", {
+        class: "hl-btn",
+        onclick: async () => {
+            const model = state.headerModel;
+            if (!model || !model.hasData) {
+                state.setStatus(statusLabels.nothingToCopy);
+                return;
+            }
+            await Strings.copyToClipboard(buildAnalystReport(model));
+            state.setStatus("Report copied to clipboard!");
+        },
+    }, "Copy Report");
 
     const sampleBtn = el("button", {
         class: "hl-btn hl-btn--small",
@@ -76,7 +104,16 @@ export function createHeaderInput(state: AppState): HTMLElement {
         (analyzeBtn as HTMLButtonElement).disabled = !textarea.value.trim();
     });
 
-    const actions = el("div", { class: "hl-input__actions" }, analyzeBtn, clearBtn, copyBtn, sampleBtn);
+    const actions = el(
+        "div",
+        { class: "hl-input__actions" },
+        analyzeBtn,
+        clearBtn,
+        copyBtn,
+        copyJsonBtn,
+        copyReportBtn,
+        sampleBtn
+    );
 
     section.appendChild(textarea);
     section.appendChild(actions);

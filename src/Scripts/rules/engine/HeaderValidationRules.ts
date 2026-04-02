@@ -214,7 +214,8 @@ export class HeaderValidationRulesEngine {
             }
 
             // Find all occurrences of the section the rule says to flag
-            const sectionsToFlag = findSectionSubSection(setOfSections, sectionRuleSaysToFlag);
+            // Pass matchHeaderName=false to avoid flagging every row in a section
+            const sectionsToFlag = findSectionSubSection(setOfSections, sectionRuleSaysToFlag, false);
 
             if (sectionsToFlag.length === 0) {
                 // If no sections exist to flag, create a placeholder section
@@ -256,7 +257,7 @@ export class HeaderValidationRulesEngine {
                 const breakoutSectionName = match[1];
 
                 // Find the broken-out row section (e.g., "SFV", "IPV", "BCL", etc.)
-                const breakoutSections = findSectionSubSection(setOfSections, breakoutSectionName);
+                const breakoutSections = findSectionSubSection(setOfSections, breakoutSectionName, false);
 
                 // Flag the broken-out section with this same rule
                 breakoutSections.forEach((breakoutSection) => {
@@ -271,14 +272,19 @@ export class HeaderValidationRulesEngine {
 export const headerValidationRules = new HeaderValidationRulesEngine();
 
 /**
- * In the set of sections (array of array of sections) find all of them with particular name
+ * In the set of sections (array of array of sections) find all of them with particular name.
+ * When matchHeaderName is true (default), also matches rows whose headerName property equals the
+ * search string. Set to false when flagging specific rows to avoid over-matching all rows in a
+ * section that share the same headerName (e.g. all ForefrontAntiSpamReport rows have
+ * headerName === "X-Forefront-Antispam-Report").
  */
-export function findSectionSubSection(setOfSections: HeaderSection[][], subSectionLookingFor: string): HeaderSection[] {
+export function findSectionSubSection(setOfSections: HeaderSection[][], subSectionLookingFor: string, matchHeaderName = true): HeaderSection[] {
     const results: HeaderSection[] = [];
 
     setOfSections.forEach((section) => {
         section.forEach((subSection) => {
-            if (subSection.header === subSectionLookingFor || subSection.headerName === subSectionLookingFor) {
+            if (subSection.header === subSectionLookingFor ||
+                (matchHeaderName && subSection.headerName === subSectionLookingFor)) {
                 results.push(subSection);
             }
         });

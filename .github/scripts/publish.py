@@ -30,7 +30,7 @@ VALIDATION_COMMANDS: List[List[str]] = [
     ["npm", "run", "size"],
 ]
 
-WORKFLOW_NAMES = {"test", "build and deploy mha"}
+WORKFLOW_NAMES = {"test", "build and deploy headerlab"}
 
 
 def run(cmd: List[str], check: bool = True, capture: bool = False) -> subprocess.CompletedProcess[str]:
