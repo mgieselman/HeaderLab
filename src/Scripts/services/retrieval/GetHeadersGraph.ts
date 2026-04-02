@@ -107,6 +107,8 @@ export class GetHeadersGraph {
                 diagnostics.set("graphGetHeadersFailure", response.status + " " + response.statusText);
                 if (response.status === 404) {
                     callbacks.onError(null, "Message not located.", true);
+                } else {
+                    callbacks.onError(null, "Unable to retrieve headers (HTTP " + response.status + ").", true);
                 }
 
                 return "";
@@ -142,11 +144,15 @@ export class GetHeadersGraph {
 
         try {
             const accessToken = await GetHeadersGraph.getAccessToken();
+            if (!accessToken) {
+                callbacks.onError(null, "Unable to retrieve auth token for header request.", true);
+                return "";
+            }
             const headers = await GetHeadersGraph.getHeaders(accessToken, callbacks);
             return headers;
         }
         catch (e) {
-            errors.log(e, "Failed in Graph/NAA flow");
+            callbacks.onError(e, "Failed in Graph/NAA flow");
         }
 
         return "";
