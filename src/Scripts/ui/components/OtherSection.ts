@@ -12,32 +12,31 @@ export function renderOther(container: HTMLElement, other: Other): void {
         return;
     }
 
-    const table = el("table", { class: "hl-table" });
-    const thead = el("thead");
-    thead.appendChild(el("tr", null,
-        el("th", null, "#"),
-        el("th", null, "Header"),
-        el("th", null, "Value")
-    ));
-    table.appendChild(thead);
-
-    const tbody = el("tbody");
     for (const row of other.rows) {
-        const tr = el("tr");
-        tr.appendChild(el("td", null, String(row.number)));
+        container.appendChild(renderOtherRow(row));
+    }
+}
 
-        const headerTd = el("td");
-        if (row.url) {
-            headerTd.appendChild(el("a", { href: row.url, target: "_blank", rel: "noopener" }, row.header));
-        } else {
-            headerTd.textContent = row.header;
-        }
-        tr.appendChild(headerTd);
+function renderOtherRow(row: { number: number; header: string; value: string; url: string }): HTMLElement {
+    const card = el("div", { class: "hl-other-item" });
 
-        tr.appendChild(el("td", null, row.value));
-        tbody.appendChild(tr);
+    // Header line: number and header name
+    const header = el("div", { class: "hl-other-item__header" });
+    header.appendChild(el("span", { class: "hl-other-item__number" }, `#${row.number}`));
+
+    const headerSpan = el("span");
+    if (row.url) {
+        headerSpan.appendChild(el("a", { href: row.url, target: "_blank", rel: "noopener" }, row.header));
+    } else {
+        headerSpan.textContent = row.header;
+    }
+    header.appendChild(headerSpan);
+    card.appendChild(header);
+
+    // Value
+    if (row.value) {
+        card.appendChild(el("div", { class: "hl-other-item__value" }, row.value));
     }
 
-    table.appendChild(tbody);
-    container.appendChild(table);
+    return card;
 }
