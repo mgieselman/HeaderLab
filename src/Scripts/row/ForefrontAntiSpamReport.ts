@@ -23,9 +23,14 @@ export class ForefrontAntiSpamReport extends AntiSpamReport {
         new Row("SRV", antispamLabels.srv, "X-Forefront-Antispam-Report"),
         new Row("X-CustomSpam", antispamLabels.customSpam, "X-Forefront-Antispam-Report"),
         new Row("SFS", antispamLabels.sfs, "X-Forefront-Antispam-Report"),
+        new Row("DIR", antispamLabels.dir, "X-Forefront-Antispam-Report"),
         new Row("source", antispamLabels.source, "X-Forefront-Antispam-Report"),
         new Row("unparsed", antispamLabels.unparsed, "X-Forefront-Antispam-Report")
     ];
+
+    protected override shouldAddUnparsedField(key: string, value: string | undefined): boolean {
+        return value !== "";
+    }
 
     public override add(header: Header): boolean {
         if (header.header.toUpperCase() === "X-Forefront-Antispam-Report".toUpperCase()) {

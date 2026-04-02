@@ -20,12 +20,7 @@ export function renderSummary(container: HTMLElement, summary: Summary, totalTim
     for (const row of summary.rows) {
         if (!row.value) continue;
 
-        const keyEl = el("span", { class: "hl-kv__key" });
-        if (row.url) {
-            keyEl.appendChild(el("a", { href: row.url, target: "_blank", rel: "noopener" }, row.label));
-        } else {
-            keyEl.textContent = row.label;
-        }
+        const keyEl = el("span", { class: "hl-kv__key" }, row.label);
 
         const valEl = el("span", { class: "hl-kv__value" });
         // Show value with postFix for creation time

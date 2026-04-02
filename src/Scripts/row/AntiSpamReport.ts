@@ -41,6 +41,12 @@ export class AntiSpamReport extends SummaryTable {
         return false;
     }
 
+    protected shouldAddUnparsedField(key: string, value: string | undefined): boolean {
+        void key;
+        void value;
+        return true;
+    }
+
     // https://docs.microsoft.com/en-us/microsoft-365/security/office-365-security/anti-spam-message-headers
     public parse(report: string): void {
         this.sourceInternal = report;
@@ -66,7 +72,7 @@ export class AntiSpamReport extends SummaryTable {
             for (let iLine = 0; iLine < lines.length; iLine++) {
                 const line = lines[iLine]?.match(/(.*?):(.*?);/m);
                 if (line && line[1]) {
-                    if (line[2] === undefined || !this.setRowValue(this.rows, line[1], line[2])) {
+                    if ((line[2] === undefined || !this.setRowValue(this.rows, line[1], line[2])) && this.shouldAddUnparsedField(line[1], line[2])) {
                         this.unparsedInternal += line[1] + ":" + line[2] + ";";
                     }
                 }

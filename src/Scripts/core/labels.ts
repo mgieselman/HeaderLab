@@ -84,5 +84,6 @@ export const antispamLabels = {
     srv: "Bulk email status",
     customSpam: "Advanced Spam Filtering",
     sfs: "Spam rules",
+    dir: "Directionality",
     bcl: "Bulk Complaint Level",
 } as const;
