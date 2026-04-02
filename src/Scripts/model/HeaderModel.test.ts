@@ -6,54 +6,120 @@ import { HeaderModel } from "./HeaderModel";
 // TODO: Move this to a global setup file
 Object.assign(global, { TextDecoder, TextEncoder }); // eslint-disable-line @typescript-eslint/naming-convention
 
-// Full real-world headers from an ActiveCampaign spam message
-const fullSpamHeaders =
-    "Received: from DS7PR06MB6790.namprd06.prod.outlook.com (::1) by\r\n" +
-    " CH3PPF3CC9C8367.namprd06.prod.outlook.com with HTTPS; Wed, 1 Apr 2026\r\n" +
-    " 14:05:55 +0000\r\n" +
-    "Received: from BY5PR04CA0017.namprd04.prod.outlook.com (2603:10b6:a03:1d0::27)\r\n" +
-    " by DS7PR06MB6790.namprd06.prod.outlook.com (2603:10b6:5:2ce::8) with\r\n" +
-    " Microsoft SMTP Server (version=TLS1_2,\r\n" +
-    " cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9769.17; Wed, 1 Apr\r\n" +
-    " 2026 14:05:52 +0000\r\n" +
-    "Received: from CO1PEPF000066E8.namprd05.prod.outlook.com\r\n" +
-    " (2603:10b6:a03:1d0:cafe::de) by BY5PR04CA0017.outlook.office365.com\r\n" +
-    " (2603:10b6:a03:1d0::27) with Microsoft SMTP Server (version=TLS1_3,\r\n" +
-    " cipher=TLS_AES_256_GCM_SHA384) id 15.20.9745.29 via Frontend Transport; Wed,\r\n" +
-    " 1 Apr 2026 14:05:51 +0000\r\n" +
-    "Authentication-Results: spf=pass (sender IP is 52.128.44.60)\r\n" +
-    " smtp.mailfrom=em-4103690.goodchoicelending.com; dkim=pass (signature was\r\n" +
-    " verified) header.d=goodchoicelending.com;dkim=pass (signature was verified)\r\n" +
-    " header.d=mailersys.com;dmarc=pass action=none\r\n" +
-    " header.from=goodchoicelending.com;compauth=pass reason=100\r\n" +
-    "Received-SPF: Pass (protection.outlook.com: domain of\r\n" +
-    " em-4103690.goodchoicelending.com designates 52.128.44.60 as permitted sender)\r\n" +
-    " receiver=protection.outlook.com; client-ip=52.128.44.60;\r\n" +
-    " helo=mail60.use2.acemsrvh.com; pr=C\r\n" +
-    "Received: from mail60.use2.acemsrvh.com (52.128.44.60) by\r\n" +
-    " CO1PEPF000066E8.mail.protection.outlook.com (10.167.249.6) with Microsoft\r\n" +
-    " SMTP Server (version=TLS1_3, cipher=TLS_AES_256_GCM_SHA384) id 15.20.9769.17\r\n" +
-    " via Frontend Transport; Wed, 1 Apr 2026 14:05:51 +0000\r\n" +
-    "X-KumoRef: eyJfQF8iOiJcXF8vIiwicmVjaXBpZW50IjoibWF0dEBnaWVzZWxtYW4uY29tIn0=\r\n" +
-    "DKIM-Signature: v=1; a=rsa-sha256; d=goodchoicelending.com; s=acdkim1; c=relaxed/relaxed;\r\n" +
-    "\tbh=LGFsenwvDen6zoLqlaHutEa0zWNU4lgWt7YuL7Du/l4=;\r\n" +
-    "\th=from:to:subject:date:mime-version:content-type;\r\n" +
-    "\tb=nqTgOumUcI8+oLGtFF5P56ZgLLaMecxlQH5jenXZid8V;\r\n" +
-    "Date: Wed, 1 Apr 2026 14:05:50 +0000 (GMT)\r\n" +
-    "From: Christian Burke <cburke@goodchoicelending.com>\r\n" +
-    "To: matt@gieselman.com\r\n" +
-    "Message-ID: <1609494806.2994157.1775052350566@service-8>\r\n" +
-    "Subject: LOC Updated Review - Gieselman Software\r\n" +
-    "MIME-Version: 1.0\r\n" +
-    "Content-Type: multipart/alternative;\r\n" +
-    "\tboundary=\"----=_Part_2994156_470094321.1775052350566\"\r\n" +
-    "X-MS-Exchange-Organization-SCL: 5\r\n" +
-    "X-Forefront-Antispam-Report:\r\n" +
-    " CIP:52.128.44.60;CTRY:US;LANG:en;SCL:5;SRV:;IPV:NLI;SFV:SPM;H:mail60.use2.acemsrvh.com;PTR:mail60.use2.acemsrvh.com;CAT:SPM;SFS:(13230040)(704162311799003)(4022899009);DIR:INB;\r\n" +
-    "X-Microsoft-Antispam:\r\n" +
-    " BCL:0;ARA:13230040|704162311799003;\r\n" +
-    "X-Microsoft-Antispam-Mailbox-Delivery:\r\n" +
-    "\tucf:0;jmr:0;auth:0;dest:J;OFR:SpamFilterAuthJ;ENG:(910005)(944490095);RF:JunkEmail;\r\n";
+// Full real-world headers from an ActiveCampaign spam message (SFV:SPM).
+// Antispam headers have values entirely on continuation lines (folded per RFC 5322).
+const fullSpamHeaders = [
+    "Received: from DS7PR06MB6790.namprd06.prod.outlook.com (::1) by",
+    " CH3PPF3CC9C8367.namprd06.prod.outlook.com with HTTPS; Wed, 1 Apr 2026",
+    " 14:05:55 +0000",
+    "Received: from BY5PR04CA0017.namprd04.prod.outlook.com (2603:10b6:a03:1d0::27)",
+    " by DS7PR06MB6790.namprd06.prod.outlook.com (2603:10b6:5:2ce::8) with",
+    " Microsoft SMTP Server (version=TLS1_2,",
+    " cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9769.17; Wed, 1 Apr",
+    " 2026 14:05:52 +0000",
+    "Received: from CO1PEPF000066E8.namprd05.prod.outlook.com",
+    " (2603:10b6:a03:1d0:cafe::de) by BY5PR04CA0017.outlook.office365.com",
+    " (2603:10b6:a03:1d0::27) with Microsoft SMTP Server (version=TLS1_3,",
+    " cipher=TLS_AES_256_GCM_SHA384) id 15.20.9745.29 via Frontend Transport; Wed,",
+    " 1 Apr 2026 14:05:51 +0000",
+    "Authentication-Results: spf=pass (sender IP is 52.128.44.60)",
+    " smtp.mailfrom=em-4103690.goodchoicelending.com; dkim=pass (signature was",
+    " verified) header.d=goodchoicelending.com;dkim=pass (signature was verified)",
+    " header.d=mailersys.com;dmarc=pass action=none",
+    " header.from=goodchoicelending.com;compauth=pass reason=100",
+    "Received-SPF: Pass (protection.outlook.com: domain of",
+    " em-4103690.goodchoicelending.com designates 52.128.44.60 as permitted sender)",
+    " receiver=protection.outlook.com; client-ip=52.128.44.60;",
+    " helo=mail60.use2.acemsrvh.com; pr=C",
+    "Received: from mail60.use2.acemsrvh.com (52.128.44.60) by",
+    " CO1PEPF000066E8.mail.protection.outlook.com (10.167.249.6) with Microsoft",
+    " SMTP Server (version=TLS1_3, cipher=TLS_AES_256_GCM_SHA384) id 15.20.9769.17",
+    " via Frontend Transport; Wed, 1 Apr 2026 14:05:51 +0000",
+    "X-KumoRef: eyJfQF8iOiJcXF8vIiwicmVjaXBpZW50IjoibWF0dEBnaWVzZWxtYW4uY29tIn0=",
+    "DKIM-Signature: v=1; a=rsa-sha256; d=goodchoicelending.com; s=acdkim1; c=relaxed/relaxed;",
+    "\tbh=LGFsenwvDen6zoLqlaHutEa0zWNU4lgWt7YuL7Du/l4=;",
+    "\th=from:to:subject:date:mime-version:content-type:sender:cc:date:message-id:",
+    "\t\tlist-unsubscribe:list-unsubscribe-post; t=1775052350; x=1775138750;",
+    "\tb=nqTgOumUcI8+oLGtFF5P56ZgLLaMecxlQH5jenXZid8V+cQRK6CqZW1OxpV9+HKtNJ40kQLAP",
+    "\tIO+IUDkL9qzKm5cCXpjzGGIBUxAMtFizMVki2Chl6sSig8vOp4r+zLfz9orXmLCeZGpJRSTMG6r",
+    "\tW7NzDEI20lNwFxPSjaHoXWNd8Rw5cZFykzAktyv/NWNeAj3dHCllFcGdjYafmEqCqfgLF+LO52D",
+    "\t+9sUJq0ZxSQcUn690JE6ygLzf3j6pcKMMLsKgt9T1I5NwcIcQWB35BBu4jpfAJUJaAyi6FC03+s",
+    "\trb5XjYpBfAhr6FnuvSwdA57S6PCyXXl2OI96c4jhwd/w==;",
+    "DKIM-Signature: v=1; a=rsa-sha256; d=mailersys.com; s=acdkim1; c=relaxed/relaxed;",
+    "\tbh=LGFsenwvDen6zoLqlaHutEa0zWNU4lgWt7YuL7Du/l4=;",
+    "\th=from:to:subject:date:mime-version:content-type:sender:cc:date:message-id:",
+    "\t\tlist-unsubscribe:list-unsubscribe-post; t=1775052350; x=1775138750;",
+    "\tb=dA2BDC/fUDdAjgp6nTKcQQlzVa1kRL2IwYHPT9F1jRaRpsvpT2lJHoPhtK1+zlicNfQNo6smr",
+    "\t4d4OedDcYeUbo3uERs8HZPClFQXqQY786DTv0Jh24aZGT/GIvAXyBhMo0sh+a7uI3My+VQqnLH1",
+    "\tlQaBs1icJwgwXos1e/JYYGfeVx1264CpKbjg05ZrMXgu4oxoOBYOIkAWWqQPC626rdPFjiqk8bl",
+    "\tIExXpUOM0tgv44nLYYXcTtRiHvxYitoku5EUt34Dsitqs/tpAP//2vdi5y06j31VaEJ7hfbeH45",
+    "\tS0Xlwlos+DnPXGDKEuWIZxzwBZk5ylL/GAmuaF8YD5wA==;",
+    "CFBL-Address: fbl-report@acems1.com; report=arf",
+    "X-Mailer: ActiveCampaign Mailer",
+    "Received: from service-8 (10.96.153.38)",
+    "  by acems1.com (KumoMTA 10.96.112.98)",
+    "  with ESMTPS (TLSv1_3:TLS13_AES_256_GCM_SHA384)  id e3a3b8582dd311f1a07502c82f9c3d17 for <matt@gieselman.com>;",
+    "  Wed, 1 Apr 2026 14:05:50 +0000",
+    "Date: Wed, 1 Apr 2026 14:05:50 +0000 (GMT)",
+    "From: Christian Burke <cburke@goodchoicelending.com>",
+    "To: matt@gieselman.com",
+    "Message-ID: <1609494806.2994157.1775052350566@service-8>",
+    "Subject: LOC Updated Review - Gieselman Software",
+    "MIME-Version: 1.0",
+    "Content-Type: multipart/alternative;",
+    "\tboundary=\"----=_Part_2994156_470094321.1775052350566\"",
+    "X-DKIM-Options: s=acdkim1",
+    "List-Unsubscribe-Post: List-Unsubscribe=One-Click",
+    "X-Virtual-Mta: camp-use2-a-c4-60-60",
+    "X-250ok-CID: 4103690-66",
+    "List-Unsubscribe: <https://ongreencapital.activehosted.com/box.php?nl=4&c=66&m=70&s=e94fa5aeb419eb68df1cb36bda1efdf4&funcml=unsub2&luha=1>,<mailto:unsubscribe-1745852455e72478b3f2f7925720917d-66-e94fa5aeb419eb68df1cb36bda1efdf4@mail60.use2.acemsrvh.com>",
+    "Feedback-ID: 4103690:activecampaign",
+    "X-Sending-Engine: Hedwig PCS",
+    "X-Report-Abuse: Please report abuse to abuse@activecampaign.com",
+    "X-lid: bWF0dEBnaWVzZWxtYW4uY29tICwgYzY2ICwgbTcwICwgczYxICwgbDQ=",
+    "X-mid: bWF0dEBnaWVzZWxtYW4uY29tICwgYzY2ICwgbTcwICwgczYx",
+    "Return-Path:",
+    " bounce-4103690-66-257966-matt=gieselman.com@em-4103690.goodchoicelending.com",
+    "X-MS-Exchange-Organization-ExpirationStartTime: 01 Apr 2026 14:05:51.4542",
+    " (UTC)",
+    "X-MS-Exchange-Organization-ExpirationStartTimeReason: OriginalSubmit",
+    "X-MS-Exchange-Organization-ExpirationInterval: 1:00:00:00.0000000",
+    "X-MS-Exchange-Organization-ExpirationIntervalReason: OriginalSubmit",
+    "X-MS-Exchange-Organization-Network-Message-Id:",
+    " 47b268fb-f2f8-4bdb-d917-08de8ff7c85e",
+    "X-EOPAttributedMessage: 0",
+    "X-EOPTenantAttributedMessage: 69f07252-6e66-4044-a080-41efced2196f:0",
+    "X-MS-Exchange-Organization-MessageDirectionality: Incoming",
+    "X-MS-PublicTrafficType: Email",
+    "X-MS-TrafficTypeDiagnostic:",
+    " CO1PEPF000066E8:EE_|DS7PR06MB6790:EE_|CH3PPF3CC9C8367:EE_",
+    "X-MS-Exchange-Organization-AuthSource:",
+    " CO1PEPF000066E8.namprd05.prod.outlook.com",
+    "X-MS-Exchange-Organization-AuthAs: Anonymous",
+    "X-MS-Office365-Filtering-Correlation-Id: 47b268fb-f2f8-4bdb-d917-08de8ff7c85e",
+    "X-MS-Exchange-Organization-SCL: 5",
+    "X-Forefront-Antispam-Report:",
+    " CIP:52.128.44.60;CTRY:US;LANG:en;SCL:5;SRV:;IPV:NLI;SFV:SPM;H:mail60.use2.acemsrvh.com;PTR:mail60.use2.acemsrvh.com;CAT:SPM;SFS:(13230040)(704162311799003)(4022899009)(4123199012)(5062899012)(7049299003)(3072899012)(2092899012)(3109299003)(5073199012)(5063199012)(12012899012)(69100299015)(1032899013)(7149299003)(20209132999009)(2066899003)(4076899003)(8096899003)(13003099007)(16102099003)(56012099003)(21082099003)(19002099003)(18002099003)(8112999003);DIR:INB;",
+    "X-Microsoft-Antispam:",
+    " BCL:0;ARA:13230040|704162311799003|4022899009|4123199012|5062899012|7049299003|3072899012|2092899012|3109299003|5073199012|5063199012|12012899012|69100299015|1032899013|7149299003|20209132999009|2066899003|4076899003|8096899003|13003099007|16102099003|56012099003|21082099003|19002099003|18002099003|8112999003;",
+    "X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Apr 2026 14:05:51.2293",
+    " (UTC)",
+    "X-MS-Exchange-CrossTenant-Network-Message-Id: 47b268fb-f2f8-4bdb-d917-08de8ff7c85e",
+    "X-MS-Exchange-CrossTenant-Id: 69f07252-6e66-4044-a080-41efced2196f",
+    "X-MS-Exchange-CrossTenant-AuthSource:",
+    " CO1PEPF000066E8.namprd05.prod.outlook.com",
+    "X-MS-Exchange-CrossTenant-AuthAs: Anonymous",
+    "X-MS-Exchange-CrossTenant-FromEntityHeader: Internet",
+    "X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR06MB6790",
+    "X-MS-Exchange-Transport-EndToEndLatency: 00:00:03.8550345",
+    "X-MS-Exchange-Processed-By-BccFoldering: 15.20.9769.009",
+    "X-MS-Exchange-ExternalInOutlookResult: IsExternal",
+    "X-Microsoft-Antispam-Mailbox-Delivery:",
+    "\tucf:0;jmr:0;auth:0;dest:J;OFR:SpamFilterAuthJ;ENG:(910005)(944490095)(944506478)(944626604)(4710137)(4715077)(4999163)(920097)(930201)(3100021)(140003)(1310096);RF:JunkEmail;",
+    "X-Microsoft-Antispam-Message-Info:",
+    "\t=?us-ascii?Q?7yy8+1Kb8d/aLdMCHBjByQjPqvKoRSPKxG0kfHIkhFNuxsGYIxxBuJRGsgwY?=",
+    " =?us-ascii?Q?7UQTjrGcjTv7g53ehYcHLBtjoAdmhL/sZ6V8NBw9Corm5eBmfjM1hGzNTFN0?=",
+].join("\r\n");
 
 // Real-world headers where antispam values are on continuation lines
 const spamHeaders =
