@@ -58,9 +58,18 @@ export class GetHeaders {
     }
 
     public static async send(
-        headersLoadedCallback: (_headers: string, apiUsed: string) => void,
+        headersLoadedCallback: (_headers: string, apiUsed: string) => void | Promise<void>,
         callbacks: HeaderCallbacks
     ): Promise<void> {
+        let detailedErrorReported = false;
+        const wrappedCallbacks: HeaderCallbacks = {
+            onStatus: (statusText: string) => callbacks.onStatus(statusText),
+            onError: (error: unknown, message: string, suppressTracking?: boolean) => {
+                detailedErrorReported = true;
+                callbacks.onError(error, message, suppressTracking);
+            },
+        };
+
         if (!GetHeaders.validItem()) {
             callbacks.onError(null, "No item selected", true);
             return;
@@ -72,20 +81,22 @@ export class GetHeaders {
         }
 
         try {
-            let headers: string = await GetHeadersAPI.send(callbacks);
+            let headers: string = await GetHeadersAPI.send(wrappedCallbacks);
             if (headers !== "") {
                 await headersLoadedCallback(headers, "API");
                 return;
             }
 
             errors.logMessage("API failed, trying Graph");
-            headers = await GetHeadersGraph.send(callbacks);
+            headers = await GetHeadersGraph.send(wrappedCallbacks);
             if (headers !== "") {
                 await headersLoadedCallback(headers, "Graph");
                 return;
             }
 
-            callbacks.onError(null, "Failed to retrieve headers.", true);
+            if (!detailedErrorReported) {
+                callbacks.onError(null, "Failed to retrieve headers.", true);
+            }
         } catch (e) {
             callbacks.onError(e, "Could not send header request");
         }
