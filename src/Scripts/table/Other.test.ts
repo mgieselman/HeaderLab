@@ -54,6 +54,6 @@ describe("Other", () => {
         other.add(header2);
 
         const result = other.toString();
-        expect(result).toBe("Other\nvalue1\nvalue2");
+        expect(result).toBe("Other\nheader1: value1\nheader2: value2");
     });
 });

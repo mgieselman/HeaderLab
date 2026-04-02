@@ -47,7 +47,7 @@ export class Other extends DataTable {
         if (!this.exists()) return "";
         const ret: string[] = ["Other"];
         this.rows.forEach(function (row) {
-            if (row.value) { ret.push(row.value); }
+            if (row.value) { ret.push(row.toString()); }
         });
         return ret.join("\n");
     }
