@@ -24,7 +24,7 @@ function renderOtherRow(row: { number: number; header: string; value: string; ur
     const header = el("div", { class: "hl-other-item__header" });
     header.appendChild(el("span", { class: "hl-other-item__number" }, `#${row.number}`));
 
-    const headerSpan = el("span");
+    const headerSpan = el("span", { class: "hl-other-item__name" });
     if (row.url) {
         headerSpan.appendChild(el("a", { href: row.url, target: "_blank", rel: "noopener" }, row.header));
     } else {
