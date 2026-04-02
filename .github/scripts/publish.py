@@ -24,6 +24,7 @@ TIMEOUT_SECONDS = 600
 REQUIRED_TOOLS = ["git", "npm", "gh"]
 VALIDATION_COMMANDS: List[List[str]] = [
     ["npm", "run", "lint"],
+    ["npx", "tsc", "--noEmit"],
     ["npm", "test"],
     ["npm", "run", "build"],
     ["npm", "run", "size"],

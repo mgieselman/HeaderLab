@@ -29,7 +29,8 @@ export class ForefrontAntiSpamReport extends AntiSpamReport {
     ];
 
     protected override shouldAddUnparsedField(key: string, value: string | undefined): boolean {
-        return value !== "";
+        void key;
+        return value !== undefined && value !== "";
     }
 
     public override add(header: Header): boolean {
