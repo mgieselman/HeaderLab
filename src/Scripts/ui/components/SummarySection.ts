@@ -1,20 +1,32 @@
 /**
- * Summary section: key metadata fields as label/value pairs with RFC links.
+ * Summary section: insight badges at top, then key metadata fields as label/value pairs with RFC links.
  */
 
 import { violationBadge } from "./ViolationBadge";
-import { Summary } from "../../model/Summary";
-import { ViolationGroup } from "../../rules/types/AnalysisTypes";
+import { HeaderModel } from "../../model/HeaderModel";
 import { getViolationsForRow } from "../../rules/ViolationUtils";
+import { Insight } from "../insights/Insight";
+import { generateInsights } from "../insights/InsightEngine";
 import { clear, el } from "../rendering/dom";
 
-export function renderSummary(container: HTMLElement, summary: Summary, totalTime: string, violationGroups: ViolationGroup[]): void {
+export function renderSummary(container: HTMLElement, model: HeaderModel): void {
     clear(container);
+    const summary = model.summary;
+    const totalTime = model.summary.totalTime;
+    const violationGroups = model.violationGroups;
+
     if (!summary.exists()) {
         container.appendChild(el("div", { class: "hl-empty" }, "No summary data found."));
         return;
     }
 
+    // --- Insight badges ---
+    const insights = generateInsights(model);
+    if (insights.length > 0) {
+        container.appendChild(renderInsightPanel(insights));
+    }
+
+    // --- Key-value grid ---
     const grid = el("div", { class: "hl-kv" });
 
     for (const row of summary.rows) {
@@ -47,4 +59,22 @@ export function renderSummary(container: HTMLElement, summary: Summary, totalTim
     }
 
     container.appendChild(grid);
+}
+
+function renderInsightPanel(insights: Insight[]): HTMLElement {
+    const panel = el("div", { class: "hl-insights" });
+
+    // Order: error first, then warning, success, info
+    const order: Record<string, number> = { error: 0, warning: 1, success: 2, info: 3 };
+    const sorted = [...insights].sort((a, b) => (order[a.severity] ?? 9) - (order[b.severity] ?? 9));
+
+    for (const insight of sorted) {
+        const badge = el("span", {
+            class: `hl-insight hl-insight--${insight.severity}`,
+            title: insight.detail,
+        }, insight.label);
+        panel.appendChild(badge);
+    }
+
+    return panel;
 }
