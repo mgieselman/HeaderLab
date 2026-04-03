@@ -86,9 +86,7 @@
 }
 
 .hl-copy-menu__item {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
+    display: block;
     width: 100%;
     padding: 0.5rem 0.75rem;
     border: none;
@@ -96,6 +94,7 @@
     cursor: pointer;
     text-align: left;
     font-family: inherit;
+    font-size: 0.85rem;
     color: var(--color-text);
 }
 
@@ -105,16 +104,6 @@
 
 .hl-copy-menu__item + .hl-copy-menu__item {
     border-top: 1px solid var(--color-border);
-}
-
-.hl-copy-menu__item-label {
-    font-size: 0.85rem;
-    font-weight: 600;
-}
-
-.hl-copy-menu__item-desc {
-    font-size: 0.75rem;
-    color: var(--color-text-secondary);
 }
 
 /* Cards */
