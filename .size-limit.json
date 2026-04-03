@@ -1,12 +1,24 @@
 [
     {
         "path": "Pages/assets/*.js",
-        "limit": "2.6 MB",
+        "limit": "2.3 MB",
         "name": "all JS bundles"
+    },
+    {
+        "path": "Pages/assets/*.js",
+        "brotli": true,
+        "limit": "700 KB",
+        "name": "all JS bundles (brotli)"
     },
     {
         "path": "Pages/assets/*.css",
         "limit": "15 KB",
         "name": "all CSS"
+    },
+    {
+        "path": "Pages/assets/*.css",
+        "brotli": true,
+        "limit": "6 KB",
+        "name": "all CSS (brotli)"
     }
 ]
