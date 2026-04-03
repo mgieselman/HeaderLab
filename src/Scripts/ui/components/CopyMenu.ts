@@ -34,10 +34,9 @@ export function createCopyMenu(state: AppState, options: CopyMenuOptions): HTMLE
         role: "menu",
     });
 
-    const items: { label: string; description: string; action: () => Promise<void> }[] = [
+    const items: { label: string; action: () => Promise<void> }[] = [
         {
             label: "Copy View",
-            description: "Text from current tab",
             action: async () => {
                 const panel = options.getResultsPanel();
                 const text = panel?.innerText?.trim();
@@ -51,7 +50,6 @@ export function createCopyMenu(state: AppState, options: CopyMenuOptions): HTMLE
         },
         {
             label: "Copy JSON",
-            description: "Structured analysis data",
             action: async () => {
                 const model = state.headerModel;
                 if (!model || !model.hasData) {
@@ -64,7 +62,6 @@ export function createCopyMenu(state: AppState, options: CopyMenuOptions): HTMLE
         },
         {
             label: "Copy Report",
-            description: "Formatted analyst report",
             action: async () => {
                 const model = state.headerModel;
                 if (!model || !model.hasData) {
@@ -85,10 +82,7 @@ export function createCopyMenu(state: AppState, options: CopyMenuOptions): HTMLE
                 close();
                 await item.action();
             },
-        },
-        el("span", { class: "hl-copy-menu__item-label" }, item.label),
-        el("span", { class: "hl-copy-menu__item-desc" }, item.description),
-        );
+        }, item.label);
         menu.appendChild(btn);
     }
 
