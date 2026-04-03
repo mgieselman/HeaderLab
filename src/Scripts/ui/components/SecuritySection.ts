@@ -2,7 +2,6 @@
  * Security & Antispam section: forefront and Microsoft antispam reports.
  */
 
-import { violationBadge } from "./ViolationBadge";
 import { AntiSpamReport } from "../../row/AntiSpamReport";
 import { ForefrontAntiSpamReport } from "../../row/ForefrontAntiSpamReport";
 import { Row } from "../../row/Row";
@@ -36,7 +35,23 @@ export function renderSecurity(
 }
 
 function renderReport(title: string, rows: Row[], violationGroups: ViolationGroup[]): HTMLElement {
-    const card = el("div", { class: "hl-card" });
+    // Determine highest severity across all rows in this report
+    let highestSeverity: string | null = null;
+    for (const row of rows) {
+        if (!row.value) continue;
+        const violations = getViolationsForRow(row, violationGroups);
+        for (const v of violations) {
+            if (v.rule.severity === "error") { highestSeverity = "error"; break; }
+            if (v.rule.severity === "warning" && highestSeverity !== "error") highestSeverity = "warning";
+            if (v.rule.severity === "info" && !highestSeverity) highestSeverity = "info";
+        }
+        if (highestSeverity === "error") break;
+    }
+
+    let cardClass = "hl-card";
+    if (highestSeverity) cardClass += ` hl-card--${highestSeverity}`;
+
+    const card = el("div", { class: cardClass });
     card.appendChild(el("div", { class: "hl-card__header" },
         el("span", { class: "hl-card__title" }, title)
     ));
@@ -47,15 +62,7 @@ function renderReport(title: string, rows: Row[], violationGroups: ViolationGrou
 
         const keyEl = el("span", { class: "hl-kv__key" }, row.label);
         const valEl = el("span", { class: "hl-kv__value" });
-
-        // Use plain text value — valueUrl contains anchor HTML which we don't want to innerHTML
         valEl.textContent = row.value;
-
-        const violations = getViolationsForRow(row, violationGroups);
-        if (violations.length > 0) {
-            valEl.appendChild(document.createTextNode(" "));
-            valEl.appendChild(violationBadge(violations[0]!.rule.severity));
-        }
 
         grid.appendChild(keyEl);
         grid.appendChild(valEl);

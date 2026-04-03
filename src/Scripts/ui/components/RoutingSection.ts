@@ -22,7 +22,11 @@ export function renderRouting(container: HTMLElement, received: Received): void 
 }
 
 function renderHop(row: ReceivedRow): HTMLElement {
-    const hop = el("div", { class: "hl-hop" });
+    const delaySort = typeof row.delaySort.value === "number" ? row.delaySort.value : 0;
+    let hopClass = "hl-hop";
+    if (delaySort < 0) hopClass += " hl-hop--negative";
+    else if (delaySort > ANOMALY_THRESHOLD_MS) hopClass += " hl-hop--anomaly";
+    const hop = el("div", { class: hopClass });
 
     // Header line: hop number, from/by, delay
     const header = el("div", { class: "hl-hop__header" });
