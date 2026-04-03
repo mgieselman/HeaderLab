@@ -2,10 +2,9 @@
  * Header input: textarea + Analyze/Clear/Copy/Sample buttons.
  */
 
+import { createCopyMenu } from "./CopyMenu";
 import { statusLabels } from "../../core/labels";
-import { Strings } from "../../core/Strings";
 import { HeaderModel } from "../../model/HeaderModel";
-import { buildAnalysisJson, buildAnalystReport } from "../analysisExport";
 import { el } from "../rendering/dom";
 import { sampleHeaders } from "../sampleData";
 import { AppState } from "../state/AppState";
@@ -51,45 +50,10 @@ export function createHeaderInput(state: AppState): HTMLElement {
         },
     }, "Clear");
 
-    const copyBtn = el("button", {
-        class: "hl-btn",
-        onclick: async () => {
-            const resultsPanel = document.querySelector(".hl-results") as HTMLElement | null;
-            const text = resultsPanel?.innerText?.trim();
-            if (!text) {
-                state.setStatus(statusLabels.nothingToCopy);
-                return;
-            }
-            await Strings.copyToClipboard(text);
-            state.setStatus(statusLabels.copied);
-        },
-    }, "Copy");
-
-    const copyJsonBtn = el("button", {
-        class: "hl-btn",
-        onclick: async () => {
-            const model = state.headerModel;
-            if (!model || !model.hasData) {
-                state.setStatus(statusLabels.nothingToCopy);
-                return;
-            }
-            await Strings.copyToClipboard(buildAnalysisJson(model));
-            state.setStatus("JSON copied to clipboard!");
-        },
-    }, "Copy JSON");
-
-    const copyReportBtn = el("button", {
-        class: "hl-btn",
-        onclick: async () => {
-            const model = state.headerModel;
-            if (!model || !model.hasData) {
-                state.setStatus(statusLabels.nothingToCopy);
-                return;
-            }
-            await Strings.copyToClipboard(buildAnalystReport(model));
-            state.setStatus("Report copied to clipboard!");
-        },
-    }, "Copy Report");
+    const copyMenu = createCopyMenu(state, {
+        buttonClass: "hl-btn",
+        getResultsPanel: () => document.querySelector(".hl-results") as HTMLElement | null,
+    });
 
     const sampleBtn = el("button", {
         class: "hl-btn hl-btn--small",
@@ -109,9 +73,7 @@ export function createHeaderInput(state: AppState): HTMLElement {
         { class: "hl-input__actions" },
         analyzeBtn,
         clearBtn,
-        copyBtn,
-        copyJsonBtn,
-        copyReportBtn,
+        copyMenu,
         sampleBtn
     );
 
