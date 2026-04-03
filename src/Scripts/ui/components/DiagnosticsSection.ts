@@ -2,7 +2,6 @@
  * Diagnostics section: violation groups displayed as expandable cards.
  */
 
-import { violationBadge } from "./ViolationBadge";
 import { ViolationGroup } from "../../rules/types/AnalysisTypes";
 import { clear, el } from "../rendering/dom";
 
@@ -35,9 +34,7 @@ export function renderDiagnostics(container: HTMLElement, violationGroups: Viola
     for (const group of violationGroups) {
         const details = el("details", { class: `hl-details hl-details--${group.severity}`, open: true });
 
-        const summary = el("summary", null);
-        summary.appendChild(violationBadge(group.severity));
-        summary.appendChild(document.createTextNode(" " + group.displayName));
+        const summary = el("summary", null, group.displayName);
         if (group.violations.length > 1) {
             summary.appendChild(document.createTextNode(` (${group.violations.length})`));
         }
