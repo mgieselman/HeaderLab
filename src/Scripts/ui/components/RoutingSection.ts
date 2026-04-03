@@ -22,10 +22,11 @@ export function renderRouting(container: HTMLElement, received: Received): void 
 }
 
 function renderHop(row: ReceivedRow): HTMLElement {
-    const delaySort = typeof row.delaySort.value === "number" ? row.delaySort.value : 0;
+    const delayMs = typeof row.delaySort.value === "number" ? row.delaySort.value : 0;
+
     let hopClass = "hl-hop";
-    if (delaySort < 0) hopClass += " hl-hop--negative";
-    else if (delaySort > ANOMALY_THRESHOLD_MS) hopClass += " hl-hop--anomaly";
+    if (delayMs < 0) hopClass += " hl-hop--negative";
+    else if (delayMs > ANOMALY_THRESHOLD_MS) hopClass += " hl-hop--anomaly";
     const hop = el("div", { class: hopClass });
 
     // Header line: hop number, from/by, delay
@@ -40,8 +41,7 @@ function renderHop(row: ReceivedRow): HTMLElement {
     }
 
     if (fieldStr(row.delay)) {
-        const delaySort = typeof row.delaySort.value === "number" ? row.delaySort.value : 0;
-        const isAnomaly = delaySort > ANOMALY_THRESHOLD_MS;
+        const isAnomaly = delayMs > ANOMALY_THRESHOLD_MS;
         const cls = "hl-hop__delay" + (isAnomaly ? " hl-hop__delay--anomaly" : "");
         header.appendChild(el("span", { class: cls }, fieldStr(row.delay)));
     }
@@ -51,9 +51,8 @@ function renderHop(row: ReceivedRow): HTMLElement {
     const pct = typeof row.percent.value === "number" ? row.percent.value : 0;
     if (pct > 0) {
         const barContainer = el("div", { class: "hl-hop__bar-container" });
-        const delaySort = typeof row.delaySort.value === "number" ? row.delaySort.value : 0;
-        const barCls = delaySort > ANOMALY_THRESHOLD_MS ? "hl-delay-bar hl-delay-bar--anomaly" :
-            delaySort < 0 ? "hl-delay-bar hl-delay-bar--negative" : "hl-delay-bar";
+        const barCls = delayMs > ANOMALY_THRESHOLD_MS ? "hl-delay-bar hl-delay-bar--anomaly" :
+            delayMs < 0 ? "hl-delay-bar hl-delay-bar--negative" : "hl-delay-bar";
         const bar = el("div", { class: barCls, style: `width:${Math.min(pct, 100)}%` });
         barContainer.appendChild(bar);
         hop.appendChild(barContainer);

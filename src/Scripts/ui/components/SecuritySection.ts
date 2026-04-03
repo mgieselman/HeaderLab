@@ -35,38 +35,33 @@ export function renderSecurity(
 }
 
 function renderReport(title: string, rows: Row[], violationGroups: ViolationGroup[]): HTMLElement {
-    // Determine highest severity across all rows in this report
-    let highestSeverity: string | null = null;
-    for (const row of rows) {
-        if (!row.value) continue;
-        const violations = getViolationsForRow(row, violationGroups);
-        for (const v of violations) {
-            if (v.rule.severity === "error") { highestSeverity = "error"; break; }
-            if (v.rule.severity === "warning" && highestSeverity !== "error") highestSeverity = "warning";
-            if (v.rule.severity === "info" && !highestSeverity) highestSeverity = "info";
-        }
-        if (highestSeverity === "error") break;
-    }
-
-    let cardClass = "hl-card";
-    if (highestSeverity) cardClass += ` hl-card--${highestSeverity}`;
-
-    const card = el("div", { class: cardClass });
+    const card = el("div", null);
     card.appendChild(el("div", { class: "hl-card__header" },
         el("span", { class: "hl-card__title" }, title)
     ));
 
+    // Build grid and track highest severity in a single pass
+    let highestSeverity: string | null = null;
     const grid = el("div", { class: "hl-kv" });
     for (const row of rows) {
         if (!row.value) continue;
 
-        const keyEl = el("span", { class: "hl-kv__key" }, row.label);
+        const violations = getViolationsForRow(row, violationGroups);
+        for (const v of violations) {
+            if (v.rule.severity === "error") highestSeverity = "error";
+            else if (v.rule.severity === "warning" && highestSeverity !== "error") highestSeverity = "warning";
+            else if (!highestSeverity) highestSeverity = "info";
+        }
+
+        grid.appendChild(el("span", { class: "hl-kv__key" }, row.label));
         const valEl = el("span", { class: "hl-kv__value" });
         valEl.textContent = row.value;
-
-        grid.appendChild(keyEl);
         grid.appendChild(valEl);
     }
+
+    let cardClass = "hl-card";
+    if (highestSeverity) cardClass += ` hl-card--${highestSeverity}`;
+    card.className = cardClass;
 
     card.appendChild(grid);
     return card;

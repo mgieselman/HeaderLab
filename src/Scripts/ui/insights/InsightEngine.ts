@@ -6,27 +6,7 @@
 import { Insight, InsightSeverity } from "./Insight";
 import { HeaderModel } from "../../model/HeaderModel";
 import { ReceivedRow } from "../../row/ReceivedRow";
-import { Row } from "../../row/Row";
-
-/** Extract value for a named field from antispam Row arrays */
-function getFieldValue(rows: Row[], header: string): string {
-    for (const row of rows) {
-        if (row.header.toUpperCase() === header.toUpperCase() && row.value) {
-            return row.value;
-        }
-    }
-    return "";
-}
-
-/** Find a header value from the Other headers table */
-function getOtherHeader(model: HeaderModel, headerName: string): string {
-    for (const row of model.otherHeaders.rows) {
-        if (row.header.toUpperCase() === headerName.toUpperCase()) {
-            return row.value;
-        }
-    }
-    return "";
-}
+import { getRowValue } from "../../row/Row";
 
 /** Parse an auth result like "spf=pass" from Authentication-Results header */
 function parseAuthResult(authHeader: string, mechanism: string): string {
@@ -121,8 +101,8 @@ export function generateInsights(model: HeaderModel): Insight[] {
     const insights: Insight[] = [];
 
     // --- Authentication Results ---
-    const authResults = getOtherHeader(model, "Authentication-Results");
-    const arcAuthResults = getOtherHeader(model, "ARC-Authentication-Results");
+    const authResults = getRowValue(model.otherHeaders.rows,"Authentication-Results");
+    const arcAuthResults = getRowValue(model.otherHeaders.rows,"ARC-Authentication-Results");
     const authHeader = authResults || arcAuthResults;
 
     if (authHeader) {
@@ -149,7 +129,7 @@ export function generateInsights(model: HeaderModel): Insight[] {
     }
 
     // --- Spam Confidence Level (SCL) ---
-    const sclValue = getFieldValue(model.forefrontAntiSpamReport.rows, "SCL");
+    const sclValue = getRowValue(model.forefrontAntiSpamReport.rows, "SCL");
     if (sclValue) {
         const scl = parseInt(sclValue, 10);
         if (!isNaN(scl)) {
@@ -164,7 +144,7 @@ export function generateInsights(model: HeaderModel): Insight[] {
     }
 
     // --- Spam Filter Verdict (SFV) ---
-    const sfvValue = getFieldValue(model.forefrontAntiSpamReport.rows, "SFV");
+    const sfvValue = getRowValue(model.forefrontAntiSpamReport.rows, "SFV");
     if (sfvValue) {
         const desc = sfvDescription(sfvValue);
         if (desc) {
@@ -178,7 +158,7 @@ export function generateInsights(model: HeaderModel): Insight[] {
     }
 
     // --- Protection Policy Category (CAT) ---
-    const catValue = getFieldValue(model.forefrontAntiSpamReport.rows, "CAT");
+    const catValue = getRowValue(model.forefrontAntiSpamReport.rows, "CAT");
     if (catValue) {
         const desc = catDescription(catValue);
         if (desc) {
@@ -192,7 +172,7 @@ export function generateInsights(model: HeaderModel): Insight[] {
     }
 
     // --- Bulk Complaint Level (BCL) ---
-    const bclValue = getFieldValue(model.antiSpamReport.rows, "BCL");
+    const bclValue = getRowValue(model.antiSpamReport.rows, "BCL");
     if (bclValue) {
         const bcl = parseInt(bclValue, 10);
         if (!isNaN(bcl)) {
@@ -215,7 +195,7 @@ export function generateInsights(model: HeaderModel): Insight[] {
     }
 
     // --- Phishing Confidence Level (PCL) ---
-    const pclValue = getFieldValue(model.forefrontAntiSpamReport.rows, "PCL");
+    const pclValue = getRowValue(model.forefrontAntiSpamReport.rows, "PCL");
     if (pclValue) {
         const pcl = parseInt(pclValue, 10);
         if (!isNaN(pcl) && pcl > 0) {
@@ -235,7 +215,7 @@ export function generateInsights(model: HeaderModel): Insight[] {
     }
 
     // --- Country of Origin ---
-    const ctry = getFieldValue(model.forefrontAntiSpamReport.rows, "CTRY");
+    const ctry = getRowValue(model.forefrontAntiSpamReport.rows, "CTRY");
     if (ctry) {
         insights.push({
             severity: "info",
@@ -246,7 +226,7 @@ export function generateInsights(model: HeaderModel): Insight[] {
     }
 
     // --- Directionality ---
-    const dir = getFieldValue(model.forefrontAntiSpamReport.rows, "DIR");
+    const dir = getRowValue(model.forefrontAntiSpamReport.rows, "DIR");
     if (dir) {
         let dirDetail: string;
         switch (dir) {
@@ -264,7 +244,7 @@ export function generateInsights(model: HeaderModel): Insight[] {
     }
 
     // --- Connecting IP ---
-    const cip = getFieldValue(model.forefrontAntiSpamReport.rows, "CIP");
+    const cip = getRowValue(model.forefrontAntiSpamReport.rows, "CIP");
     if (cip) {
         insights.push({
             severity: "info",
@@ -350,8 +330,8 @@ export function generateInsights(model: HeaderModel): Insight[] {
     }
 
     // --- Message priority ---
-    const priority = getOtherHeader(model, "X-Priority") || getOtherHeader(model, "X-MSMail-Priority");
-    const importance = getOtherHeader(model, "Importance");
+    const priority = getRowValue(model.otherHeaders.rows,"X-Priority") || getRowValue(model.otherHeaders.rows,"X-MSMail-Priority");
+    const importance = getRowValue(model.otherHeaders.rows,"Importance");
     if (priority || importance) {
         const pInfo = parsePriority(priority, importance);
         if (pInfo) {
@@ -384,7 +364,7 @@ export function generateInsights(model: HeaderModel): Insight[] {
     }
 
     // --- Phishing safety (SFTY) ---
-    const sfty = getFieldValue(model.forefrontAntiSpamReport.rows, "SFTY");
+    const sfty = getRowValue(model.forefrontAntiSpamReport.rows, "SFTY");
     if (sfty) {
         insights.push({
             severity: "error",
@@ -400,24 +380,16 @@ export function generateInsights(model: HeaderModel): Insight[] {
 // --- Helper functions ---
 
 function isLongDelivery(hops: ReceivedRow[]): boolean {
-    // Consider > 5 minutes as long delivery
+    let first = Infinity;
+    let last = -Infinity;
     for (const hop of hops) {
-        const dateNum = hop.dateNum.value;
-        if (typeof dateNum === "number" && !isNaN(dateNum)) {
-            // Find first and last valid timestamps
-            let first = Infinity;
-            let last = -Infinity;
-            for (const h of hops) {
-                const d = h.dateNum.value;
-                if (typeof d === "number" && !isNaN(d)) {
-                    if (d < first) first = d;
-                    if (d > last) last = d;
-                }
-            }
-            return (last - first) > 5 * 60 * 1000;
+        const d = hop.dateNum.value;
+        if (typeof d === "number" && !isNaN(d)) {
+            if (d < first) first = d;
+            if (d > last) last = d;
         }
     }
-    return false;
+    return last > first && (last - first) > 5 * 60 * 1000;
 }
 
 function findBottleneck(hops: ReceivedRow[]): { hop: number; delay: string; from: string; by: string; severity: InsightSeverity } | null {
