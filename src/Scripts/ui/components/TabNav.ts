@@ -28,7 +28,7 @@ export function getTabDefs(model: HeaderModel): TabDef[] {
         { id: "security", label: "Security", exists: model.forefrontAntiSpamReport.exists() || model.antiSpamReport.exists(), violationSeverity: null },
         { id: "other", label: "Other", exists: model.otherHeaders.exists(), violationSeverity: null },
         { id: "diagnostics", label: "Diagnostics", exists: severity !== null, violationSeverity: severity },
-        { id: "original", label: "Original", exists: !!model.originalHeaders, violationSeverity: null },
+        { id: "original", label: "Source", exists: !!model.originalHeaders, violationSeverity: null },
     ];
 
     return tabs.filter(t => t.exists);
