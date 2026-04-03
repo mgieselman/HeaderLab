@@ -10,19 +10,25 @@ export interface TabDef {
     id: string;
     label: string;
     exists: boolean;
-    hasViolations: boolean;
+    violationSeverity: "error" | "warning" | "info" | null;
 }
 
 export function getTabDefs(model: HeaderModel): TabDef[] {
-    const hasViolations = model.violationGroups.length > 0;
+    const groups = model.violationGroups;
+    let severity: "error" | "warning" | "info" | null = null;
+    if (groups.length > 0) {
+        if (groups.some(g => g.severity === "error")) severity = "error";
+        else if (groups.some(g => g.severity === "warning")) severity = "warning";
+        else severity = "info";
+    }
 
     const tabs: TabDef[] = [
-        { id: "summary", label: "Summary", exists: model.summary.exists(), hasViolations: false },
-        { id: "routing", label: "Routing", exists: model.receivedHeaders.exists(), hasViolations: false },
-        { id: "security", label: "Security", exists: model.forefrontAntiSpamReport.exists() || model.antiSpamReport.exists(), hasViolations: false },
-        { id: "other", label: "Other", exists: model.otherHeaders.exists(), hasViolations: false },
-        { id: "diagnostics", label: "Diagnostics", exists: hasViolations, hasViolations: hasViolations },
-        { id: "original", label: "Original", exists: !!model.originalHeaders, hasViolations: false },
+        { id: "summary", label: "Summary", exists: model.summary.exists(), violationSeverity: null },
+        { id: "routing", label: "Routing", exists: model.receivedHeaders.exists(), violationSeverity: null },
+        { id: "security", label: "Security", exists: model.forefrontAntiSpamReport.exists() || model.antiSpamReport.exists(), violationSeverity: null },
+        { id: "other", label: "Other", exists: model.otherHeaders.exists(), violationSeverity: null },
+        { id: "diagnostics", label: "Diagnostics", exists: severity !== null, violationSeverity: severity },
+        { id: "original", label: "Original", exists: !!model.originalHeaders, violationSeverity: null },
     ];
 
     return tabs.filter(t => t.exists);
@@ -40,7 +46,7 @@ export function renderTabNav(container: HTMLElement, state: AppState): void {
         const isActive = state.activeTab === tab.id;
         let cls = "hl-tabs__tab";
         if (isActive) cls += " hl-tabs__tab--active";
-        if (tab.hasViolations) cls += " hl-tabs__tab--has-violations";
+        if (tab.violationSeverity) cls += ` hl-tabs__tab--${tab.violationSeverity}`;
 
         const btn = el("button", {
             class: cls,
