@@ -36,8 +36,8 @@ export function createCopyMenu(state: AppState, options: CopyMenuOptions): HTMLE
 
     const items: { label: string; description: string; action: () => Promise<void> }[] = [
         {
-            label: "Copy text",
-            description: "Plain text from results",
+            label: "Copy View",
+            description: "Text from current tab",
             action: async () => {
                 const panel = options.getResultsPanel();
                 const text = panel?.innerText?.trim();
@@ -63,7 +63,7 @@ export function createCopyMenu(state: AppState, options: CopyMenuOptions): HTMLE
             },
         },
         {
-            label: "Copy report",
+            label: "Copy Report",
             description: "Formatted analyst report",
             action: async () => {
                 const model = state.headerModel;
