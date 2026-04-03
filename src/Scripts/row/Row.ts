@@ -22,3 +22,9 @@ export class Row {
 
     toString(): string { return this.label + ": " + this.value; }
 }
+
+/** Find the value of a row by case-insensitive header match. */
+export function getRowValue(rows: Row[], header: string): string {
+    const row = rows.find((r) => r.header.toUpperCase() === header.toUpperCase());
+    return row?.value?.trim() ?? "";
+}

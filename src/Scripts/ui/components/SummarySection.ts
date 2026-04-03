@@ -10,7 +10,6 @@ import { clear, el } from "../rendering/dom";
 export function renderSummary(container: HTMLElement, model: HeaderModel): void {
     clear(container);
     const summary = model.summary;
-    const totalTime = model.summary.totalTime;
 
     if (!summary.exists()) {
         container.appendChild(el("div", { class: "hl-empty" }, "No summary data found."));
@@ -39,6 +38,7 @@ export function renderSummary(container: HTMLElement, model: HeaderModel): void 
     }
 
     // Total delivery time
+    const totalTime = summary.totalTime;
     if (totalTime) {
         const keyEl = el("span", { class: "hl-kv__key" }, "Delivery time");
         const valEl = el("span", { class: "hl-kv__value" }, totalTime);

@@ -1,6 +1,6 @@
 import { HeaderModel } from "../model/HeaderModel";
 import { ReceivedRow } from "../row/ReceivedRow";
-import { Row } from "../row/Row";
+import { Row, getRowValue } from "../row/Row";
 
 interface ExportRow {
     header: string;
@@ -78,11 +78,6 @@ function extractReceivedHops(rows: ReceivedRow[]): ExportReceivedHop[] {
         percent: Number(row.percent.value) || 0,
         sourceHeader: String(row.sourceHeader.value ?? ""),
     }));
-}
-
-function getRowValue(rows: Row[], header: string): string {
-    const row = rows.find((r) => r.header.toUpperCase() === header.toUpperCase());
-    return row ? sanitizeRowValue(row.value) : "";
 }
 
 export function buildAnalysisJson(model: HeaderModel): string {

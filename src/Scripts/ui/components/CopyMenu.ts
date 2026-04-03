@@ -18,14 +18,33 @@ interface CopyMenuOptions {
 export function createCopyMenu(state: AppState, options: CopyMenuOptions): HTMLElement {
     const wrapper = el("div", { class: "hl-copy-menu" });
 
+    function open() {
+        wrapper.classList.add("hl-copy-menu--open");
+        trigger.setAttribute("aria-expanded", "true");
+        document.addEventListener("click", onOutsideClick);
+    }
+
+    function close() {
+        wrapper.classList.remove("hl-copy-menu--open");
+        trigger.setAttribute("aria-expanded", "false");
+        document.removeEventListener("click", onOutsideClick);
+    }
+
+    function onOutsideClick() {
+        close();
+    }
+
     const trigger = el("button", {
         class: options.buttonClass,
         "aria-haspopup": "true",
         "aria-expanded": "false",
         onclick: (e: Event) => {
             e.stopPropagation();
-            const open = wrapper.classList.toggle("hl-copy-menu--open");
-            trigger.setAttribute("aria-expanded", String(open));
+            if (wrapper.classList.contains("hl-copy-menu--open")) {
+                close();
+            } else {
+                open();
+            }
         },
     }, "Copy \u25BE");
 
@@ -57,7 +76,7 @@ export function createCopyMenu(state: AppState, options: CopyMenuOptions): HTMLE
                     return;
                 }
                 await Strings.copyToClipboard(buildAnalysisJson(model));
-                state.setStatus("JSON copied to clipboard!");
+                state.setStatus(statusLabels.copied);
             },
         },
         {
@@ -69,7 +88,7 @@ export function createCopyMenu(state: AppState, options: CopyMenuOptions): HTMLE
                     return;
                 }
                 await Strings.copyToClipboard(buildAnalystReport(model));
-                state.setStatus("Report copied to clipboard!");
+                state.setStatus(statusLabels.copied);
             },
         },
     ];
@@ -88,14 +107,6 @@ export function createCopyMenu(state: AppState, options: CopyMenuOptions): HTMLE
 
     wrapper.appendChild(trigger);
     wrapper.appendChild(menu);
-
-    function close() {
-        wrapper.classList.remove("hl-copy-menu--open");
-        trigger.setAttribute("aria-expanded", "false");
-    }
-
-    // Close on outside click
-    document.addEventListener("click", () => close());
 
     // Close on Escape
     wrapper.addEventListener("keydown", (e: Event) => {
