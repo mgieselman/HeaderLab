@@ -1,4 +1,4 @@
-import { type IPublicClientApplication, createNestablePublicClientApplication } from "@azure/msal-browser";
+import type { IPublicClientApplication } from "@azure/msal-browser";
 
 import { GetHeaders, HeaderCallbacks } from "./GetHeaders";
 import { naaClientId } from "../../config/naaClientId";
@@ -42,6 +42,8 @@ export class GetHeadersGraph {
         if (GetHeadersGraph.msalApp) {
             return GetHeadersGraph.msalApp;
         }
+
+        const { createNestablePublicClientApplication } = await import("@azure/msal-browser");
 
         const msalConfig = {
             auth: {

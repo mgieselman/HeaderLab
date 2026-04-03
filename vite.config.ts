@@ -5,7 +5,7 @@ import { defineConfig } from "vite";
 const __dirname = import.meta.dirname;
 const defaultNaaClientId = "3b66646d-972e-49e4-a2b0-b37a78a00e11";
 
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
     root: "src/Pages",
     publicDir: resolve(__dirname, "public"),
     define: {
@@ -17,7 +17,7 @@ export default defineConfig({
     build: {
         outDir: resolve(__dirname, "Pages"),
         emptyOutDir: false,
-        sourcemap: true,
+        sourcemap: mode !== "production",
         rollupOptions: {
             input: {
                 headerlab: resolve(__dirname, "src/Pages/headerlab.html"),
@@ -37,4 +37,4 @@ export default defineConfig({
     server: {
         port: 44336,
     },
-});
+}));

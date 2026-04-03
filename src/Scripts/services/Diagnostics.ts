@@ -1,6 +1,3 @@
-import { ApplicationInsights, ICustomProperties, IEventTelemetry, ITelemetryItem } from "@microsoft/applicationinsights-web";
-import stackTrace from "stacktrace-js";
-
 import { aikey } from "../config/aikey";
 import { buildTime } from "../config/buildTime";
 import { GetHeaders } from "./retrieval/GetHeaders";
@@ -8,61 +5,115 @@ import { GetHeadersAPI } from "./retrieval/GetHeadersAPI";
 import { GetHeadersGraph } from "./retrieval/GetHeadersGraph";
 import { version } from "../config/version";
 
+type ICustomProperties = Record<string, unknown>;
+type IEventTelemetry = { name: string; properties?: Record<string, unknown> };
+type ITelemetryItem = {
+    data?: Record<string, unknown>;
+    baseType?: string;
+    baseData?: Record<string, unknown>;
+};
+
+type AppInsightsClient = {
+    addTelemetryInitializer: (initializer: (envelope: ITelemetryItem) => boolean) => void;
+    loadAppInsights: () => void;
+    trackPageView: () => void;
+    trackEvent: (event: IEventTelemetry, customProperties?: ICustomProperties) => void;
+    trackException: (event: IEventTelemetry, customProperties?: ICustomProperties) => void;
+};
+
 export class Diagnostics {
     private appDiagnostics: { [k: string]: string | number | boolean } | null = null;
     private itemDiagnostics: { [k: string]: string | boolean } | null = null;
     private inGet = false;
     private sendTelemetry = true;
-    private appInsights = new ApplicationInsights({
-        config: {
-            instrumentationKey: aikey(),
-            disableAjaxTracking: true,
-            disableFetchTracking: true,
-            /* ...Other Configuration Options... */
-        }
-    });
+    private appInsights: AppInsightsClient | null = null;
+    private appInsightsLoadPromise: Promise<void> | null = null;
 
     constructor() {
-        this.appInsights.addTelemetryInitializer((envelope: ITelemetryItem): boolean => {
-            if (!envelope || !envelope.data) return false;
-            envelope.data["baseType"] = envelope.baseType;
-            envelope.data["baseData"] = envelope.baseData;
-            // This will get called for any appInsights tracking - we can augment or suppress logging from here
-            // No appInsights logging for localhost/dev
-            if (!this.sendTelemetry) {
-                return false;
-            }
-            const doLog: boolean = (document.domain !== "localhost" && document.location.protocol !== "file:");
-            if (envelope.baseType === "PageviewData") return doLog;
-            if (envelope.baseType === "PageviewPerformanceData") return doLog;
+        this.ensureAppInsightsLoaded();
+    }
 
-            envelope.baseData = envelope.baseData || {};
-            envelope.baseData["properties"] = envelope.baseData["properties"] || {};
-            Object.assign(envelope.baseData["properties"], this.get());
+    private ensureAppInsightsLoaded(): void {
+        if (this.appInsights || this.appInsightsLoadPromise || !this.sendTelemetry) {
+            return;
+        }
 
-            // If we're not one of the above types, tag in our diagnostics data
-            if (envelope.baseType === "ExceptionData" && envelope.baseData) {
-                // custom data for the ExceptionData type lives in a different place
-                // Log an extra event with parsed stack frame
-                if (envelope.baseData["exceptions"].length > 0) {
-                    stackTrace.fromError(envelope.baseData["exceptions"][0])
-                        .then((stackframes: stackTrace.StackFrame[]): void => {
-                            this.appInsights.trackEvent({
-                                name: "Exception Details", properties: {
-                                    stack: stackframes,
-                                    error: (envelope && envelope.baseData) ? envelope.baseData["exceptions"][0] : ""
-                                }
-                            });
-                        });
+        const instrumentationKey = aikey();
+        if (!instrumentationKey) {
+            return;
+        }
+
+        this.appInsightsLoadPromise = (async (): Promise<void> => {
+            const appInsightsModule = await import("@microsoft/applicationinsights-web");
+            const appInsightsCtor = appInsightsModule.ApplicationInsights;
+            const appInsightsInstance = new appInsightsCtor({
+                config: {
+                    instrumentationKey: instrumentationKey,
+                    disableAjaxTracking: true,
+                    disableFetchTracking: true,
                 }
+            }) as unknown as AppInsightsClient;
+
+            appInsightsInstance.addTelemetryInitializer((envelope: ITelemetryItem): boolean => {
+                if (!envelope) return false;
+
+                envelope.data = envelope.data || {};
+                envelope.data["baseType"] = envelope.baseType;
+                envelope.data["baseData"] = envelope.baseData;
+                if (!this.sendTelemetry) {
+                    return false;
+                }
+
+                const doLog: boolean = (document.domain !== "localhost" && document.location.protocol !== "file:");
+                if (envelope.baseType === "PageviewData") return doLog;
+                if (envelope.baseType === "PageviewPerformanceData") return doLog;
+
+                envelope.baseData = envelope.baseData || {};
+                const properties = (envelope.baseData["properties"] as Record<string, unknown> | undefined) || {};
+                envelope.baseData["properties"] = properties;
+                Object.assign(properties, this.get());
+
+                if (envelope.baseType === "ExceptionData") {
+                    const exceptions = envelope.baseData["exceptions"] as unknown[] | undefined;
+                    if (exceptions && exceptions.length > 0) {
+                        void this.trackExceptionDetails(exceptions[0]);
+                    }
+                }
+
+                return doLog;
+            });
+
+            appInsightsInstance.loadAppInsights();
+            if (process.env["NODE_ENV"] !== "test") {
+                appInsightsInstance.trackPageView();
             }
 
-            return doLog;
+            this.appInsights = appInsightsInstance;
+        })().catch((error: unknown) => {
+            this.appInsightsLoadPromise = null;
+            this.sendTelemetry = false;
+            console.log("Telemetry initialization failed", error);
         });
+    }
 
-        this.appInsights.loadAppInsights();
-        if (process.env["NODE_ENV"] !== "test") {
-            this.appInsights.trackPageView(); // Manually call trackPageView to establish the current user/session/pageview        }
+    private async trackExceptionDetails(exception: unknown): Promise<void> {
+        if (!this.appInsights) {
+            return;
+        }
+
+        try {
+            const stackTraceModule = await import("stacktrace-js");
+            const stackTrace = stackTraceModule.default || stackTraceModule;
+            const stackframes = await stackTrace.fromError(exception as Error);
+            this.appInsights.trackEvent({
+                name: "Exception Details",
+                properties: {
+                    stack: stackframes,
+                    error: exception,
+                }
+            });
+        } catch {
+            // Keep telemetry non-blocking if stack trace parsing fails
         }
     }
 
@@ -74,6 +125,7 @@ export class Diagnostics {
 
     public initSendTelemetry(sendTelemetry: boolean): void {
         this.sendTelemetry = sendTelemetry;
+        this.ensureAppInsightsLoaded();
         this.onTelemetryChanged?.(sendTelemetry);
     }
 
@@ -83,6 +135,7 @@ export class Diagnostics {
         if (changed) {
             this.onTelemetryChanged?.(sendTelemetry);
             this.sendTelemetry = sendTelemetry;
+            this.ensureAppInsightsLoaded();
             if (typeof (Office) !== "undefined" && Office.context) {
                 Office.context.roamingSettings.set("sendTelemetry", this.sendTelemetry);
                 Office.context.roamingSettings.saveAsync((result: Office.AsyncResult<void>) => {
@@ -100,7 +153,10 @@ export class Diagnostics {
 
     public trackEvent(event: IEventTelemetry, customProperties?: ICustomProperties): void {
         if (this.sendTelemetry) {
-            this.appInsights.trackEvent(event, customProperties);
+            this.ensureAppInsightsLoaded();
+            if (this.appInsights) {
+                this.appInsights.trackEvent(event, customProperties);
+            }
         }
         else {
             const mgsBase = `Event ${JSON.stringify(event)}: ${JSON.stringify(customProperties)}`;
@@ -110,7 +166,10 @@ export class Diagnostics {
 
     public trackException(event: IEventTelemetry, customProperties?: ICustomProperties): void {
         if (this.sendTelemetry) {
-            this.appInsights.trackException(event, customProperties);
+            this.ensureAppInsightsLoaded();
+            if (this.appInsights) {
+                this.appInsights.trackException(event, customProperties);
+            }
         }
         else {
             const mgsBase = `Exception ${JSON.stringify(event)}: ${JSON.stringify(customProperties)}`;
@@ -122,7 +181,10 @@ export class Diagnostics {
         const message = (e as Error).message;
         if (this.sendTelemetry) {
             const stack = (e as Error).stack;
-            this.appInsights.trackEvent({ name: eventType, properties: { source: source, exception: JSON.stringify(e), message: message, stack: stack } });
+            this.ensureAppInsightsLoaded();
+            if (this.appInsights) {
+                this.appInsights.trackEvent({ name: eventType, properties: { source: source, exception: JSON.stringify(e), message: message, stack: stack } });
+            }
         }
         else {
             const mgsBase = `Error ${eventType} from ${source}: ${message}`;
