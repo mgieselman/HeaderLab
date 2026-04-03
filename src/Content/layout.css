@@ -126,16 +126,21 @@ html, body {
     font-weight: 600;
 }
 
-.hl-tabs__tab--has-violations::after {
+.hl-tabs__tab--error::after,
+.hl-tabs__tab--warning::after,
+.hl-tabs__tab--info::after {
     content: "";
     display: inline-block;
     width: 6px;
     height: 6px;
     border-radius: 50%;
-    background: var(--color-error);
     margin-left: 0.35rem;
     vertical-align: middle;
 }
+
+.hl-tabs__tab--error::after { background: var(--color-error); }
+.hl-tabs__tab--warning::after { background: var(--color-warning); }
+.hl-tabs__tab--info::after { background: var(--color-info); }
 
 /* Status bar / toast */
 .hl-status {
