@@ -60,6 +60,63 @@
     border-radius: var(--radius-sm);
 }
 
+/* Copy dropdown menu */
+.hl-copy-menu {
+    position: relative;
+    display: inline-flex;
+}
+
+.hl-copy-menu__dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 100;
+    min-width: 200px;
+    margin-top: 0.25rem;
+    background: var(--color-surface-raised);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-card);
+    overflow: hidden;
+}
+
+.hl-copy-menu--open .hl-copy-menu__dropdown {
+    display: block;
+}
+
+.hl-copy-menu__item {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: none;
+    background: none;
+    cursor: pointer;
+    text-align: left;
+    font-family: inherit;
+    color: var(--color-text);
+}
+
+.hl-copy-menu__item:hover {
+    background: var(--color-surface);
+}
+
+.hl-copy-menu__item + .hl-copy-menu__item {
+    border-top: 1px solid var(--color-border);
+}
+
+.hl-copy-menu__item-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.hl-copy-menu__item-desc {
+    font-size: 0.75rem;
+    color: var(--color-text-secondary);
+}
+
 /* Cards */
 .hl-card {
     background: var(--color-surface-raised);
