@@ -31,7 +31,52 @@ The cumulative scope of these changes made merging back into the upstream MHA re
 - **Light / dark / system theme** — persisted to localStorage
 - **Copy to clipboard** — export the current view or a plain-text report
 
-## Quick Start
+## Installing the Outlook Add-in
+
+HeaderLab works as an Outlook add-in for Windows, Mac, and Outlook on the web. Once installed, it appears in the ribbon when you open or select a message and retrieves headers automatically.
+
+### Option 1 — Microsoft AppSource (recommended)
+
+> Coming soon. The add-in will be listed on AppSource once available.
+
+### Option 2 — Sideload from the manifest (IT admin / self-install)
+
+Sideloading lets you install HeaderLab in your own Outlook without an AppSource listing.
+
+**Outlook on the web**
+1. Open [Outlook on the web](https://outlook.office.com) and select any message
+2. Click the **···** overflow menu → **Get Add-ins**
+3. Select **My add-ins** → **Add a custom add-in** → **Add from URL**
+4. Paste the manifest URL:
+   ```
+   https://happy-pond-01840f710.4.azurestaticapps.net/manifest.json
+   ```
+5. Click **OK** and accept the warning — HeaderLab will appear in the ribbon
+
+**Outlook for Windows / Mac**
+1. Open Outlook and go to **Home** → **Get Add-ins** (or **Store**)
+2. Select **My add-ins** → **Add a custom add-in** → **Add from URL**
+3. Paste the same manifest URL above and click **Install**
+
+**Organization-wide deployment (Microsoft 365 admin)**
+1. Go to the [Microsoft 365 admin center](https://admin.microsoft.com) → **Settings** → **Integrated apps**
+2. Click **Upload custom apps** → **Office Add-in** → **Upload manifest file (.xml or .json)**
+3. Upload `manifest.json` from this repo (or point to the URL above)
+4. Assign to users or groups and deploy
+
+### Using the add-in
+
+1. Select or open a message in Outlook
+2. Click **HeaderLab** in the ribbon (or the **···** overflow menu on mobile)
+3. The add-in opens and displays the routing, security, and diagnostics tabs automatically
+
+### Standalone web app
+
+No installation needed — paste raw headers directly at:
+
+**[https://happy-pond-01840f710.4.azurestaticapps.net](https://happy-pond-01840f710.4.azurestaticapps.net)**
+
+## Quick Start (development)
 
 **Requirements:** Node >= 18.12.0 (CI uses Node 22)
 
@@ -50,45 +95,6 @@ npm run lint:fix      # ESLint with auto-fix
 npm run test:watch    # Vitest in watch mode
 npm run size          # check bundle size budgets
 npx vitest run src/Scripts/path/to/file.test.ts  # single test file
-```
-
-## Architecture
-
-Source lives under `src/Scripts/`, organized into layers with dependencies flowing downward:
-
-| Layer | Purpose |
-|-------|---------|
-| `config/` | Build-time constants (`__AIKEY__`, `__VERSION__`, etc.) |
-| `core/` | Pure utilities — date parsing, MIME decoding, string helpers |
-| `row/` | Individual header parsers (`ReceivedRow`, `AntiSpamReport`, etc.) |
-| `table/` | Row collections with sorting and hop-delta computation |
-| `model/` | `HeaderModel` — central orchestrator, async factory |
-| `rules/` | Validation engine, rule types, `rules.json` loader |
-| `services/` | Telemetry, error collection, header retrieval (Office.js / Graph) |
-| `ui/` | Vanilla TypeScript + CSS custom properties, no framework |
-
-Two entry points: `ui/app.ts` (standalone) and `ui/addin.ts` (Outlook add-in).
-
-## Project Structure
-
-```
-src/
-├── Content/                # CSS (theme, layout, components, typography)
-├── Pages/                  # HTML entry points
-└── Scripts/
-    ├── config/             # Build-time constant wrappers
-    ├── core/               # Dates, Decoder, Strings, labels
-    ├── matchers/           # Vitest custom matchers
-    ├── model/              # HeaderModel, Summary
-    ├── row/                # Per-header parsers
-    ├── rules/              # Validation engine + rules.json
-    ├── services/           # Diagnostics, Errors, retrieval
-    ├── table/              # Row collections
-    └── ui/                 # Components, state, rendering, entry points
-public/
-└── data/
-    └── rules.json          # Rule definitions loaded at runtime
-Pages/                      # Build output (deployed to Azure Static Web Apps)
 ```
 
 ## Deployment
