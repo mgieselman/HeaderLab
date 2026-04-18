@@ -35,13 +35,7 @@ The cumulative scope of these changes made merging back into the upstream MHA re
 
 HeaderLab works as an Outlook add-in for Windows, Mac, and Outlook on the web. Once installed, it appears in the ribbon when you open or select a message and retrieves headers automatically.
 
-### Option 1 — Microsoft AppSource (recommended)
-
-> Coming soon. The add-in will be listed on AppSource once available.
-
-### Option 2 — Sideload from the manifest (IT admin / self-install)
-
-Sideloading lets you install HeaderLab in your own Outlook without an AppSource listing.
+Sideload the add-in using the hosted manifest URL — no AppSource listing required.
 
 **Outlook on the web**
 1. Open [Outlook on the web](https://outlook.office.com) and select any message
@@ -64,7 +58,7 @@ Sideloading lets you install HeaderLab in your own Outlook without an AppSource 
 3. Upload `manifest.json` from this repo (or point to the URL above)
 4. Assign to users or groups and deploy
 
-### Using the add-in
+**Using the add-in**
 
 1. Select or open a message in Outlook
 2. Click **HeaderLab** in the ribbon (or the **···** overflow menu on mobile)
