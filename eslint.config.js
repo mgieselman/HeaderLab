@@ -1,13 +1,12 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { fixupPluginRules } from "@eslint/compat";
 import { FlatCompat } from "@eslint/eslintrc";
 import js from "@eslint/js";
 import stylistic from "@stylistic/eslint-plugin";
 import typescriptEslint from "@typescript-eslint/eslint-plugin";
 import tsParser from "@typescript-eslint/parser";
-import importPlugin from "eslint-plugin-import";
+import importPlugin from "eslint-plugin-import-x";
 import node from "eslint-plugin-node";
 import globals from "globals";
 
@@ -46,7 +45,7 @@ export default [{
         "@typescript-eslint": typescriptEslint,
         "@stylistic": stylistic,
         node,
-        import: fixupPluginRules(importPlugin),
+        import: importPlugin,
     },
 
     languageOptions: {
@@ -76,7 +75,7 @@ export default [{
     },
 
     settings: {
-        "import/resolver": {
+        "import-x/resolver": {
             typescript: {
                 project: "./tsconfig.json",
             },
@@ -160,13 +159,13 @@ export default [{
             selector: "property",
             format: ["camelCase"],
             filter: {
-                regex: "^(@|aria-|data-|import/|linebreak-style|max-classes-per-file|no-duplicate-imports|no-inner-declarations|no-unmodified-loop-condition|block-scoped-var|sort-imports|newlines-between|SwitchCase|no-undef|no-global-assign|Office|NodeJS|EventListenerOrEventListenerObject|AddEventListenerOptions|PermissionDescriptor|PermissionName|__[A-Z_]+__|\\^.+\\$)",
+                regex: "^(@|aria-|data-|import/|import-x/|linebreak-style|max-classes-per-file|no-duplicate-imports|no-inner-declarations|no-unmodified-loop-condition|block-scoped-var|sort-imports|newlines-between|SwitchCase|no-undef|no-global-assign|Office|NodeJS|EventListenerOrEventListenerObject|AddEventListenerOptions|PermissionDescriptor|PermissionName|__[A-Z_]+__|^.+$)",
                 match: false
             }
         }, {
             selector: "property",
             filter: {
-                regex: "^(@|aria-|data-|import/|linebreak-style|max-classes-per-file|no-duplicate-imports|no-inner-declarations|no-unmodified-loop-condition|block-scoped-var|sort-imports|newlines-between|SwitchCase|no-undef|no-global-assign|Office|NodeJS|EventListenerOrEventListenerObject|AddEventListenerOptions|PermissionDescriptor|PermissionName|__[A-Z_]+__|\\^.+\\$)",
+                regex: "^(@|aria-|data-|import/|import-x/|linebreak-style|max-classes-per-file|no-duplicate-imports|no-inner-declarations|no-unmodified-loop-condition|block-scoped-var|sort-imports|newlines-between|SwitchCase|no-undef|no-global-assign|Office|NodeJS|EventListenerOrEventListenerObject|AddEventListenerOptions|PermissionDescriptor|PermissionName|__[A-Z_]+__|^.+$)",
                 match: true
             },
             format: null

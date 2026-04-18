@@ -12,6 +12,8 @@ Email header analyzer — parses raw transport headers into human-readable routi
 
 **Live app:** [https://happy-pond-01840f710.4.azurestaticapps.net](https://happy-pond-01840f710.4.azurestaticapps.net)
 
+![HeaderLab add-in showing Summary tab with routing, authentication, and spam analysis results](docs/screenshot-addin.png)
+
 ## Relationship to microsoft/MHA
 
 HeaderLab shares the same original codebase lineage as [microsoft/MHA](https://github.com/microsoft/MHA) — the Message Header Analyzer add-in that has been part of the Microsoft 365 ecosystem for many years.
