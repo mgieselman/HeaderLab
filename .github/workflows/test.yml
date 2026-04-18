@@ -31,6 +31,13 @@ jobs:
         run: |
           npm ci
           npx tsc --noEmit
-          npm test
+          npm test -- --coverage
           npm run build
           npm run size
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./Pages/coverage/lcov.info
+          fail_ci_if_error: false

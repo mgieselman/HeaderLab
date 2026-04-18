@@ -3,8 +3,10 @@
 
 [![Build and Deploy](https://github.com/mgieselman/headerlab/actions/workflows/build.yml/badge.svg)](https://github.com/mgieselman/headerlab/actions/workflows/build.yml)
 [![Test](https://github.com/mgieselman/headerlab/actions/workflows/test.yml/badge.svg)](https://github.com/mgieselman/headerlab/actions/workflows/test.yml)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![codecov](https://codecov.io/gh/mgieselman/headerlab/graph/badge.svg)](https://codecov.io/gh/mgieselman/headerlab)
 [![Node 22](https://img.shields.io/badge/node-22-brightgreen.svg)](https://nodejs.org/)
+[![ESLint](https://img.shields.io/badge/ESLint-enabled-4B32C3.svg)](https://eslint.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 Email header analyzer — parses raw transport headers into human-readable routing, timing, and security analysis. Runs as a standalone web app and as a Microsoft Outlook add-in.
 
