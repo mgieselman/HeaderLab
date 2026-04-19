@@ -81,8 +81,9 @@ describe("ParentFrameUtils", () => {
 
         test("handles URL encoded values", () => {
             const search = "?message=Hello%20World&encoded=test%2Bvalue";
-            expect(ParentFrameUtils.getQueryVariable("message", search)).toBe("Hello%20World");
-            expect(ParentFrameUtils.getQueryVariable("encoded", search)).toBe("test%2Bvalue");
+            // URLSearchParams correctly decodes percent-encoded values
+            expect(ParentFrameUtils.getQueryVariable("message", search)).toBe("Hello World");
+            expect(ParentFrameUtils.getQueryVariable("encoded", search)).toBe("test+value");
         });
 
         test("handles complex parameter names", () => {

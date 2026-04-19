@@ -44,12 +44,13 @@ function initAddin(): void {
     async function retrieveHeaders(): Promise<void> {
         state.clear();
         state.setLoading(true);
-        state.setStatus(statusLabels.loading);
+        state.setStatus(statusLabels.retrieving);
 
         try {
             await GetHeaders.send(
                 async (headers: string, apiUsed: string) => {
                     diagnostics.set("API used", apiUsed);
+                    state.setStatus(statusLabels.analyzing);
                     try {
                         const model = await HeaderModel.create(headers);
                         state.setModel(model);
@@ -88,5 +89,5 @@ if (typeof Office !== "undefined") {
     Office.onReady(() => { initAddin(); });
 } else {
     // Fallback for testing outside of Office
-    document.addEventListener("DOMContentLoaded", initAddin);
+    document.addEventListener("DOMContentLoaded", initAddin, { once: true });
 }

@@ -17,21 +17,31 @@ interface CopyMenuOptions {
 
 export function createCopyMenu(state: AppState, options: CopyMenuOptions): HTMLElement {
     const wrapper = el("div", { class: "hl-copy-menu" });
+    let outsideClickListener: ((e: Event) => void) | null = null;
+
+    function getMenuItems(): HTMLButtonElement[] {
+        return Array.from(menu.querySelectorAll<HTMLButtonElement>(".hl-copy-menu__item"));
+    }
 
     function open() {
         wrapper.classList.add("hl-copy-menu--open");
         trigger.setAttribute("aria-expanded", "true");
-        document.addEventListener("click", onOutsideClick);
+        outsideClickListener = () => close();
+        document.addEventListener("click", outsideClickListener);
+        // Move focus to the first menu item
+        requestAnimationFrame(() => {
+            const items = getMenuItems();
+            if (items.length > 0) items[0]!.focus();
+        });
     }
 
     function close() {
         wrapper.classList.remove("hl-copy-menu--open");
         trigger.setAttribute("aria-expanded", "false");
-        document.removeEventListener("click", onOutsideClick);
-    }
-
-    function onOutsideClick() {
-        close();
+        if (outsideClickListener) {
+            document.removeEventListener("click", outsideClickListener);
+            outsideClickListener = null;
+        }
     }
 
     const trigger = el("button", {
@@ -65,6 +75,7 @@ export function createCopyMenu(state: AppState, options: CopyMenuOptions): HTMLE
                 }
                 await Strings.copyToClipboard(text);
                 state.setStatus(statusLabels.copied);
+                setTimeout(() => state.setStatus(""), 3000);
             },
         },
         {
@@ -77,6 +88,7 @@ export function createCopyMenu(state: AppState, options: CopyMenuOptions): HTMLE
                 }
                 await Strings.copyToClipboard(buildAnalysisJson(model));
                 state.setStatus(statusLabels.copied);
+                setTimeout(() => state.setStatus(""), 3000);
             },
         },
         {
@@ -89,6 +101,7 @@ export function createCopyMenu(state: AppState, options: CopyMenuOptions): HTMLE
                 }
                 await Strings.copyToClipboard(buildAnalystReport(model));
                 state.setStatus(statusLabels.copied);
+                setTimeout(() => state.setStatus(""), 3000);
             },
         },
     ];
@@ -107,6 +120,29 @@ export function createCopyMenu(state: AppState, options: CopyMenuOptions): HTMLE
 
     wrapper.appendChild(trigger);
     wrapper.appendChild(menu);
+
+    // Keyboard navigation within the menu
+    menu.addEventListener("keydown", (e: Event) => {
+        const ke = e as KeyboardEvent;
+        const items = getMenuItems();
+        const currentIndex = items.indexOf(document.activeElement as HTMLButtonElement);
+
+        if (ke.key === "ArrowDown") {
+            ke.preventDefault();
+            const next = items[(currentIndex + 1) % items.length];
+            next?.focus();
+        } else if (ke.key === "ArrowUp") {
+            ke.preventDefault();
+            const prev = items[(currentIndex - 1 + items.length) % items.length];
+            prev?.focus();
+        } else if (ke.key === "Home") {
+            ke.preventDefault();
+            items[0]?.focus();
+        } else if (ke.key === "End") {
+            ke.preventDefault();
+            items[items.length - 1]?.focus();
+        }
+    });
 
     // Close on Escape
     wrapper.addEventListener("keydown", (e: Event) => {

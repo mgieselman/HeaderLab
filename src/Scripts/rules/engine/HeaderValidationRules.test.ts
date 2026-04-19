@@ -108,7 +108,6 @@ describe("HeaderValidationRulesEngine", () => {
 
     describe("flagAllRowsWithViolations", () => {
         test("should flag sections that violate rules", () => {
-            // TODO: Fix - engine state issue, rule not matching even though pattern should work
             const rule = new SimpleValidationRule(
                 "Subject",
                 "urgent",

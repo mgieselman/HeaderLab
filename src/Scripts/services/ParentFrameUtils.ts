@@ -11,19 +11,8 @@ export class ParentFrameUtils {
      * @returns The parameter value or empty string if not found
      */
     static getQueryVariable(variable: string, search: string = window.location.search): string {
-        const vars: string[] = search.substring(1).split("&");
-
-        let found = "";
-        vars.forEach((v: string) => {
-            if (found === "") {
-                const pair: string[] = v.split("=");
-                if (pair[0] === variable) {
-                    found = pair[1] ?? "";
-                }
-            }
-        });
-
-        return found;
+        const params = new URLSearchParams(search);
+        return params.get(variable) ?? "";
     }
 
     /**

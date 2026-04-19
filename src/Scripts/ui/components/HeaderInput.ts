@@ -12,7 +12,14 @@ import { AppState } from "../state/AppState";
 export function createHeaderInput(state: AppState): HTMLElement {
     const section = el("div", { class: "hl-input" });
 
+    const textareaId = "hl-header-input";
+    const label = el("label", {
+        for: textareaId,
+        class: "hl-input__label",
+    }, "Email Headers");
+
     const textarea = el("textarea", {
+        id: textareaId,
         class: "hl-input__textarea hl-mono",
         placeholder: statusLabels.prompt,
         "aria-label": "Email headers",
@@ -77,11 +84,9 @@ export function createHeaderInput(state: AppState): HTMLElement {
         sampleBtn
     );
 
+    section.appendChild(label);
     section.appendChild(textarea);
     section.appendChild(actions);
-
-    // Auto-focus
-    requestAnimationFrame(() => textarea.focus());
 
     return section;
 }

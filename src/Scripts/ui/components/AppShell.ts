@@ -26,6 +26,13 @@ function formatBuildTimestamp(timestamp: string): string {
 export function createAppShell(root: HTMLElement, state: AppState, mode: AppMode): void {
     clear(root);
 
+    // Skip-to-content link for keyboard users
+    const skipLink = el("a", {
+        href: "#hl-main-content",
+        class: "hl-skip-link",
+    }, "Skip to content");
+    root.appendChild(skipLink);
+
     // Header bar
     const header = el("div", { class: "hl-header" });
     header.appendChild(el("span", { class: "hl-header__title" }, "HeaderLab"));
@@ -37,16 +44,17 @@ export function createAppShell(root: HTMLElement, state: AppState, mode: AppMode
         }));
     }
 
-    header.appendChild(el("button", {
+    const settingsBtn = el("button", {
         class: "hl-btn hl-btn--icon",
         "aria-label": "Settings",
-        onclick: () => openSettingsDialog(state),
-    }, "\u2699"));
+        onclick: () => openSettingsDialog(state, settingsBtn as HTMLElement),
+    }, "\u2699");
+    header.appendChild(settingsBtn);
 
     root.appendChild(header);
 
     // Main content area
-    const main = el("div", { class: "hl-main" });
+    const main = el("div", { id: "hl-main-content", class: "hl-main", tabindex: "-1" });
 
     // Input area (standalone only)
     if (mode === "standalone") {
@@ -68,8 +76,14 @@ export function createAppShell(root: HTMLElement, state: AppState, mode: AppMode
     root.appendChild(statusContainer);
 
     // Build/deployment timestamp
-    const buildTimestamp = formatBuildTimestamp(buildTime());
-    const buildInfoContainer = el("div", { class: "hl-build-info" }, `Built: ${buildTimestamp}`);
+    const buildTimestamp = buildTime();
+    const buildIso = (() => {
+        try { return new Date(buildTimestamp).toISOString(); } catch { return buildTimestamp; }
+    })();
+    const buildInfoContainer = el("footer", { class: "hl-build-info", role: "contentinfo" });
+    const timeEl = el("time", { datetime: buildIso });
+    timeEl.textContent = `Built: ${formatBuildTimestamp(buildTimestamp)}`;
+    buildInfoContainer.appendChild(timeEl);
     root.appendChild(buildInfoContainer);
 
     // Re-render on state changes

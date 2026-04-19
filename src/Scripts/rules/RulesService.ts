@@ -44,8 +44,6 @@ class RulesService {
                 headerModel.otherHeaders.rows
             ];
 
-            console.log("🔍 RulesService: Processing", headerSections.length, "sections");
-
             // Clear flags and run simple rules on each section
             headerSections.forEach(section => {
                 if (Array.isArray(section)) {
@@ -91,8 +89,10 @@ class RulesService {
                                     violationMap.set(rule, violation);
                                 } else {
                                     // We've seen this rule - add this section to affected sections
-                                    const existing = violationMap.get(rule)!;
-                                    existing.affectedSections.push(headerSection);
+                                    const existing = violationMap.get(rule);
+                                    if (existing) {
+                                        existing.affectedSections.push(headerSection);
+                                    }
                                 }
                             });
                         }
@@ -120,14 +120,13 @@ class RulesService {
                     });
                 }
 
-                const group = groupMap.get(groupKey)!;
-                group.violations.push(violation);
+                const group = groupMap.get(groupKey);
+                if (group) {
+                    group.violations.push(violation);
+                }
             });
 
             const violationGroups = Array.from(groupMap.values());
-
-            console.log("Rule violations found:", violations.length);
-            console.log("Violation groups found:", violationGroups.length);
 
             return {
                 success: true,

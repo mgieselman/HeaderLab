@@ -5,9 +5,12 @@ export class Strings {
     }
 
     public static htmlEncode(value: string): string {
-        const div = document.createElement("div");
-        div.appendChild(document.createTextNode(value));
-        return div.innerHTML;
+        return value
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#39;");
     }
 
     private static headerToUrlMap = new Map<string, string>([
@@ -65,20 +68,6 @@ export class Strings {
     }
 
     public static copyToClipboard(text: string): Promise<void> {
-        if (navigator.clipboard) {
-            return navigator.clipboard.writeText(text);
-        }
-
-        return new Promise((resolve) => {
-            const textArea = document.createElement("textarea");
-            textArea.value = text;
-            textArea.style.position = "fixed";
-            document.body.appendChild(textArea);
-            textArea.focus();
-            textArea.select();
-            document.execCommand("copy");
-            document.body.removeChild(textArea);
-            resolve();
-        });
+        return navigator.clipboard.writeText(text);
     }
 }

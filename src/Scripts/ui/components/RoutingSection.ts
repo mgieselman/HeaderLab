@@ -12,7 +12,7 @@ const ANOMALY_THRESHOLD_MS = 30000;
 export function renderRouting(container: HTMLElement, received: Received): void {
     clear(container);
     if (!received.exists()) {
-        container.appendChild(el("div", { class: "hl-empty" }, "No received headers found."));
+        container.appendChild(el("div", { class: "hl-empty" }, "No received headers found. This is normal for internally sent messages or emails where routing information was stripped."));
         return;
     }
 
@@ -42,8 +42,20 @@ function renderHop(row: ReceivedRow): HTMLElement {
 
     if (fieldStr(row.delay)) {
         const isAnomaly = delayMs > ANOMALY_THRESHOLD_MS;
+        const isNegative = delayMs < 0;
         const cls = "hl-hop__delay" + (isAnomaly ? " hl-hop__delay--anomaly" : "");
-        header.appendChild(el("span", { class: cls }, fieldStr(row.delay)));
+        const delayLabel = isNegative
+            ? `⚠ ${fieldStr(row.delay)} (negative)`
+            : isAnomaly
+                ? `⚠ ${fieldStr(row.delay)} (anomaly)`
+                : fieldStr(row.delay);
+        const delayEl = el("span", { class: cls }, delayLabel);
+        if (isAnomaly || isNegative) {
+            delayEl.setAttribute("aria-label", isNegative
+                ? `Negative delay: ${fieldStr(row.delay)}`
+                : `Anomalous delay: ${fieldStr(row.delay)}`);
+        }
+        header.appendChild(delayEl);
     }
     hop.appendChild(header);
 

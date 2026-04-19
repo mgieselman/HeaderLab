@@ -25,14 +25,16 @@ export function renderDiagnostics(container: HTMLElement, violationGroups: Viola
     if (counts.info) parts.push(`${counts.info} info`);
 
     container.appendChild(
-        el("div", { class: `hl-diagnostics-banner hl-diagnostics-banner--${highestSeverity}`, role: "alert" },
+        el("div", { class: `hl-diagnostics-banner hl-diagnostics-banner--${highestSeverity}`, "aria-label": "Diagnostics summary" },
             parts.join(", ") + " found"
         )
     );
 
     // Violation groups
     for (const group of violationGroups) {
-        const details = el("details", { class: `hl-details hl-details--${group.severity}`, open: true });
+        // Errors are expanded by default; warnings and info are collapsed
+        const isExpanded = group.severity === "error";
+        const details = el("details", { class: `hl-details hl-details--${group.severity}`, ...(isExpanded ? { open: true } : {}) });
 
         const summary = el("summary", null, group.displayName);
         if (group.violations.length > 1) {

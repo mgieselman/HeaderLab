@@ -7,7 +7,7 @@ import { el } from "../rendering/dom";
 import { AppState } from "../state/AppState";
 import { ThemeMode } from "../state/ThemeManager";
 
-export function openSettingsDialog(state: AppState): void {
+export function openSettingsDialog(state: AppState, triggerElement?: HTMLElement): void {
     const overlay = el("div", {
         class: "hl-dialog-overlay",
         onclick: (e: Event) => { if (e.target === overlay) close(); },
@@ -22,6 +22,7 @@ export function openSettingsDialog(state: AppState): void {
 
     function close(): void {
         overlay.remove();
+        triggerElement?.focus();
     }
 
     // Header
@@ -72,7 +73,12 @@ export function openSettingsDialog(state: AppState): void {
 
     // Privacy link
     dialog.appendChild(el("div", { class: "hl-field" },
-        el("a", { href: "privacy.html", target: "_blank", rel: "noopener" }, "Privacy Policy")
+        el("a", {
+            href: "privacy.html",
+            target: "_blank",
+            rel: "noopener",
+            "aria-label": "Privacy Policy - opens in new tab",
+        }, "Privacy Policy \u29C9")
     ));
 
     overlay.appendChild(dialog);

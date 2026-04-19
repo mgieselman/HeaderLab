@@ -2,6 +2,7 @@
  * Original headers section: collapsible raw view.
  */
 
+import { Strings } from "../../core/Strings";
 import { clear, el } from "../rendering/dom";
 
 export function renderOriginal(container: HTMLElement, originalHeaders: string): void {
@@ -12,7 +13,24 @@ export function renderOriginal(container: HTMLElement, originalHeaders: string):
     }
 
     const details = el("details", { class: "hl-details", open: true });
-    details.appendChild(el("summary", null, "Raw headers"));
+
+    const summaryRow = el("div", { class: "hl-details__summary-row" });
+    summaryRow.appendChild(el("summary", null, "Raw headers"));
+
+    const copyBtn = el("button", {
+        class: "hl-btn hl-btn--small",
+        "aria-label": "Copy raw headers to clipboard",
+        onclick: async (e: Event) => {
+            e.stopPropagation(); // prevent <details> toggle
+            await Strings.copyToClipboard(originalHeaders);
+            const btn = e.target as HTMLButtonElement;
+            const original = btn.textContent;
+            btn.textContent = "Copied!";
+            setTimeout(() => { btn.textContent = original; }, 2000);
+        },
+    }, "Copy");
+    summaryRow.appendChild(copyBtn);
+    details.appendChild(summaryRow);
 
     const content = el("div", { class: "hl-details__content" });
     const pre = el("pre", { class: "hl-mono" }, originalHeaders);

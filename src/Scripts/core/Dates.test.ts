@@ -29,6 +29,4 @@ describe("Dates.parseDate", () => {
         expect(result).toBeInstanceOf(DateWithNum);
         expect(result.dateNum).toBe(new Date("01/28/2018 12:34:56 +0000").valueOf());
     });
-
-    // TODO: Figure out how to mock a failure to load dayjs
 });

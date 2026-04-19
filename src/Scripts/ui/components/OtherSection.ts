@@ -8,7 +8,7 @@ import { clear, el } from "../rendering/dom";
 export function renderOther(container: HTMLElement, other: Other): void {
     clear(container);
     if (!other.exists()) {
-        container.appendChild(el("div", { class: "hl-empty" }, "No other headers found."));
+        container.appendChild(el("div", { class: "hl-empty" }, "No additional headers found."));
         return;
     }
 
@@ -26,7 +26,15 @@ function renderOtherRow(row: { number: number; header: string; value: string; ur
 
     const headerSpan = el("span", { class: "hl-other-item__name" });
     if (row.url) {
-        headerSpan.appendChild(el("a", { href: row.url, target: "_blank", rel: "noopener" }, row.header));
+        const link = el("a", {
+            href: row.url,
+            target: "_blank",
+            rel: "noopener",
+            "aria-label": `${row.header} - open RFC reference in new tab`,
+            class: "hl-external-link",
+        }, row.header);
+        link.appendChild(el("span", { class: "hl-external-link__icon", "aria-hidden": "true" }, " \u29C9"));
+        headerSpan.appendChild(link);
     } else {
         headerSpan.textContent = row.header;
     }

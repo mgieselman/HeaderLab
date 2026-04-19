@@ -20,8 +20,11 @@ export class AppState {
         this.theme = new ThemeManager();
     }
 
-    public subscribe(fn: StateListener): void {
+    public subscribe(fn: StateListener): () => void {
         this.listeners.push(fn);
+        return () => {
+            this.listeners = this.listeners.filter(l => l !== fn);
+        };
     }
 
     private notify(): void {

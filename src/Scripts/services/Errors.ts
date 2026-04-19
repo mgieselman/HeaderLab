@@ -35,8 +35,8 @@ export class Errors {
             if (typeof (error) === "string") return false;
             if (typeof (error) === "number") return false;
             if (typeof error === "object" && "stack" in error) return true;
-        } catch (e) {
-            this.diag.trackEvent({ name: "isError exception with error", properties: { error: JSON.stringify(e) } });
+        } catch {
+            this.diag.trackEvent({ name: "isError exception" });
         }
 
         return false;
@@ -50,7 +50,6 @@ export class Errors {
             const event = { name: "Errors.log" };
             const props = {
                 message: message,
-                error: JSON.stringify(error, null, 2),
                 source: "",
                 stack: "",
                 description: "",

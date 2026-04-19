@@ -1,5 +1,7 @@
 export const statusLabels = {
     loading: "Loading...",
+    retrieving: "Retrieving headers from email...",
+    analyzing: "Analyzing headers...",
     requestSent: "Retrieving headers from server.",
     foundHeaders: "Found headers",
     processingHeader: "Processing header",

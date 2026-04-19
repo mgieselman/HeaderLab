@@ -37,5 +37,5 @@ export function text(content: string): Text {
 }
 
 export function clear(container: Element): void {
-    container.innerHTML = "";
+    container.replaceChildren();
 }

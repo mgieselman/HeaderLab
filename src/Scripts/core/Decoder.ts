@@ -71,29 +71,29 @@ export class Decoder {
 
         // Only decode if we think this is valid base64
         if (RegExp(/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/).test(input) === true) {
-            const $v$0 = [];
-            let $v$1, $v$2, $v$3, $v$4, $v$5, $v$6, $v$7;
-            let $v$8 = 0;
-            while ($v$8 < input.length) {
-                $v$4 = Decoder.base64Chars.indexOf(input.charAt($v$8++));
-                $v$5 = Decoder.base64Chars.indexOf(input.charAt($v$8++));
-                $v$6 = Decoder.base64Chars.indexOf(input.charAt($v$8++));
-                $v$7 = Decoder.base64Chars.indexOf(input.charAt($v$8++));
-                $v$1 = $v$4 << 2 | $v$5 >> 4;
-                $v$2 = ($v$5 & 15) << 4 | $v$6 >> 2;
-                $v$3 = ($v$6 & 3) << 6 | $v$7;
+            const outputBytes = [];
+            let char1, char2, char3, char4, byte1, byte2, byte3;
+            let pos = 0;
+            while (pos < input.length) {
+                char1 = Decoder.base64Chars.indexOf(input.charAt(pos++));
+                char2 = Decoder.base64Chars.indexOf(input.charAt(pos++));
+                char3 = Decoder.base64Chars.indexOf(input.charAt(pos++));
+                char4 = Decoder.base64Chars.indexOf(input.charAt(pos++));
+                byte1 = char1 << 2 | char2 >> 4;
+                byte2 = (char2 & 15) << 4 | char3 >> 2;
+                byte3 = (char3 & 3) << 6 | char4;
 
-                if ($v$7 !== 64) {
-                    $v$0.push($v$1, $v$2, $v$3);
-                } else if ($v$6 !== 64) {
-                    $v$0.push($v$1, $v$2);
+                if (char4 !== 64) {
+                    outputBytes.push(byte1, byte2, byte3);
+                } else if (char3 !== 64) {
+                    outputBytes.push(byte1, byte2);
                 } else {
-                    $v$0.push($v$1);
+                    outputBytes.push(byte1);
                 }
             }
 
             try {
-                return Decoder.decodeHexCodepage(charSet, $v$0);
+                return Decoder.decodeHexCodepage(charSet, outputBytes);
             }
             catch { /**/ }
         }

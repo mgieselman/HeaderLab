@@ -16,11 +16,11 @@ Email header analyzer — parses raw transport headers into human-readable routi
 
 ## Relationship to microsoft/MHA
 
-HeaderLab shares the same original codebase lineage as [microsoft/MHA](https://github.com/microsoft/MHA) — the Message Header Analyzer add-in that has been part of the Microsoft 365 ecosystem for many years.
+HeaderLab started as a fork of [microsoft/MHA](https://github.com/microsoft/MHA) to fix the EWS authentication issues with M365.
 
-The divergence was driven by necessity. Modern Microsoft 365 tenants have been retiring Exchange Web Services (EWS) authentication in favor of OAuth 2.0 and Nested App Authentication (NAA). Updating the header retrieval layer to support NAA required changes throughout the auth and retrieval stack. Alongside that, a full UI rebuild was undertaken — replacing the legacy frame-based multi-pane layout with a single-page TypeScript application, adding a proper component model, CSS custom properties for theming, and a Vite-based build pipeline.
+Since modern Microsoft 365 tenants have been retiring Exchange Web Services (EWS) authentication in favor of OAuth 2.0 and Nested App Authentication (NAA). Updating the header retrieval layer to support NAA required changes throughout the auth and retrieval stack. Alongside that, a full UI rebuild was undertaken — replacing the legacy frame-based multi-pane layout with a single-page TypeScript application, adding a proper component model, CSS custom properties for theming, and a Vite-based build pipeline.
 
-The cumulative scope of these changes made merging back into the upstream MHA repository impractical. **HeaderLab is not a GitHub fork of microsoft/MHA** — it is an independently developed tool that grew from the same roots.
+The cumulative scope of these changes made merging back into the upstream MHA repository impractical.
 
 ## Features
 

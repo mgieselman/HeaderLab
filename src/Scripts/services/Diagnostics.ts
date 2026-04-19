@@ -92,7 +92,7 @@ export class Diagnostics {
         })().catch((error: unknown) => {
             this.appInsightsLoadPromise = null;
             this.sendTelemetry = false;
-            console.log("Telemetry initialization failed", error);
+            console.warn("Telemetry initialization failed", (error as Error)?.message ?? error);
         });
     }
 
@@ -105,11 +105,16 @@ export class Diagnostics {
             const stackTraceModule = await import("stacktrace-js");
             const stackTrace = stackTraceModule.default || stackTraceModule;
             const stackframes = await stackTrace.fromError(exception as Error);
+            const safeStack = stackframes.map((f: { functionName?: string; fileName?: string; lineNumber?: number }) => ({
+                fn: f.functionName,
+                file: f.fileName,
+                line: f.lineNumber
+            }));
             this.appInsights.trackEvent({
                 name: "Exception Details",
                 properties: {
-                    stack: stackframes,
-                    error: exception,
+                    stack: safeStack,
+                    message: (exception as Error)?.message ?? "Unknown error",
                 }
             });
         } catch {
@@ -183,12 +188,12 @@ export class Diagnostics {
             const stack = (e as Error).stack;
             this.ensureAppInsightsLoaded();
             if (this.appInsights) {
-                this.appInsights.trackEvent({ name: eventType, properties: { source: source, exception: JSON.stringify(e), message: message, stack: stack } });
+                this.appInsights.trackEvent({ name: eventType, properties: { source: source, message: message, stack: stack } });
             }
         }
         else {
             const mgsBase = `Error ${eventType} from ${source}: ${message}`;
-            console.log(mgsBase + " exception: " + JSON.stringify(e));
+            console.warn(mgsBase);
         }
     }
 
