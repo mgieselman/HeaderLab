@@ -2,3 +2,8 @@
 /node_modules
 /Pages
 /Resources
+.DS_Store
+Thumbs.db
+*.log
+.env
+.env.*

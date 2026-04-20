@@ -10,7 +10,7 @@
 
 Email header analyzer — parses raw transport headers into human-readable routing, timing, and security analysis. Runs as a standalone web app and as a Microsoft Outlook add-in.
 
-**Live app:** [https://happy-pond-01840f710.4.azurestaticapps.net](https://happy-pond-01840f710.4.azurestaticapps.net)
+**Live app:** [https://headerlab.gieselman.com](https://headerlab.gieselman.com)
 
 ![HeaderLab add-in showing Summary tab with routing, authentication, and spam analysis results](docs/screenshot-addin.png)
 
@@ -45,7 +45,7 @@ Sideload the add-in using the hosted manifest URL — no AppSource listing requi
 3. Select **My add-ins** → **Add a custom add-in** → **Add from URL**
 4. Paste the manifest URL:
    ```
-   https://happy-pond-01840f710.4.azurestaticapps.net/manifest.json
+   https://headerlab.gieselman.com/manifest.json
    ```
 5. Click **OK** and accept the warning — HeaderLab will appear in the ribbon
 
@@ -70,7 +70,7 @@ Sideload the add-in using the hosted manifest URL — no AppSource listing requi
 
 No installation needed — paste raw headers directly at:
 
-**[https://happy-pond-01840f710.4.azurestaticapps.net](https://happy-pond-01840f710.4.azurestaticapps.net)**
+**[https://headerlab.gieselman.com](https://headerlab.gieselman.com)**
 
 ## Quick Start (development)
 
@@ -92,6 +92,29 @@ npm run test:watch    # Vitest in watch mode
 npm run size          # check bundle size budgets
 npx vitest run src/Scripts/path/to/file.test.ts  # single test file
 ```
+
+## Self-hosting
+
+The manifests and hosted app at `headerlab.gieselman.com` are configured for the maintainer's deployment. **If you fork this repo and self-host, you must create your own Entra ID app registration** — do not reuse the client ID in the manifests. Using the published manifests as-is will load the maintainer's hosted app, not your own build.
+
+Steps to self-host:
+
+1. **Register an Entra ID app**
+   - Create a new app registration in [Entra ID](https://entra.microsoft.com)
+   - Add a SPA redirect URI: `brk-multihub://<your-domain>`
+   - Set the Application ID URI to `api://<your-domain>/<your-client-id>`
+   - Grant the `Mail.Read` delegated permission (Microsoft Graph)
+
+2. **Set build secrets / environment variables**
+   - `HEADERLAB_NAA_CLIENT_ID` — your client ID
+   - `AZURE_STATIC_WEB_APPS_API_TOKEN` — your deployment token
+   - `APPINSIGHTS_INSTRUMENTATIONKEY` — optional
+
+3. **Update the manifests**
+   - Replace all occurrences of `headerlab.gieselman.com` in `Manifest.xml` and `manifest.json` with your domain
+   - Replace the client ID GUID with your own
+
+> **Note:** The standalone web app (paste-and-analyze) works without any Entra setup. NAA/Graph header retrieval in the Outlook add-in is the only feature requiring an app registration.
 
 ## Deployment
 

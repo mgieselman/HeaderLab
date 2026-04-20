@@ -12,8 +12,8 @@
   <DefaultLocale>en-US</DefaultLocale>
   <DisplayName DefaultValue="HeaderLab" />
     <Description DefaultValue="Analyze message headers with HeaderLab using Graph API and NAA" />
-  <IconUrl DefaultValue="https://happy-pond-01840f710.4.azurestaticapps.net/Resources/headerlabLogo64.png" />
-  <HighResolutionIconUrl DefaultValue="https://happy-pond-01840f710.4.azurestaticapps.net/Resources/headerlabLogo192.png" />
+  <IconUrl DefaultValue="https://headerlab.gieselman.com/Resources/headerlabLogo64.png" />
+  <HighResolutionIconUrl DefaultValue="https://headerlab.gieselman.com/Resources/headerlabLogo192.png" />
   <SupportUrl DefaultValue="https://github.com/mgieselman/headerlab/issues" />
   <Hosts>
     <Host Name="Mailbox" />
@@ -27,23 +27,22 @@
   <FormSettings>
     <Form xsi:type="ItemRead">
       <DesktopSettings>
-        <SourceLocation DefaultValue="https://happy-pond-01840f710.4.azurestaticapps.net/Default.html" />
+        <SourceLocation DefaultValue="https://headerlab.gieselman.com/Default.html" />
         <RequestedHeight>450</RequestedHeight>
       </DesktopSettings>
 
       <TabletSettings>
-        <SourceLocation DefaultValue="https://happy-pond-01840f710.4.azurestaticapps.net/DefaultTablet.html" />
+        <SourceLocation DefaultValue="https://headerlab.gieselman.com/Default.html" />
         <RequestedHeight>350</RequestedHeight>
       </TabletSettings>
 
       <PhoneSettings>
-        <SourceLocation DefaultValue="https://happy-pond-01840f710.4.azurestaticapps.net/DefaultPhone.html" />
+        <SourceLocation DefaultValue="https://headerlab.gieselman.com/Default.html" />
       </PhoneSettings>
     </Form>
   </FormSettings>
 
-  <!-- TODO: Dial this down to ReadItem when the token bug is fixed -->
-  <Permissions>ReadWriteMailbox</Permissions>
+  <Permissions>ReadItem</Permissions>
 
   <Rule xsi:type="RuleCollection" Mode="And">
     <Rule xsi:type="ItemIs" ItemType="Message" FormType="Read"/>
@@ -93,13 +92,13 @@
     <Resources>
       <bt:Images>
         <!-- HeaderLab icon -->
-        <bt:Image id="headerlab-icon-16" DefaultValue="https://happy-pond-01840f710.4.azurestaticapps.net/Resources/headerlabLogo16.png"/>
-        <bt:Image id="headerlab-icon-32" DefaultValue="https://happy-pond-01840f710.4.azurestaticapps.net/Resources/headerlabLogo32.png"/>
-        <bt:Image id="headerlab-icon-80" DefaultValue="https://happy-pond-01840f710.4.azurestaticapps.net/Resources/headerlabLogo80.png"/>
+        <bt:Image id="headerlab-icon-16" DefaultValue="https://headerlab.gieselman.com/Resources/headerlabLogo16.png"/>
+        <bt:Image id="headerlab-icon-32" DefaultValue="https://headerlab.gieselman.com/Resources/headerlabLogo32.png"/>
+        <bt:Image id="headerlab-icon-80" DefaultValue="https://headerlab.gieselman.com/Resources/headerlabLogo80.png"/>
       </bt:Images>
       <bt:Urls>
-        <bt:Url id="functionFile" DefaultValue="https://happy-pond-01840f710.4.azurestaticapps.net/Functions.html"/>
-        <bt:Url id="headerlabTaskPaneUrl" DefaultValue="https://happy-pond-01840f710.4.azurestaticapps.net/Default.html"/>
+        <bt:Url id="functionFile" DefaultValue="https://headerlab.gieselman.com/Functions.html"/>
+        <bt:Url id="headerlabTaskPaneUrl" DefaultValue="https://headerlab.gieselman.com/Default.html"/>
       </bt:Urls>
       <bt:ShortStrings>
         <bt:String id="groupLabel" DefaultValue=" "/>
@@ -187,14 +186,14 @@
       <Resources>
         <bt:Images>
           <!-- HeaderLab icon -->
-          <bt:Image id="headerlab-icon-16" DefaultValue="https://happy-pond-01840f710.4.azurestaticapps.net/Resources/headerlabLogo16.png"/>
-          <bt:Image id="headerlab-icon-32" DefaultValue="https://happy-pond-01840f710.4.azurestaticapps.net/Resources/headerlabLogo32.png"/>
-          <bt:Image id="headerlab-icon-80" DefaultValue="https://happy-pond-01840f710.4.azurestaticapps.net/Resources/headerlabLogo80.png"/>
+          <bt:Image id="headerlab-icon-16" DefaultValue="https://headerlab.gieselman.com/Resources/headerlabLogo16.png"/>
+          <bt:Image id="headerlab-icon-32" DefaultValue="https://headerlab.gieselman.com/Resources/headerlabLogo32.png"/>
+          <bt:Image id="headerlab-icon-80" DefaultValue="https://headerlab.gieselman.com/Resources/headerlabLogo80.png"/>
         </bt:Images>
         <bt:Urls>
-          <bt:Url id="functionFile" DefaultValue="https://happy-pond-01840f710.4.azurestaticapps.net/Functions.html"/>
-          <bt:Url id="headerlabDesktopPaneUrl" DefaultValue="https://happy-pond-01840f710.4.azurestaticapps.net/DesktopPane.html"/>
-          <bt:Url id="headerlabMobilePaneUrl" DefaultValue="https://happy-pond-01840f710.4.azurestaticapps.net/MobilePane.html"/>
+          <bt:Url id="functionFile" DefaultValue="https://headerlab.gieselman.com/Functions.html"/>
+          <bt:Url id="headerlabDesktopPaneUrl" DefaultValue="https://headerlab.gieselman.com/DesktopPane.html"/>
+          <bt:Url id="headerlabMobilePaneUrl" DefaultValue="https://headerlab.gieselman.com/MobilePane.html"/>
         </bt:Urls>
         <bt:ShortStrings>
           <bt:String id="groupLabel" DefaultValue=" "/>
@@ -207,7 +206,7 @@
       </Resources>
       <WebApplicationInfo>
         <Id>3b66646d-972e-49e4-a2b0-b37a78a00e11</Id>
-        <Resource>api://happy-pond-01840f710.4.azurestaticapps.net/3b66646d-972e-49e4-a2b0-b37a78a00e11</Resource>
+        <Resource>api://headerlab.gieselman.com/3b66646d-972e-49e4-a2b0-b37a78a00e11</Resource>
         <Scopes>
           <Scope>profile</Scope>
           <Scope>openid</Scope>

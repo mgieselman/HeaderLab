@@ -30,6 +30,16 @@ export class Diagnostics {
     private appInsightsLoadPromise: Promise<void> | null = null;
 
     constructor() {
+        // Read stored preference before initializing telemetry so we don't
+        // load Application Insights before the user's opt-out is honoured.
+        try {
+            const stored = localStorage.getItem("headerlab-sendTelemetry");
+            if (stored === "false") {
+                this.sendTelemetry = false;
+            }
+        } catch {
+            // localStorage unavailable (e.g. test environment)
+        }
         this.ensureAppInsightsLoaded();
     }
 
@@ -140,6 +150,7 @@ export class Diagnostics {
         if (changed) {
             this.onTelemetryChanged?.(sendTelemetry);
             this.sendTelemetry = sendTelemetry;
+            try { localStorage.setItem("headerlab-sendTelemetry", String(sendTelemetry)); } catch { /* unavailable */ }
             this.ensureAppInsightsLoaded();
             if (typeof (Office) !== "undefined" && Office.context) {
                 Office.context.roamingSettings.set("sendTelemetry", this.sendTelemetry);

@@ -35,7 +35,7 @@
     },
     "webApplicationInfo": {
         "id": "3b66646d-972e-49e4-a2b0-b37a78a00e11",
-        "resource": "api://happy-pond-01840f710.4.azurestaticapps.net/3b66646d-972e-49e4-a2b0-b37a78a00e11"
+        "resource": "api://headerlab.gieselman.com/3b66646d-972e-49e4-a2b0-b37a78a00e11"
     },
     "extensions": [
         {
@@ -61,7 +61,7 @@
                     "id": "TaskPaneRuntime",
                     "type": "general",
                     "code": {
-                        "page": "https://happy-pond-01840f710.4.azurestaticapps.net/DesktopPane.html"
+                        "page": "https://headerlab.gieselman.com/DesktopPane.html"
                     },
                     "lifetime": "short",
                     "actions": [
@@ -85,7 +85,7 @@
                     "id": "FunctionRuntime",
                     "type": "general",
                     "code": {
-                        "page": "https://happy-pond-01840f710.4.azurestaticapps.net/Functions.html"
+                        "page": "https://headerlab.gieselman.com/Functions.html"
                     }
                 }
             ],
@@ -102,15 +102,15 @@
                                     "icons": [
                                         {
                                             "size": 16,
-                                            "url": "https://happy-pond-01840f710.4.azurestaticapps.net/Resources/headerlabLogo16.png"
+                                            "url": "https://headerlab.gieselman.com/Resources/headerlabLogo16.png"
                                         },
                                         {
                                             "size": 32,
-                                            "url": "https://happy-pond-01840f710.4.azurestaticapps.net/Resources/headerlabLogo32.png"
+                                            "url": "https://headerlab.gieselman.com/Resources/headerlabLogo32.png"
                                         },
                                         {
                                             "size": 80,
-                                            "url": "https://happy-pond-01840f710.4.azurestaticapps.net/Resources/headerlabLogo80.png"
+                                            "url": "https://headerlab.gieselman.com/Resources/headerlabLogo80.png"
                                         }
                                     ],
                                     "controls": [
@@ -121,15 +121,15 @@
                                             "icons": [
                                                 {
                                                     "size": 16,
-                                                    "url": "https://happy-pond-01840f710.4.azurestaticapps.net/Resources/headerlabLogo16.png"
+                                                    "url": "https://headerlab.gieselman.com/Resources/headerlabLogo16.png"
                                                 },
                                                 {
                                                     "size": 32,
-                                                    "url": "https://happy-pond-01840f710.4.azurestaticapps.net/Resources/headerlabLogo32.png"
+                                                    "url": "https://headerlab.gieselman.com/Resources/headerlabLogo32.png"
                                                 },
                                                 {
                                                     "size": 80,
-                                                    "url": "https://happy-pond-01840f710.4.azurestaticapps.net/Resources/headerlabLogo80.png"
+                                                    "url": "https://headerlab.gieselman.com/Resources/headerlabLogo80.png"
                                                 }
                                             ],
                                             "supertip": {

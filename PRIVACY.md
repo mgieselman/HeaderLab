@@ -8,7 +8,17 @@ All header analysis is performed locally in your browser. No email header data i
 
 ## Telemetry
 
-HeaderLab may collect anonymous usage telemetry (page views, errors) via Application Insights to improve the tool. You can opt out of telemetry at any time from the Settings menu. No telemetry is collected on localhost or during development.
+HeaderLab may collect anonymous usage telemetry via Application Insights to improve the tool. You can opt out of telemetry at any time from the Settings menu. No telemetry is collected on localhost or during development.
+
+The following telemetry events may be collected:
+
+- **Page view** — when the app is loaded
+- **Error / exception** — unhandled errors, including sanitized stack traces
+- **Add-in: API headers** — when headers are retrieved via the Office.js API
+- **Add-in: Graph headers** — when headers are retrieved via Microsoft Graph
+- **App diagnostics** — version, build time, and feature flags (no personal data)
+
+No email content, subject lines, sender/recipient addresses, or header values are included in telemetry.
 
 ## Outlook Add-in
 

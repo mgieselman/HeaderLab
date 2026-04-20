@@ -85,3 +85,18 @@ npm run size        # verify bundle size budgets
 ## Reporting Security Vulnerabilities
 
 See [SECURITY.md](SECURITY.md) — please do not open a public issue for security vulnerabilities.
+
+## Developer Certificate of Origin
+
+By making a contribution to this project you certify, under the terms of the
+[Developer Certificate of Origin (DCO)](https://developercertificate.org/), that
+you have the right to submit it under the MIT License. Add a `Signed-off-by` line
+to your commit message:
+
+```
+git commit -s -m "My commit message"
+```
+
+## Releases
+
+Release history is tracked via [GitHub Releases](https://github.com/mgieselman/headerlab/releases).

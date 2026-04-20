@@ -3,7 +3,7 @@ import { resolve } from "node:path";
 import { defineConfig } from "vite";
 
 const __dirname = import.meta.dirname;
-const defaultNaaClientId = "3b66646d-972e-49e4-a2b0-b37a78a00e11";
+const defaultNaaClientId = "";
 
 export default defineConfig(({ mode }) => ({
     root: "src/Pages",
