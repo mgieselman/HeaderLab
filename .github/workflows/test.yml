@@ -29,6 +29,8 @@ jobs:
           cache: 'npm'
 
       - name: Install, lint, test
+        env:
+          HEADERLAB_NAA_CLIENT_ID: ''
         run: |
           npm ci
           npx tsc --noEmit

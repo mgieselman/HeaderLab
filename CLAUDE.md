@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-HeaderLab (package name: `mha`) is an email Message Header Analyzer. It parses raw email transport headers and displays routing hops, delivery delays, antispam verdicts, authentication results (SPF/DKIM/DMARC), and rule-based diagnostics. It runs both as a standalone web app and as an Outlook Office Add-in (via Office.js).
+HeaderLab (package name: `mha`) is an email Message Header Analyzer. It parses raw email transport headers and displays routing hops, delivery delays, antispam verdicts, authentication results (SPF/DKIM/DMARC), and rule-based diagnostics. It runs both as a standalone web app and as an Outlook Office Add-in (Office.js with a Microsoft Graph fallback for hosts where `getAllInternetHeadersAsync` is not implemented, notably Outlook for iOS).
 
 Originally named MHA (Microsoft Header Analyzer), now renamed to HeaderLab. MHA references have been removed from the data and retrieval layers. See `PLAN.md` for the UI rebuild plan and architecture modernization proposals.
 
@@ -31,7 +31,7 @@ Node >= 18.12.0 required. CI uses Node 22.
 Code is organized under `src/Scripts/` into layers with dependencies flowing downward:
 
 ### `config/` — Build-time constants
-Vite `define` wrappers: `aikey`, `buildTime`, `version`. No internal imports.
+Vite `define` wrappers: `aikey`, `buildTime`, `version`, `naaClientId`. No internal imports.
 
 ### `core/` — Pure domain utilities
 Foundational modules imported broadly across all layers:
@@ -57,7 +57,7 @@ Validates parsed headers against rules defined in `public/data/rules.json`. Entr
 - **`Diagnostics.ts`** — Application Insights telemetry (exported class + `diagnostics` singleton).
 - **`Errors.ts`** / **`Stack.ts`** — Error collection (instance class with injected `Diagnostics`), stack trace parsing.
 - **`ParentFrameUtils.ts`** — Query string parsing, diagnostics string generation.
-- **`retrieval/`** — Header retrieval for Outlook add-in mode. `GetHeaders` calls the Office.js API (`GetHeadersAPI`, `getAllInternetHeadersAsync`) with the `ReadItem` permission. Uses `HeaderCallbacks` interface to decouple from UI.
+- **`retrieval/`** — Header retrieval for Outlook add-in mode. `GetHeaders` tries the Office.js API (`GetHeadersAPI`, `getAllInternetHeadersAsync`) with the `ReadItem` permission first; on hosts where the API is not available (e.g., Outlook for iOS), it falls back to Microsoft Graph via NAA/MSAL (`GetHeadersGraph`). Uses `HeaderCallbacks` interface to decouple from UI.
 
 ### `ui/` — Presentation layer
 Vanilla TypeScript + CSS custom properties, no framework. Two entry points:
@@ -77,7 +77,7 @@ Vanilla TypeScript + CSS custom properties, no framework. Two entry points:
 
 - Header parsing order matters: `summary.add()` → `forefrontAntiSpamReport.add()` → `antiSpamReport.add()` → `receivedHeaders.add()` → `otherHeaders.add()`. First match wins.
 - `HeaderModel.create()` is async (static factory) because rule analysis loads rules from JSON.
-- Vite globals: `__AIKEY__`, `__BUILDTIME__`, `__VERSION__` are replaced at build time via `define` in `vite.config.ts`.
+- Vite globals: `__AIKEY__`, `__BUILDTIME__`, `__VERSION__`, `__NAACLIENTID__` are replaced at build time via `define` in `vite.config.ts`.
 - UI re-renders on `AppState.subscribe()` callbacks — no virtual DOM, sections are rebuilt on tab switch.
 - Build output must produce HTML files matching `manifest.json`: `headerlab.html`, `Default.html`, `DesktopPane.html`, `MobilePane.html`, `Functions.html`.
 

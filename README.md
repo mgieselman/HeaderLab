@@ -18,7 +18,7 @@ Email header analyzer — parses raw transport headers into human-readable routi
 
 HeaderLab started as a fork of [microsoft/MHA](https://github.com/microsoft/MHA) to fix the EWS authentication issues with M365.
 
-With Exchange Web Services (EWS) being retired in modern Microsoft 365 tenants, the header retrieval layer was rewritten around the Office.js `getAllInternetHeadersAsync` API (Mailbox 1.9+), which requires only the `ReadItem` permission and no user auth flow. Alongside that, a full UI rebuild was undertaken — replacing the legacy frame-based multi-pane layout with a single-page TypeScript application, adding a proper component model, CSS custom properties for theming, and a Vite-based build pipeline.
+With Exchange Web Services (EWS) being retired in modern Microsoft 365 tenants, the header retrieval layer was rewritten around the Office.js `getAllInternetHeadersAsync` API (Mailbox 1.9+). Outlook on Desktop and Outlook on the Web honor that API directly; Outlook for iOS has not implemented `getAllInternetHeadersAsync` despite advertising Mailbox 1.9 requirement-set support, so a Microsoft Graph fallback via Nested App Authentication (NAA + MSAL) is used on hosts where the direct API is unavailable. Alongside that, a full UI rebuild was undertaken — replacing the legacy frame-based multi-pane layout with a single-page TypeScript application, adding a proper component model, CSS custom properties for theming, and a Vite-based build pipeline.
 
 The cumulative scope of these changes made merging back into the upstream MHA repository impractical.
 
@@ -28,7 +28,7 @@ The cumulative scope of these changes made merging back into the upstream MHA re
 - **Authentication results** — SPF, DKIM, and DMARC pass/fail with RFC links
 - **Antispam verdicts** — parses `X-Forefront-Antispam-Report` and `X-Microsoft-Antispam` headers
 - **Rule-based diagnostics** — flags configuration issues and anomalies
-- **Outlook add-in** — retrieves headers directly from the selected message via Office.js (no sign-in required)
+- **Outlook add-in** — retrieves headers directly from the selected message via Office.js, with a Microsoft Graph fallback (NAA) for Outlook on iOS where the native API is not yet implemented
 - **Standalone web app** — paste raw headers and analyze without signing in
 - **Light / dark / system theme** — persisted to localStorage
 - **Copy to clipboard** — export the current view or a plain-text report
@@ -95,16 +95,26 @@ npx vitest run src/Scripts/path/to/file.test.ts  # single test file
 
 ## Self-hosting
 
-The manifests and hosted app at `headerlab.gieselman.com` are configured for the maintainer's deployment. Header retrieval uses the Office.js API only — no Entra ID app registration, OAuth consent, or client secret is required.
+The manifests and hosted app at `headerlab.gieselman.com` are configured for the maintainer's deployment. **If you fork this repo and self-host, you must create your own Entra ID app registration** for the Graph/NAA fallback path — do not reuse the client ID in the manifests. The add-in's direct Office.js path works without any Entra setup, but the iOS fallback requires it.
 
 Steps to self-host:
 
-1. **Set build secrets / environment variables**
+1. **Register an Entra ID app** (required for the Graph fallback used on Outlook for iOS)
+   - Create a new app registration in [Entra ID](https://entra.microsoft.com)
+   - Add a SPA redirect URI: `brk-multihub://<your-domain>`
+   - Set the Application ID URI to `api://<your-domain>/<your-client-id>`
+   - Grant the `Mail.Read` delegated permission (Microsoft Graph)
+
+2. **Set build secrets / environment variables**
+   - `HEADERLAB_NAA_CLIENT_ID` — your Entra client ID
    - `AZURE_STATIC_WEB_APPS_API_TOKEN` — your deployment token
    - `APPINSIGHTS_INSTRUMENTATIONKEY` — optional
 
-2. **Update the manifests**
+3. **Update the manifests**
    - Replace all occurrences of `headerlab.gieselman.com` in `Manifest.xml` and `manifest.json` with your domain
+   - Replace the client ID GUID with your own
+
+> **Note:** The standalone web app (paste-and-analyze) works without any Entra setup. Only the Outlook-add-in iOS fallback requires the Entra registration.
 
 ## Deployment
 
@@ -113,6 +123,7 @@ Deployed to Azure Static Web Apps from `Pages/`. Push to `main` triggers the bui
 | Secret | Purpose |
 |--------|---------|
 | `AZURE_STATIC_WEB_APPS_API_TOKEN` | Deployment token |
+| `HEADERLAB_NAA_CLIENT_ID` | Entra ID app registration for the Graph/NAA iOS fallback |
 | `APPINSIGHTS_INSTRUMENTATIONKEY` | Application Insights (optional) |
 
 ## Contributing

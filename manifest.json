@@ -27,7 +27,7 @@
         "permissions": {
             "resourceSpecific": [
                 {
-                    "name": "Mailbox.Read.User",
+                    "name": "MailboxItem.Read.User",
                     "type": "Delegated"
                 }
             ]

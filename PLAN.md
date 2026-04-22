@@ -451,4 +451,18 @@ After Phase 5, Outlook on iOS (5.2614.0) began returning Office.js error code `7
 - `publish.py` security-review gate gained a `[permission-upgrade]` commit-message bypass mirroring the existing `[no-docs]` pattern, so deliberate upgrades pass the regression check while accidental ones still block.
 - iOS users must remove and re-add the add-in for the new manifest permission to take effect.
 
-**Escalation:** `ReadWriteItem` was also rejected on iOS with the same `7000` error. Bumped further to `ReadMailbox` (commit `9711f11`) — but that value is not valid in Outlook's XML manifest spec (XML only accepts `Restricted`, `ReadItem`, `ReadWriteItem`, `ReadWriteMailbox`), so sideload failed with "can't be completed at this time". Corrected to `ReadWriteMailbox` in the XML manifest while keeping the narrower `Mailbox.Read.User` in the unified manifest. See `docs/plans/ios-permission-bump-2.md` and `ios-permission-bump-3.md`. If iOS still rejects at `ReadWriteMailbox`, the issue is API availability rather than permission, and the fix becomes a REST fallback via `getCallbackTokenAsync`.
+**Escalation:** `ReadWriteItem` was also rejected on iOS with the same `7000` error. Bumped further to `ReadMailbox` (commit `9711f11`) — but that value is not valid in Outlook's XML manifest spec (XML only accepts `Restricted`, `ReadItem`, `ReadWriteItem`, `ReadWriteMailbox`), so sideload failed with "can't be completed at this time". Corrected to `ReadWriteMailbox` in the XML manifest while keeping the narrower `Mailbox.Read.User` in the unified manifest. See `docs/plans/ios-permission-bump-2.md` and `ios-permission-bump-3.md`.
+
+## Phase 7: Restore NAA/Graph Fallback (root cause was never permission)
+
+Root-cause analysis (three-agent research, see `docs/plans/restore-naa-graph.md`) revealed that `getAllInternetHeadersAsync` is not on Microsoft's published allow-list of APIs ported to Outlook for iOS, even though `isSetSupported('Mailbox', '1.9')` returns true there. The `code 7000 / "Permission Denied"` error is misleading; it's actually "API not available on this host." No permission elevation can fix it. The 4/19 build worked on iOS only because NAA/Graph was silently invoked when the API failed — the direct API has never worked on iOS, and this was masked by the fallback.
+
+**Outcome:**
+- `GetHeadersGraph.ts`, `GetHeadersGraph.test.ts`, and `naaClientId.ts` restored from `50f293a~`.
+- `GetHeaders.send()` restored to API → Graph fallback chain with pending-error wrapping.
+- `@azure/msal-browser` dep, `__NAACLIENTID__` Vite/Vitest/ESLint define, and `HEADERLAB_NAA_CLIENT_ID` workflow env restored.
+- `Manifest.xml` / `ManifestDebugLocal.xml` dropped from `ReadWriteMailbox` back to `ReadItem` — the escalations were chasing the wrong root cause. `manifest.json` dropped from `Mailbox.Read.User` back to `MailboxItem.Read.User`.
+- All today's other improvements retained: per-route CSP, error-card copy button, surfaced Office.js error code/message, `publish.py` review gates + CI failure-log capture + live-site verification, diff-parser warning filter, `[permission-upgrade]`/`[no-docs]` bypasses, `.gitignore` pycache entries.
+- iOS users must re-sideload one final time; the XML `<Permissions>` change is a new on-the-wire manifest.
+
+**Lesson:** `isSetSupported` advertises requirement-set membership, not individual API availability. Future add-in work targeting mobile Outlook should test the specific API at runtime, not rely on the requirement-set flag. The Graph fallback should stay in place until one of the open `getAllInternetHeadersAsync`-on-iOS issues is resolved by Microsoft (track `OfficeDev/office-js#4109`).
