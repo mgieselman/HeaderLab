@@ -2,7 +2,6 @@ import { aikey } from "../config/aikey";
 import { buildTime } from "../config/buildTime";
 import { GetHeaders } from "./retrieval/GetHeaders";
 import { GetHeadersAPI } from "./retrieval/GetHeadersAPI";
-import { GetHeadersGraph } from "./retrieval/GetHeadersGraph";
 import { version } from "../config/version";
 
 type ICustomProperties = Record<string, unknown>;
@@ -301,7 +300,6 @@ export class Diagnostics {
             if (GetHeaders) {
                 this.appDiagnostics["permissionLevel"] = GetHeaders.permissionLevel();
                 this.appDiagnostics["canUseAPI"] = GetHeadersAPI.canUseAPI();
-                this.appDiagnostics["canUseGraph"] = GetHeadersGraph.canUseGraph();
                 this.appDiagnostics["sufficientPermission"] = GetHeaders.sufficientPermission(true);
             }
         }

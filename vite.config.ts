@@ -3,7 +3,6 @@ import { resolve } from "node:path";
 import { defineConfig } from "vite";
 
 const __dirname = import.meta.dirname;
-const defaultNaaClientId = "";
 
 export default defineConfig(({ mode }) => ({
     root: "src/Pages",
@@ -12,7 +11,6 @@ export default defineConfig(({ mode }) => ({
         "__AIKEY__": JSON.stringify(process.env["APPINSIGHTS_INSTRUMENTATIONKEY"] || ""),
         "__BUILDTIME__": JSON.stringify(new Date().toISOString()),
         "__VERSION__": JSON.stringify(process.env["SCM_COMMIT_ID"] || "local"),
-        "__NAACLIENTID__": JSON.stringify(process.env["HEADERLAB_NAA_CLIENT_ID"] || defaultNaaClientId),
     },
     build: {
         outDir: resolve(__dirname, "Pages"),

@@ -11,7 +11,7 @@
   <ProviderName>Matt Gieselman</ProviderName>
   <DefaultLocale>en-US</DefaultLocale>
   <DisplayName DefaultValue="HeaderLab" />
-    <Description DefaultValue="Analyze message headers with HeaderLab using Graph API and NAA" />
+    <Description DefaultValue="Analyze message headers with HeaderLab" />
   <IconUrl DefaultValue="https://headerlab.gieselman.com/Resources/headerlabLogo64.png" />
   <HighResolutionIconUrl DefaultValue="https://headerlab.gieselman.com/Resources/headerlabLogo192.png" />
   <SupportUrl DefaultValue="https://github.com/mgieselman/headerlab/issues" />

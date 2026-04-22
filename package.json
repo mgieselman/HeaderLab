@@ -64,15 +64,13 @@
     "@microsoft/office-js": "^1.1.110"
   },
   "dependencies": {
-    "@azure/msal-browser": "^5.2.0",
     "@microsoft/applicationinsights-web": "^3.3.11",
     "codepage": "^1.15.0",
     "dayjs": "^1.11.20",
     "stacktrace-js": "^2.0.2"
   },
   "overrides": {
-    "tmp": "^0.2.5",
-    "@azure/msal-browser": "^5.2.0"
+    "tmp": "^0.2.5"
   },
   "-vs-binding": {
     "BeforeBuild": [

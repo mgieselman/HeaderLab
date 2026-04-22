@@ -6,7 +6,6 @@ export default defineConfig({
         "__AIKEY__": JSON.stringify(""),
         "__BUILDTIME__": JSON.stringify("test"),
         "__VERSION__": JSON.stringify("test"),
-        "__NAACLIENTID__": JSON.stringify(""),
     },
     test: {
         environment: "jsdom",

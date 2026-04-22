@@ -24,9 +24,9 @@ You should receive an acknowledgment within 48 hours. We will work with you to u
 
 ## Security Measures
 
-- **Nested App Authentication (NAA)** — the Outlook add-in uses modern OAuth 2.0 / NAA for header retrieval; legacy EWS has been removed
+- **Least-privilege add-in permission** — the Outlook add-in requests only `ReadItem` on the current message; no mailbox-wide access, no OAuth consent, no client secret
 - **No server-side processing** — all header parsing runs client-side in the browser; no headers are transmitted to a backend
-- **Content Security Policy** — enforced via Azure Static Web Apps routing configuration
+- **Content Security Policy** — enforced via Azure Static Web Apps routing configuration; `connect-src` is restricted to `'self'` and the Application Insights ingestion endpoint
 - **Strict TypeScript** — `noExplicitAny` and all strict checks enabled; reduces a class of runtime errors
 - **Dependabot** — automated dependency vulnerability alerts and updates
 - **Secret scanning and push protection** — enabled on the repository

@@ -56,7 +56,6 @@ export default [{
             // Vite defined globals (replaced at build time)
             __AIKEY__: "readonly",
             __BUILDTIME__: "readonly",
-            __NAACLIENTID__: "readonly",
             __VERSION__: "readonly",
             // Node.js/TypeScript globals used in specific contexts
             process: "readonly",

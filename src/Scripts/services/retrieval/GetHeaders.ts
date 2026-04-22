@@ -1,7 +1,5 @@
 import { GetHeadersAPI } from "./GetHeadersAPI";
-import { GetHeadersGraph } from "./GetHeadersGraph";
 import { diagnostics } from "../Diagnostics";
-import { errors } from "../Errors";
 
 /**
  * Callbacks for the retrieval layer to communicate status and errors
@@ -10,12 +8,6 @@ import { errors } from "../Errors";
 export interface HeaderCallbacks {
     onError: (error: unknown, message: string, suppressTracking?: boolean) => void;
     onStatus: (statusText: string) => void;
-}
-
-interface RetrievalError {
-    error: unknown;
-    message: string;
-    suppressTracking: boolean | undefined;
 }
 
 export class GetHeaders {
@@ -67,11 +59,12 @@ export class GetHeaders {
         headersLoadedCallback: (_headers: string, apiUsed: string) => void | Promise<void>,
         callbacks: HeaderCallbacks
     ): Promise<void> {
-        let pendingDetailedError: RetrievalError | null = null;
+        let hasDetailedError = false;
         const wrappedCallbacks: HeaderCallbacks = {
             onStatus: (statusText: string) => callbacks.onStatus(statusText),
             onError: (error: unknown, message: string, suppressTracking?: boolean) => {
-                pendingDetailedError = { error, message, suppressTracking };
+                hasDetailedError = true;
+                callbacks.onError(error, message, suppressTracking);
             },
         };
 
@@ -86,38 +79,13 @@ export class GetHeaders {
         }
 
         try {
-            let headers: string = await GetHeadersAPI.send(wrappedCallbacks);
+            const headers: string = await GetHeadersAPI.send(wrappedCallbacks);
             if (headers !== "") {
                 await headersLoadedCallback(headers, "API");
                 return;
             }
 
-            errors.logMessage("API failed, trying Graph");
-            headers = await GetHeadersGraph.send(wrappedCallbacks);
-            if (headers !== "") {
-                await headersLoadedCallback(headers, "Graph");
-                return;
-            }
-
-            if (pendingDetailedError !== null) {
-                const retrievalError = pendingDetailedError as RetrievalError;
-                let message = retrievalError.message;
-
-                if (message === "Office API header request failed." && !GetHeadersGraph.canUseGraph()) {
-                    const diagnosticsData = diagnostics.get();
-                    const noGraphReason = diagnosticsData["noGraphReason"];
-                    if (typeof noGraphReason === "string" && noGraphReason.length > 0) {
-                        message += " Graph fallback unavailable: " + noGraphReason + ".";
-                    } else {
-                        message += " Graph fallback unavailable.";
-                    }
-                }
-
-                callbacks.onError(
-                    retrievalError.error,
-                    message,
-                    retrievalError.suppressTracking
-                );
+            if (hasDetailedError) {
                 return;
             }
 

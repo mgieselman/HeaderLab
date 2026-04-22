@@ -15,14 +15,13 @@ The following telemetry events may be collected:
 - **Page view** — when the app is loaded
 - **Error / exception** — unhandled errors, including sanitized stack traces
 - **Add-in: API headers** — when headers are retrieved via the Office.js API
-- **Add-in: Graph headers** — when headers are retrieved via Microsoft Graph
 - **App diagnostics** — version, build time, and feature flags (no personal data)
 
 No email content, subject lines, sender/recipient addresses, or header values are included in telemetry.
 
 ## Outlook Add-in
 
-When used as an Outlook add-in, HeaderLab retrieves message headers using the Office.js API or Microsoft Graph API. This requires the `Mail.Read` permission. Headers are processed locally and are not stored or transmitted beyond what is necessary for retrieval.
+When used as an Outlook add-in, HeaderLab retrieves message headers using the Office.js API (`getAllInternetHeadersAsync`). This requires only the `ReadItem` permission on the current message — no sign-in, OAuth consent, or access to the wider mailbox is involved. Headers are processed locally and are not stored or transmitted beyond what is necessary for retrieval.
 
 ## Contact
 

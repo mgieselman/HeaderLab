@@ -70,7 +70,7 @@ Evaluate the existing architecture, design patterns, and technology choices acro
 - `ViolationUtils` mixes DOM manipulation (highlightHtml) with pure functions (escapeAndHighlight). DOM-dependent code should be isolated for testability.
 
 **Retrieval layer**
-- After Phase 1, the retrieval layer (`GetHeaders → GetHeadersAPI → GetHeadersGraph`) has no data-layer dependencies. Clean fallback chain with `HeaderCallbacks` interface for decoupling. No issues.
+- After Phase 1, the retrieval layer had no data-layer dependencies and used a Graph-fallback chain behind a `HeaderCallbacks` interface. In Phase 5 the Graph path was removed; `GetHeaders` now calls `GetHeadersAPI` only. `HeaderCallbacks` is retained as the UI-decoupling seam.
 
 ### 2.2 Tech Stack Evaluation — Findings
 
@@ -95,7 +95,7 @@ Evaluate the existing architecture, design patterns, and technology choices acro
 - `codepage`: used by RFC 2047 decoder for charset conversion. Still needed — no native browser API covers all email charsets.
 - `dayjs`: lightweight, maintained, appropriate for date parsing.
 - `stacktrace-js`: used for error telemetry stack parsing. Maintained. Keep.
-- `@azure/msal-browser`: required for Graph API nested app auth. Keep.
+- `@azure/msal-browser`: was required for the Graph fallback's NAA auth. Removed in Phase 5.
 - `lit` and `@fluentui/web-components`: listed in dependencies but unused after Phase 0 UI removal. **Remove.**
 
 **ESM-only output**
@@ -428,3 +428,15 @@ All Phase 4 steps completed:
 | 4.3 | Done — Webpack replaced by Vite, build output to Pages/ |
 | 4.4 | Done — Jest replaced by Vitest, done() callbacks converted to promises |
 | 4.5 | Done — moduleResolution: bundler, useDefineForClassFields: true |
+
+## Phase 5: Remove NAA / Graph Retrieval Path
+
+The Outlook add-in originally supported a Microsoft Graph fallback (via MSAL / Nested App Auth) for clients where the Office.js `getAllInternetHeadersAsync` API was not available. Target runtime is current Outlook on iOS / Mac / Win / Web against Exchange Online (M365), where the API path is universally available — the fallback provided no functional benefit while costing an MSAL bundle, an Azure AD app registration, OAuth consent, dual code paths, and a build-time `HEADERLAB_NAA_CLIENT_ID` secret.
+
+**Outcome:**
+- Deleted `GetHeadersGraph.ts`, `GetHeadersGraph.test.ts`, `naaClientId.ts`.
+- Simplified `GetHeaders.send()` to call `GetHeadersAPI` only; public signature unchanged.
+- Dropped `@azure/msal-browser` from dependencies (bundle shrunk accordingly).
+- Manifest permission dropped from `ReadWriteMailbox` to `ReadItem` in both `Manifest.xml` and `ManifestDebugLocal.xml`.
+- CSP `connect-src` tightened to `'self' https://dc.services.visualstudio.com` (dropped `graph.microsoft.com` and Microsoft login hosts).
+- Removed `__NAACLIENTID__` Vite/Vitest/eslint globals and the `HEADERLAB_NAA_CLIENT_ID` secret from `build.yml` / `test.yml`.

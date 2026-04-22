@@ -42,8 +42,7 @@
     </Form>
   </FormSettings>
 
-  <!-- TODO: Dial this down to ReadItem when the token bug is fixed -->
-  <Permissions>ReadWriteMailbox</Permissions>
+  <Permissions>ReadItem</Permissions>
 
   <Rule xsi:type="RuleCollection" Mode="And">
     <Rule xsi:type="ItemIs" ItemType="Message" FormType="Read"/>
