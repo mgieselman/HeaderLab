@@ -12,8 +12,14 @@ export class GetHeadersAPI {
                     resolve(asyncResult.value);
                 } else {
                     diagnostics.set("getAllInternetHeadersAsyncFailure", JSON.stringify(asyncResult));
-                    errors.log(asyncResult.error, "getAllInternetHeadersAsync failed.\nFallback to Rest.\n" + JSON.stringify(asyncResult, null, 2), true);
-                    callbacks.onError(asyncResult.error, "Office API header request failed.", true);
+                    errors.log(asyncResult.error, "getAllInternetHeadersAsync failed.\n" + JSON.stringify(asyncResult, null, 2), true);
+                    const errCode = asyncResult.error?.code;
+                    const errMessage = asyncResult.error?.message;
+                    const detail = [errCode, errMessage].filter(Boolean).join(": ");
+                    const userMessage = detail
+                        ? "Office API header request failed (" + detail + ")."
+                        : "Office API header request failed.";
+                    callbacks.onError(asyncResult.error, userMessage, true);
                     resolve("");
                 }
             });

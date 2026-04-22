@@ -137,8 +137,12 @@ def diff_files_vs_origin() -> List[str]:
     for output in (tracked.stdout, working.stdout, untracked.stdout):
         for line in (output or "").splitlines():
             line = line.strip()
-            if line:
-                files.add(line)
+            if not line:
+                continue
+            # Filter git warnings that leak in because run() merges stderr into stdout.
+            if line.startswith("warning:") or line.startswith("hint:") or line.startswith("error:"):
+                continue
+            files.add(line)
     return sorted(files)
 
 
