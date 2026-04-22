@@ -53,7 +53,9 @@ ALWAYS_ALLOWED_DIRS = (
 )
 
 # Outlook add-in <Permissions> levels, ordered least → most permissive.
-PERMISSION_ORDER = ["Restricted", "ReadItem", "ReadWriteItem", "ReadMailbox", "ReadWriteMailbox"]
+# These are the only valid values in the XML manifest; the unified manifest
+# uses Graph-style permission names which are compared separately.
+PERMISSION_ORDER = ["Restricted", "ReadItem", "ReadWriteItem", "ReadWriteMailbox"]
 
 # Secret-pattern regexes scanned over diffs.
 SECRET_PATTERNS = [
