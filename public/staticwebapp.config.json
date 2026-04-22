@@ -4,19 +4,22 @@
             "route": "/",
             "rewrite": "/headerlab.html",
             "headers": {
-                "X-Frame-Options": "DENY"
+                "X-Frame-Options": "DENY",
+                "Content-Security-Policy": "default-src 'self'; script-src 'self' https://az416426.vo.msecnd.net; style-src 'self' 'unsafe-inline'; connect-src 'self' https://dc.services.visualstudio.com; img-src 'self' data:; frame-src 'none';"
             }
         },
         {
             "route": "/headerlab.html",
             "headers": {
-                "X-Frame-Options": "DENY"
+                "X-Frame-Options": "DENY",
+                "Content-Security-Policy": "default-src 'self'; script-src 'self' https://az416426.vo.msecnd.net; style-src 'self' 'unsafe-inline'; connect-src 'self' https://dc.services.visualstudio.com; img-src 'self' data:; frame-src 'none';"
             }
         },
         {
             "route": "/privacy.html",
             "headers": {
-                "X-Frame-Options": "DENY"
+                "X-Frame-Options": "DENY",
+                "Content-Security-Policy": "default-src 'self'; script-src 'self' https://az416426.vo.msecnd.net; style-src 'self' 'unsafe-inline'; connect-src 'self' https://dc.services.visualstudio.com; img-src 'self' data:; frame-src 'none';"
             }
         }
     ],
@@ -24,7 +27,6 @@
         "X-Content-Type-Options": "nosniff",
         "Referrer-Policy": "strict-origin-when-cross-origin",
         "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
-        "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
-        "Content-Security-Policy": "default-src 'self'; script-src 'self' https://appsforoffice.microsoft.com https://az416426.vo.msecnd.net; style-src 'self' 'unsafe-inline'; connect-src 'self' https://dc.services.visualstudio.com; img-src 'self' data:; frame-src https://appsforoffice.microsoft.com;"
+        "Permissions-Policy": "camera=(), microphone=(), geolocation=()"
     }
 }
