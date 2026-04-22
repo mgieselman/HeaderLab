@@ -65,7 +65,7 @@
   },
   "dependencies": {
     "@azure/msal-browser": "^5.2.0",
-    "@microsoft/applicationinsights-web": "^3.3.11",
+    "@microsoft/applicationinsights-web": "^3.4.1",
     "codepage": "^1.15.0",
     "dayjs": "^1.11.20",
     "stacktrace-js": "^2.0.2"
