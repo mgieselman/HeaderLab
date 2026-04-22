@@ -550,23 +550,38 @@ def verify_live_site(commit_sha: str) -> None:
                 time.sleep(LIVE_SITE_POLL_SECONDS)
                 continue
 
-            assets = _ASSET_RE.findall(body)
+            assets = sorted(set(_ASSET_RE.findall(body)))
             if not assets:
-                last_reason = "could not find JS asset reference in /headerlab.html"
+                last_reason = "could not find any JS asset reference in /headerlab.html"
                 time.sleep(LIVE_SITE_POLL_SECONDS)
                 continue
 
-            asset_status, _, asset_body = http_get(f"{LIVE_SITE_URL}{assets[0]}")
-            if asset_status != 200:
-                last_reason = f"asset {assets[0]} returned HTTP {asset_status}"
-                time.sleep(LIVE_SITE_POLL_SECONDS)
-                continue
+            # __VERSION__ is bundled into whichever chunk imports Diagnostics.ts —
+            # not necessarily the entry chunk. Scan every asset and pass if any
+            # of them contains the just-pushed commit's short SHA.
+            sha_seen = False
+            asset_errors: List[str] = []
+            for asset in assets:
+                asset_status, _, asset_body = http_get(f"{LIVE_SITE_URL}{asset}")
+                if asset_status != 200:
+                    asset_errors.append(f"{asset} HTTP {asset_status}")
+                    continue
+                if short_sha in asset_body:
+                    sha_seen = True
+                    print(f"  Found {short_sha} in {asset}")
+                    break
 
-            if short_sha not in asset_body:
-                last_reason = (
-                    f"asset {assets[0]} does not yet contain commit SHA {short_sha} "
-                    "(likely CDN propagation lag)"
-                )
+            if not sha_seen:
+                if asset_errors:
+                    last_reason = (
+                        f"commit SHA {short_sha} not found in any of {len(assets)} asset(s); "
+                        f"some failed to fetch: {asset_errors}"
+                    )
+                else:
+                    last_reason = (
+                        f"commit SHA {short_sha} not found in any of {len(assets)} asset(s) "
+                        "(likely CDN propagation lag)"
+                    )
                 time.sleep(LIVE_SITE_POLL_SECONDS)
                 continue
 
