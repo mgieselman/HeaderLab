@@ -440,3 +440,13 @@ The Outlook add-in originally supported a Microsoft Graph fallback (via MSAL / N
 - Manifest permission dropped from `ReadWriteMailbox` to `ReadItem` in both `Manifest.xml` and `ManifestDebugLocal.xml`.
 - CSP `connect-src` tightened to `'self' https://dc.services.visualstudio.com` (dropped `graph.microsoft.com` and Microsoft login hosts).
 - Removed `__NAACLIENTID__` Vite/Vitest/eslint globals and the `HEADERLAB_NAA_CLIENT_ID` secret from `build.yml` / `test.yml`.
+
+## Phase 6: iOS Compatibility Bump
+
+After Phase 5, Outlook on iOS (5.2614.0) began returning Office.js error code `7000: You don't have sufficient permissions for this action` from `getAllInternetHeadersAsync`. Microsoft's docs say `ReadItem` is sufficient for that API, and Outlook on Desktop accepts it, but iOS Outlook rejects it. The original `ReadWriteMailbox` worked on iOS only because it implied broad enough rights to satisfy the iOS check.
+
+**Outcome:**
+- `Manifest.xml`, `ManifestDebugLocal.xml`, and `manifest.json` bumped from `ReadItem` / `MailboxItem.Read.User` to `ReadWriteItem` / `MailboxItem.ReadWrite.User`. Still item-scoped (only the message under view), not mailbox-wide.
+- Error UI in `StatusBar.ts` gained a copy-to-clipboard button so future Office.js failures can be captured verbatim for diagnosis.
+- `publish.py` security-review gate gained a `[permission-upgrade]` commit-message bypass mirroring the existing `[no-docs]` pattern, so deliberate upgrades pass the regression check while accidental ones still block.
+- iOS users must remove and re-add the add-in for the new manifest permission to take effect.

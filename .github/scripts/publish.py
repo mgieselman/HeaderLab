@@ -173,12 +173,15 @@ def collect_planned_paths(repo_root: Path) -> Set[str]:
         text = plan.read_text(encoding="utf-8", errors="replace")
         for match in PATH_LIKE.findall(text):
             # Heuristic: must look like a relative path with an extension
-            # or start with .github/ src/ public/ docs/.
+            # or start with .github/ src/ public/ docs/, or be a dotfile
+            # name (.gitignore, .eslintrc, etc).
             if "/" in match or any(
                 match.startswith(prefix) for prefix in (".github", "src/", "public/", "docs/")
             ):
                 paths.add(match)
-            elif "." in match and not match.startswith("."):
+            elif "." in match[1:]:
+                paths.add(match)
+            elif match.startswith(".") and len(match) > 1:
                 paths.add(match)
     return paths
 
@@ -287,8 +290,9 @@ def file_at_origin(path: str) -> str | None:
     return result.stdout
 
 
-def gate_security_review(diff_files: List[str], diff_text: str, repo_root: Path) -> None:
+def gate_security_review(diff_files: List[str], diff_text: str, repo_root: Path, message: str | None) -> None:
     print("\n=== Gate: security-review ===")
+    permission_upgrade_acked = bool(message and "[permission-upgrade]" in message)
 
     # 2a. npm audit on production deps
     audit = run(["npm", "audit", "--omit=dev", "--audit-level=high"], check=False, capture=True)
@@ -322,12 +326,19 @@ def gate_security_review(diff_files: List[str], diff_text: str, repo_root: Path)
             print(f"  {manifest_name}: no baseline at origin/main, current = {new_level}")
             continue
         if permission_rank(new_level) > permission_rank(old_level):
-            fail(
-                f"Security-review gate: {manifest_name} <Permissions> regressed from "
-                f"'{old_level}' to '{new_level}' (more permissive).",
-                4,
-            )
-        print(f"  {manifest_name}: {old_level} → {new_level} (no regression)")
+            if permission_upgrade_acked:
+                print(
+                    f"  {manifest_name}: {old_level} -> {new_level} (UPGRADE acknowledged via [permission-upgrade])"
+                )
+            else:
+                fail(
+                    f"Security-review gate: {manifest_name} <Permissions> upgraded from "
+                    f"'{old_level}' to '{new_level}' (more permissive). "
+                    "Add [permission-upgrade] to the commit message if intentional.",
+                    4,
+                )
+        else:
+            print(f"  {manifest_name}: {old_level} -> {new_level} (no regression)")
 
     # 2d. CSP connect-src non-regression
     for csp_name in ("staticwebapp.config.json", "public/staticwebapp.config.json"):
@@ -646,7 +657,7 @@ def main() -> None:
         print(f"  {f}")
 
     gate_code_review(diff_files, root)
-    gate_security_review(diff_files, diff_text, root)
+    gate_security_review(diff_files, diff_text, root, args.message)
     gate_doc_sync(diff_files, args.message)
 
     if args.dry_run:

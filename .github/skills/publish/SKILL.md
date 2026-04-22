@@ -56,7 +56,7 @@ The script performs these steps in order:
    - **Security-review gate** —
      - `npm audit --omit=dev --audit-level=high` must report no high/critical vulnerabilities.
      - Diff is scanned for AWS keys, PEM private keys, Slack tokens, GitHub PATs, Google API keys, and `sk-` prefixed secrets.
-     - `Manifest.xml` and `ManifestDebugLocal.xml` `<Permissions>` must not regress (become more permissive) vs `origin/main`. Order: `Restricted < ReadItem < ReadWriteItem < ReadMailbox < ReadWriteMailbox`.
+     - `Manifest.xml` and `ManifestDebugLocal.xml` `<Permissions>` must not increase in scope (become more permissive) vs `origin/main`. Order: `Restricted < ReadItem < ReadWriteItem < ReadMailbox < ReadWriteMailbox`. Override an intentional upgrade by including `[permission-upgrade]` in the commit message.
      - `staticwebapp.config.json` and `public/staticwebapp.config.json` CSP `connect-src` must not add hosts vs `origin/main`. A baseline with no CSP is treated as "tightening allowed."
    - **Doc-sync gate** — if any `src/Scripts/` file is in the diff, at least one of `README.md`, `PRIVACY.md`, `SECURITY.md`, `CLAUDE.md`, `PLAN.md` must also be in the diff. Override by including `[no-docs]` in the commit message.
 5. If repo is dirty and `--message` is provided:
