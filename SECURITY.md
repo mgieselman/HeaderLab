@@ -24,7 +24,7 @@ You should receive an acknowledgment within 48 hours. We will work with you to u
 
 ## Security Measures
 
-- **Item-scoped add-in permission** — the Outlook add-in requests `ReadWriteItem` on the current message only; no mailbox-wide access, no OAuth consent, no client secret. (`ReadItem` is what the API documentation requires, but Outlook for iOS rejects `getAllInternetHeadersAsync` at that level — see `docs/plans/ios-permission-bump.md`. The add-in does not write to messages; the elevated level only satisfies the iOS runtime check.)
+- **Read-only add-in permission** — the Outlook add-in requests `ReadMailbox` (read-only mailbox scope); no write access, no OAuth consent, no client secret. (`ReadItem` is what `getAllInternetHeadersAsync` documentation requires and what Outlook on Desktop accepts, but Outlook for iOS rejects the API call at any item-scoped level — see `docs/plans/ios-permission-bump.md` and `docs/plans/ios-permission-bump-2.md`. The add-in only ever reads transport headers of the currently selected message; the broader mailbox scope is never exercised, only declared to satisfy the iOS runtime check.)
 - **No server-side processing** — all header parsing runs client-side in the browser; no headers are transmitted to a backend
 - **Content Security Policy** — enforced via Azure Static Web Apps routing configuration; `connect-src` is restricted to `'self'` and the Application Insights ingestion endpoint
 - **Strict TypeScript** — `noExplicitAny` and all strict checks enabled; reduces a class of runtime errors

@@ -450,3 +450,5 @@ After Phase 5, Outlook on iOS (5.2614.0) began returning Office.js error code `7
 - Error UI in `StatusBar.ts` gained a copy-to-clipboard button so future Office.js failures can be captured verbatim for diagnosis.
 - `publish.py` security-review gate gained a `[permission-upgrade]` commit-message bypass mirroring the existing `[no-docs]` pattern, so deliberate upgrades pass the regression check while accidental ones still block.
 - iOS users must remove and re-add the add-in for the new manifest permission to take effect.
+
+**Escalation:** `ReadWriteItem` was also rejected on iOS with the same `7000` error. Bumped further to `ReadMailbox` (read-only mailbox scope, still no write capability). See `docs/plans/ios-permission-bump-2.md`. If `ReadMailbox` is also insufficient, the next step is a REST fallback via `getCallbackTokenAsync` rather than further permission escalation, since the add-in only needs to read the current message's headers.
