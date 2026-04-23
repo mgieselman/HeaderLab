@@ -29,7 +29,8 @@ Rework the Security section to match the Summary section's flat, insight-led lay
 - `src/Scripts/ui/components/SecuritySection.ts` — full rewrite. New signature `(container, model)`. Renders filtered insight list, Classification subsection (SFV/CAT/SCL/PCL/SFTY/BCL), Origin & transport subsection (CIP/PTR/H/CTRY/LANG/IPV/DIR/ARC, suppressed when `DIR=INT`), and a collapsed `<details>` with the raw Forefront + Antispam dump including `source`/`unparsed`.
 - `src/Scripts/ui/components/ResultsView.ts` — updated the `renderSecurity` caller to the new signature.
 - `src/Scripts/ui/components/RoutingSection.ts` — small class-name additions (`hl-hop__route`, `hl-hop__fields__value`) that were in the working tree alongside the Insight-engine work; included in this publish since they're tiny and already landed locally.
-- `src/Content/components.css` — added `.hl-subsection`, `.hl-subsection__title`, `.hl-subsection__rows`, `.hl-kv-row`, `.hl-kv-row--{error,warning,success,info}`, `.hl-kv__detail`.
+- `src/Content/components.css` — added `.hl-subsection`, `.hl-subsection__title`, `.hl-subsection__rows`, `.hl-kv-row`, `.hl-kv-row--{error,warning,success,info}`, `.hl-kv__detail`. Follow-up: added `.hl-subsection--card` (border + radius + padding matching `.hl-insight` chrome) so Classification and Origin & transport read as cards alongside the insight list.
+- `src/Scripts/ui/components/SecuritySection.ts` — follow-up: `renderSubsection()` now applies `hl-subsection--card`.
 
 ## Validation
 

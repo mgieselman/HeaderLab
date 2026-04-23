@@ -122,7 +122,7 @@ function dedupeByLabel(rows: RenderedRow[]): RenderedRow[] {
 }
 
 function renderSubsection(title: string, rows: RenderedRow[]): HTMLElement {
-    const block = el("div", { class: "hl-subsection" });
+    const block = el("div", { class: "hl-subsection hl-subsection--card" });
     block.appendChild(el("div", { class: "hl-subsection__title" }, title));
     const body = el("div", { class: "hl-subsection__rows" });
     for (const row of rows) {

@@ -257,6 +257,19 @@
     gap: 0.125rem;
 }
 
+/* Card-wrapped subsection — matches .hl-insight chrome so grouped rows
+   read as peers of the insight cards above them. */
+.hl-subsection--card {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    padding: 0.5rem 0.75rem;
+    margin-top: 0.5rem;
+}
+
+.hl-subsection--card:first-child {
+    margin-top: 0;
+}
+
 /* A single kv row that can carry per-row severity on its left edge */
 .hl-kv-row {
     display: grid;
