@@ -106,6 +106,35 @@ describe("GetHeaders.send", () => {
         );
     });
 
+    test("adds Graph fallback reason when API request fails with detailed code and Graph is unavailable", async () => {
+        vi.spyOn(GetHeaders, "validItem").mockReturnValue(true);
+        vi.spyOn(GetHeaders, "sufficientPermission").mockReturnValue(true);
+        vi.spyOn(GetHeadersGraph, "canUseGraph").mockReturnValue(false);
+        vi.spyOn(diagnostics, "get").mockReturnValue({ "noGraphReason": "No NAA client ID configured" });
+        vi.spyOn(GetHeadersAPI, "send").mockImplementation(async (callbacks) => {
+            callbacks.onError(
+                new Error("test"),
+                "Office API header request failed (7000: You don't have sufficient permissions for this action.).",
+                true,
+            );
+            return "";
+        });
+        vi.spyOn(GetHeadersGraph, "send").mockResolvedValue("");
+
+        const headersLoadedCallback = vi.fn();
+        const onStatus = vi.fn();
+        const onError = vi.fn();
+
+        await GetHeaders.send(headersLoadedCallback, { onStatus, onError });
+
+        expect(headersLoadedCallback).not.toHaveBeenCalled();
+        expect(onError).toHaveBeenCalledWith(
+            expect.any(Error),
+            "Office API header request failed (7000: You don't have sufficient permissions for this action.). Graph fallback unavailable: No NAA client ID configured.",
+            true,
+        );
+    });
+
     test("does not surface API error when Graph fallback succeeds", async () => {
         vi.spyOn(GetHeaders, "validItem").mockReturnValue(true);
         vi.spyOn(GetHeaders, "sufficientPermission").mockReturnValue(true);

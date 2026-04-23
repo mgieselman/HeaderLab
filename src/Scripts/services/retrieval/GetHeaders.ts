@@ -103,7 +103,7 @@ export class GetHeaders {
                 const retrievalError = pendingDetailedError as RetrievalError;
                 let message = retrievalError.message;
 
-                if (message === "Office API header request failed." && !GetHeadersGraph.canUseGraph()) {
+                if (message.startsWith("Office API header request failed") && !GetHeadersGraph.canUseGraph()) {
                     const diagnosticsData = diagnostics.get();
                     const noGraphReason = diagnosticsData["noGraphReason"];
                     if (typeof noGraphReason === "string" && noGraphReason.length > 0) {
