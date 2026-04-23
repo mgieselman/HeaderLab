@@ -57,7 +57,7 @@ Validates parsed headers against rules defined in `public/data/rules.json`. Entr
 - **`Diagnostics.ts`** — Application Insights telemetry (exported class + `diagnostics` singleton).
 - **`Errors.ts`** / **`Stack.ts`** — Error collection (instance class with injected `Diagnostics`), stack trace parsing.
 - **`ParentFrameUtils.ts`** — Query string parsing, diagnostics string generation.
-- **`retrieval/`** — Header retrieval for Outlook add-in mode. `GetHeaders` tries the Office.js API (`GetHeadersAPI`, `getAllInternetHeadersAsync`) with the `ReadItem` permission first; on hosts where the API is not available (e.g., Outlook for iOS), it falls back to Microsoft Graph via NAA/MSAL (`GetHeadersGraph`). Uses `HeaderCallbacks` interface to decouple from UI.
+- **`retrieval/`** — Header retrieval for Outlook add-in mode. See the **Header retrieval architecture** section below for the full story (it has cost real time and is non-obvious). Short version: `GetHeaders.send()` tries `GetHeadersAPI` (`getAllInternetHeadersAsync`) first, then falls back to `GetHeadersGraph` (Microsoft Graph via NAA/MSAL) when the API path returns empty. The fallback is load-bearing on Outlook for iOS — do not remove it. `HeaderCallbacks` interface decouples retrieval from UI.
 
 ### `ui/` — Presentation layer
 Vanilla TypeScript + CSS custom properties, no framework. Two entry points:
@@ -80,6 +80,44 @@ Vanilla TypeScript + CSS custom properties, no framework. Two entry points:
 - Vite globals: `__AIKEY__`, `__BUILDTIME__`, `__VERSION__`, `__NAACLIENTID__` are replaced at build time via `define` in `vite.config.ts`.
 - UI re-renders on `AppState.subscribe()` callbacks — no virtual DOM, sections are rebuilt on tab switch.
 - Build output must produce HTML files matching `manifest.json`: `headerlab.html`, `Default.html`, `DesktopPane.html`, `MobilePane.html`, `Functions.html`.
+
+## Header retrieval architecture (READ BEFORE TOUCHING `retrieval/`)
+
+The retrieval layer has a non-obvious shape that exists because of a still-unfixed Microsoft platform bug. Removing what looks like dead code here will silently break Outlook for iOS users. See `docs/plans/restore-naa-graph.md` and the Phase 7 entry in `PLAN.md` for the full investigation.
+
+### Two-path fallback chain
+
+`GetHeaders.send(headersLoadedCallback, callbacks)` runs in this order:
+
+1. **`GetHeadersAPI.send()`** — calls `Office.context.mailbox.item.getAllInternetHeadersAsync` (Mailbox 1.9). Requires `ReadItem`. The async result is *swallowed* on failure (`resolve("")` rather than throw) so the dispatcher can try the next path.
+2. **`GetHeadersGraph.send()`** — only if step 1 returned empty. Calls `acquireTokenSilent` (then `acquireTokenPopup` on failure) via MSAL Nested App Authentication, then `GET https://graph.microsoft.com/v1.0/me/messages/{itemId}?$expand=singleValueExtendedProperties($filter=id eq 'String 0x007D')` to read the raw transport-headers extended property.
+3. **Composed error** — if both paths fail and `canUseGraph()` is false, the user-facing message gets `Graph fallback unavailable: <reason>` appended so the silent-skip mode is visible. The check uses `startsWith("Office API header request failed")` because the API error string includes the Office.js error code/message in parens (added today: `(<code>: <message>)`).
+
+`pendingDetailedError` wrapping in `GetHeaders.send()` exists to preserve the API error if Graph also fails without setting a more useful one. Don't simplify it away unless you've fully traced the four-way matrix of (API set onError or not) × (Graph set onError or not).
+
+### Why the fallback exists
+
+`getAllInternetHeadersAsync` is **not implemented on Outlook for iOS** even though `Office.context.requirements.isSetSupported("Mailbox", "1.9") === true` returns true there. iOS reports the high requirement-set number for the *subset* of Mailbox 1.9 APIs that's been ported to mobile, and this one isn't on the allow-list. The call fails with `code 7000 / "You don't have sufficient permissions for this action"` — a misleading message; the real meaning is "API not available on this host." Permission elevation does not fix it (we tried `ReadItem` → `ReadWriteItem` → `ReadWriteMailbox`; all hit the same 7000). Microsoft has had open issues on this for ~18 months (`microsoft/MHA#896`, `#1460`; `OfficeDev/office-js#2554`, `#4109`) with no committed fix.
+
+The Graph fallback path is the only working iOS path. Outlook Desktop (Win/Mac) and Outlook on the Web honor the direct API and never reach the Graph branch. The diagnostics tab's "API used" field will read `"API"` on Desktop/Web and `"Graph"` on iOS.
+
+### Build-time secret wiring
+
+The Graph path needs an Entra app client ID at build time:
+- Source secret in the GitHub repo: **`MHA_NAA_CLIENT_ID`** (legacy name from when this was the MHA fork — never renamed).
+- `.github/workflows/build.yml` maps it: `HEADERLAB_NAA_CLIENT_ID: ${{ secrets.MHA_NAA_CLIENT_ID }}`.
+- `vite.config.ts` reads `process.env["HEADERLAB_NAA_CLIENT_ID"]` and bakes it into `__NAACLIENTID__`.
+- `src/Scripts/config/naaClientId.ts` exports the value at runtime.
+- `GetHeadersGraph.canUseGraph()` returns false if it's empty, which causes the Graph branch to be silently skipped.
+
+If you ever see iOS failing with the bare `Office API header request failed (7000: ...)` and no `Graph fallback unavailable` suffix, suspect a string-equality bug in the message composition (the suffix code path didn't run). If you see the suffix with `No NAA client ID configured`, the secret pipeline is broken.
+
+### Lessons baked in
+
+- **Never trust `isSetSupported` alone on mobile Outlook.** The advertised requirement set covers a partial set of APIs. For any new mobile-touched feature, implement a Graph (or other) fallback.
+- **Don't remove the Graph fallback.** Commit `50f293a` did this on the assumption the API path was sufficient everywhere; commit `d3fe8b7` had to put it all back.
+- **The XML manifest `<Permissions>` element accepts only four values: `Restricted`, `ReadItem`, `ReadWriteItem`, `ReadWriteMailbox`.** `ReadMailbox` looks reasonable but is invalid in the XML schema — Outlook rejects sideload with "can't be completed at this time." It *is* valid in the unified `manifest.json` (which uses Graph-style scope names like `Mailbox.Read.User`), but the two systems are not interchangeable.
+- **CSP must NOT apply to add-in pages** (`Default.html`, `DesktopPane.html`, `MobilePane.html`, `Functions.html`). Office.js initializes a telemetry iframe to `telemetryservice.firstpartyapps.oaspapps.com` and (when NAA is in use) loads MSAL frames from `login.microsoftonline.com` — both blocked by any meaningful `frame-src`. CSP is set per-route in `staticwebapp.config.json` *only* on the standalone web pages (`/`, `/headerlab.html`, `/privacy.html`).
 
 ## Code Style
 

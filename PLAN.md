@@ -466,3 +466,13 @@ Root-cause analysis (three-agent research, see `docs/plans/restore-naa-graph.md`
 - iOS users must re-sideload one final time; the XML `<Permissions>` change is a new on-the-wire manifest.
 
 **Lesson:** `isSetSupported` advertises requirement-set membership, not individual API availability. Future add-in work targeting mobile Outlook should test the specific API at runtime, not rely on the requirement-set flag. The Graph fallback should stay in place until one of the open `getAllInternetHeadersAsync`-on-iOS issues is resolved by Microsoft (track `OfficeDev/office-js#4109`).
+
+### Phase 7 follow-ups (still in the same iOS debugging arc)
+
+After the restore landed (commit `d3fe8b7`), iOS still showed the bare API error with no Graph attempt. Two compounding bugs were keeping Graph silent:
+
+1. **GitHub-secret name mismatch.** The repo's NAA client-ID secret was named `MHA_NAA_CLIENT_ID` (legacy from the MHA fork). The restored workflow file referenced `secrets.HEADERLAB_NAA_CLIENT_ID` (the renamed name), which resolved to empty in CI → `__NAACLIENTID__` baked in as `""` → `naaClientId()` returned `""` → `canUseGraph()` returned false → Graph was silently skipped. Fixed by mapping the env var in `build.yml` to the existing legacy secret: `HEADERLAB_NAA_CLIENT_ID: ${{ secrets.MHA_NAA_CLIENT_ID }}`. No secret rename needed.
+
+2. **Graph-fallback-message string-equality bug.** `GetHeaders.send()` only appended the `Graph fallback unavailable: <reason>` suffix when the API error string strictly equaled `"Office API header request failed."`. The Phase 5 diagnostic improvement made the API string `"Office API header request failed (<code>: <message>)."`, breaking the equality check and hiding the silent-skip mode from the user. Changed to `startsWith("Office API header request failed")` so the suffix appears regardless of error-code formatting.
+
+**Lesson:** when adding diagnostic detail to error strings, audit every consumer that pattern-matches against them. The original equality check became silently wrong the moment the format was tightened — and the breakage was invisible because the consumer only fired on a corner case that took days to reproduce.

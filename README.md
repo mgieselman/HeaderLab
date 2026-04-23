@@ -106,7 +106,7 @@ Steps to self-host:
    - Grant the `Mail.Read` delegated permission (Microsoft Graph)
 
 2. **Set build secrets / environment variables**
-   - `HEADERLAB_NAA_CLIENT_ID` — your Entra client ID
+   - Entra client ID — `HEADERLAB_NAA_CLIENT_ID` is the env var the build expects, but the GitHub-secret name is configurable in `.github/workflows/build.yml`. The maintainer's deployment uses a legacy secret named `MHA_NAA_CLIENT_ID` (from when this was the MHA fork) and maps it via `HEADERLAB_NAA_CLIENT_ID: ${{ secrets.MHA_NAA_CLIENT_ID }}`. Either name works — pick one and make the mapping match.
    - `AZURE_STATIC_WEB_APPS_API_TOKEN` — your deployment token
    - `APPINSIGHTS_INSTRUMENTATIONKEY` — optional
 
@@ -114,7 +114,7 @@ Steps to self-host:
    - Replace all occurrences of `headerlab.gieselman.com` in `Manifest.xml` and `manifest.json` with your domain
    - Replace the client ID GUID with your own
 
-> **Note:** The standalone web app (paste-and-analyze) works without any Entra setup. Only the Outlook-add-in iOS fallback requires the Entra registration.
+> **Note:** The standalone web app (paste-and-analyze) works without any Entra setup. The Outlook add-in works without Entra on Desktop and Web, where the Office.js `getAllInternetHeadersAsync` API is implemented. Only Outlook for iOS requires the Graph/NAA fallback (and therefore the Entra registration), because Microsoft hasn't implemented the API on iOS — see `docs/plans/restore-naa-graph.md` for the investigation.
 
 ## Deployment
 
@@ -123,8 +123,10 @@ Deployed to Azure Static Web Apps from `Pages/`. Push to `main` triggers the bui
 | Secret | Purpose |
 |--------|---------|
 | `AZURE_STATIC_WEB_APPS_API_TOKEN` | Deployment token |
-| `HEADERLAB_NAA_CLIENT_ID` | Entra ID app registration for the Graph/NAA iOS fallback |
+| `HEADERLAB_NAA_CLIENT_ID` (or `MHA_NAA_CLIENT_ID`, mapped in workflow) | Entra ID app registration for the Graph/NAA iOS fallback |
 | `APPINSIGHTS_INSTRUMENTATIONKEY` | Application Insights (optional) |
+
+Pushing to `main` runs CI; the deploy is gated by the `python3 .github/scripts/publish.py` script when invoked from the developer machine. See `.github/skills/publish/SKILL.md` for the full set of pre-push gates and post-push verifications.
 
 ## Contributing
 
