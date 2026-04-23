@@ -154,7 +154,7 @@ describe("InsightEngine", () => {
 
             const catInsight = findInsight(insights, "Categorized as spam");
             expect(catInsight).toBeDefined();
-            expect(catInsight?.detail).toContain("protection policy");
+            expect(catInsight?.severity).toBe("error");
         });
 
         test("generates BCL warning for high bulk level", async () => {
@@ -170,7 +170,7 @@ describe("InsightEngine", () => {
             const model = await HeaderModel.create(bulkHeaders);
             const insights = generateInsights(model);
 
-            expect(findInsight(insights, "Bulk mail")).toBeDefined();
+            expect(findInsight(insights, "Bulk")).toBeDefined();
         });
     });
 
@@ -215,16 +215,16 @@ describe("InsightEngine", () => {
             const model = await HeaderModel.create(spamHeaders);
             const insights = generateInsights(model);
 
-            const ip = findInsight(insights, "IP:");
+            const ip = findInsight(insights, "Connecting IP");
             expect(ip).toBeDefined();
-            expect(ip?.detail).toContain("52.128.44.60");
+            expect(ip?.label).toContain("52.128.44.60");
         });
 
         test("generates TLS insight for all-encrypted hops", async () => {
             const model = await HeaderModel.create(spamHeaders);
             const insights = generateInsights(model);
 
-            const tls = findInsight(insights, "encrypted");
+            const tls = findInsight(insights, "TLS on all hops");
             expect(tls).toBeDefined();
             expect(tls?.severity).toBe("success");
         });
@@ -233,7 +233,7 @@ describe("InsightEngine", () => {
             const model = await HeaderModel.create(unencryptedHeaders);
             const insights = generateInsights(model);
 
-            const tls = findInsight(insights, "unencrypted");
+            const tls = findInsight(insights, "plaintext hop");
             expect(tls).toBeDefined();
             expect(tls?.severity).toBe("warning");
         });

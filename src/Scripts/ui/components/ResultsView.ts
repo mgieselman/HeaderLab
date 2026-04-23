@@ -27,7 +27,7 @@ export function renderResults(container: HTMLElement, state: AppState): void {
             renderRouting(container, model.receivedHeaders);
             break;
         case "security":
-            renderSecurity(container, model.forefrontAntiSpamReport, model.antiSpamReport, model.violationGroups);
+            renderSecurity(container, model);
             break;
         case "other":
             renderOther(container, model.otherHeaders);

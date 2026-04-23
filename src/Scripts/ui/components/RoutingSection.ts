@@ -37,7 +37,7 @@ function renderHop(row: ReceivedRow): HTMLElement {
     if (fieldStr(row.from)) fromBy.push(fieldStr(row.from));
     if (fieldStr(row.by)) fromBy.push(fieldStr(row.by));
     if (fromBy.length) {
-        header.appendChild(el("span", null, fromBy.join(" \u2192 ")));
+        header.appendChild(el("span", { class: "hl-hop__route" }, fromBy.join(" \u2192 ")));
     }
 
     if (fieldStr(row.delay)) {
@@ -83,7 +83,7 @@ function renderHop(row: ReceivedRow): HTMLElement {
     for (const [label, value] of details) {
         if (!value) continue;
         fields.appendChild(el("span", null, label));
-        fields.appendChild(el("span", null, value));
+        fields.appendChild(el("span", { class: "hl-hop__fields__value" }, value));
     }
 
     if (fields.childElementCount > 0) {

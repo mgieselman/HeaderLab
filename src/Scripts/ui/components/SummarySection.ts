@@ -3,8 +3,8 @@
  */
 
 import { HeaderModel } from "../../model/HeaderModel";
-import { Insight } from "../insights/Insight";
 import { generateInsights } from "../insights/InsightEngine";
+import { renderInsightList } from "../insights/InsightList";
 import { clear, el } from "../rendering/dom";
 
 export function renderSummary(container: HTMLElement, model: HeaderModel): void {
@@ -47,21 +47,4 @@ export function renderSummary(container: HTMLElement, model: HeaderModel): void 
     }
 
     container.appendChild(grid);
-}
-
-function renderInsightList(insights: Insight[]): HTMLElement {
-    const list = el("ul", { class: "hl-insights" });
-
-    // Order: error first, then warning, success, info
-    const order: Record<string, number> = { error: 0, warning: 1, success: 2, info: 3 };
-    const sorted = [...insights].sort((a, b) => (order[a.severity] ?? 9) - (order[b.severity] ?? 9));
-
-    for (const insight of sorted) {
-        const label = el("span", { class: "hl-insight__label" }, insight.label);
-        const detail = el("span", { class: "hl-insight__detail" }, ` \u2014 ${insight.detail}`);
-        const item = el("li", { class: `hl-insight hl-insight--${insight.severity}` }, label, detail);
-        list.appendChild(item);
-    }
-
-    return list;
 }

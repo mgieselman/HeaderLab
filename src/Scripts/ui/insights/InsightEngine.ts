@@ -11,89 +11,121 @@ import { getRowValue } from "../../row/Row";
 /** Parse an auth result like "spf=pass" from Authentication-Results header */
 function parseAuthResult(authHeader: string, mechanism: string): string {
     if (!authHeader) return "";
-    // Match "spf=pass", "dkim=fail (reason)", "dmarc=pass", etc.
-    const pattern = new RegExp(`${mechanism}\\s*=\\s*(\\w+)`, "i");
+    // Match "spf=pass", "dkim=fail", "compauth=softpass", etc.
+    // Allow hyphens in result tokens (e.g. "soft-fail" variants).
+    const pattern = new RegExp(`${mechanism}\\s*=\\s*([\\w-]+)`, "i");
     const match = authHeader.match(pattern);
     return match?.[1]?.toLowerCase() ?? "";
 }
 
-function authSeverity(result: string): InsightSeverity {
-    switch (result) {
-        case "pass": return "success";
-        case "softfail": return "warning";
-        case "temperror":
-        case "permerror":
-        case "neutral": return "warning";
-        case "fail": return "error";
-        case "none": return "info";
-        default: return "info";
-    }
-}
+type AuthEntry = { severity: InsightSeverity; detail?: string };
 
-function authLabel(mechanism: string, result: string): string {
-    return `${mechanism.toUpperCase()} ${result}`;
-}
+const SPF_RESULTS: Record<string, AuthEntry> = {
+    pass: { severity: "success", detail: "Sender authorized by domain" },
+    fail: { severity: "error", detail: "Sender not authorized by domain" },
+    softfail: { severity: "warning", detail: "Sender not listed; domain doesn't enforce" },
+    neutral: { severity: "warning", detail: "Domain takes no position" },
+    none: { severity: "info", detail: "Domain published no policy" },
+    temperror: { severity: "warning", detail: "Couldn't check — DNS lookup failed" },
+    permerror: { severity: "warning", detail: "Domain's policy is broken" },
+};
 
-function authDetail(mechanism: string, result: string): string {
-    const names: Record<string, string> = {
-        spf: "Sender Policy Framework",
-        dkim: "DomainKeys Identified Mail",
-        dmarc: "Domain-based Message Authentication",
-        compauth: "Composite Authentication",
+const DKIM_RESULTS: Record<string, AuthEntry> = {
+    pass: { severity: "success", detail: "Message wasn't altered in transit" },
+    fail: { severity: "error", detail: "Message was altered or key mismatched" },
+    neutral: { severity: "warning", detail: "Signature couldn't be evaluated" },
+    policy: { severity: "warning", detail: "Signature couldn't be evaluated" },
+    none: { severity: "info", detail: "Message wasn't signed" },
+    temperror: { severity: "warning", detail: "Couldn't check — DNS lookup failed" },
+    permerror: { severity: "warning", detail: "Signature header is malformed" },
+};
+
+const DMARC_RESULTS: Record<string, AuthEntry> = {
+    pass: { severity: "success", detail: "From address matches authenticated domain" },
+    fail: { severity: "error", detail: "From address doesn't match authenticated domain" },
+    bestguesspass: { severity: "info", detail: "No policy, but authentication looks consistent" },
+    none: { severity: "info", detail: "Domain published no policy" },
+    temperror: { severity: "warning", detail: "Couldn't check — DNS lookup failed" },
+    permerror: { severity: "warning", detail: "Domain's policy is broken" },
+};
+
+const COMPAUTH_RESULTS: Record<string, AuthEntry> = {
+    pass: { severity: "success", detail: "Microsoft trusts the sender" },
+    fail: { severity: "error", detail: "Microsoft couldn't verify the sender" },
+    softpass: { severity: "warning", detail: "Sender accepted on weak signals" },
+    none: { severity: "info", detail: "No verdict assigned" },
+};
+
+function authInsight(mechLabel: string, result: string, table: Record<string, AuthEntry>, category: Insight["category"] = "auth"): Insight {
+    const entry = table[result];
+    return {
+        severity: entry?.severity ?? "info",
+        label: `${mechLabel} ${result}`,
+        detail: entry?.detail,
+        category,
     };
-    return `${names[mechanism] ?? mechanism}: ${result}`;
 }
 
 /** Describe SCL values */
-function sclDescription(scl: number): { severity: InsightSeverity; detail: string } {
-    if (scl <= -1) return { severity: "success", detail: "Message skipped filtering (trusted sender)" };
-    if (scl === 0) return { severity: "success", detail: "Not spam — message was clean" };
-    if (scl === 1) return { severity: "success", detail: "Not spam — low confidence" };
-    if (scl <= 4) return { severity: "info", detail: "Low spam confidence" };
-    if (scl === 5) return { severity: "warning", detail: "Spam — moderate confidence" };
-    if (scl <= 8) return { severity: "error", detail: "Spam — high confidence" };
-    return { severity: "error", detail: "Spam — highest confidence (SCL 9)" };
+function sclInsight(scl: number): Insight {
+    const anchor = { section: "forefront" as const, rowKey: "SCL" };
+    if (scl <= -1) return { severity: "success", label: `SCL ${scl}`, detail: "Filtering bypassed", category: "spam", anchor };
+    if (scl <= 1) return { severity: "success", label: `SCL ${scl}`, category: "spam", anchor };
+    if (scl <= 4) return { severity: "info", label: `SCL ${scl}`, category: "spam", anchor };
+    if (scl <= 6) return { severity: "warning", label: `SCL ${scl}`, detail: "Sent to Junk by default", category: "spam", anchor };
+    return { severity: "error", label: `SCL ${scl}`, detail: "Quarantined by default", category: "spam", anchor };
 }
 
-type InsightDesc = { severity: InsightSeverity; label: string; detail: string };
+type CodeEntry = { severity: InsightSeverity; label: string; detail?: string };
 
 /** Describe SFV codes */
-function sfvDescription(sfv: string): InsightDesc | null {
+function sfvDescription(sfv: string): CodeEntry | null {
     switch (sfv.toUpperCase()) {
-        case "BLK": return { severity: "error", label: "Blocked sender", detail: "Message blocked by recipient's block list" };
-        case "NSPM": return { severity: "success", label: "Not spam", detail: "Spam filter determined message is not spam" };
-        case "SFE": return { severity: "success", label: "Safe sender", detail: "Sender is on the recipient's safe senders list" };
-        case "SKA": return { severity: "info", label: "Allow-listed", detail: "Skipped filtering due to sender allow list" };
-        case "SKB": return { severity: "error", label: "Block-listed", detail: "Matched a sender block list" };
-        case "SKI": return { severity: "info", label: "Internal", detail: "Intra-org message, skipped spam filtering" };
-        case "SKN": return { severity: "info", label: "Transport rule", detail: "Marked as non-spam by a transport rule" };
-        case "SKQ": return { severity: "info", label: "Released", detail: "Message released from quarantine" };
-        case "SKS": return { severity: "info", label: "Rule skip", detail: "Marked as spam before content filter — transport rule" };
-        case "SPM": return { severity: "error", label: "Spam", detail: "Message was marked as spam by the content filter" };
-        case "DMS": return { severity: "error", label: "Verdict overridden", detail: "Spam verdict ignored due to tenant settings" };
+        case "BLK": return { severity: "error", label: "User-blocked (BLK)", detail: "On recipient's personal block list" };
+        case "NSPM": return { severity: "success", label: "Not spam (NSPM)" };
+        case "SFE": return { severity: "success", label: "Safe sender (SFE)", detail: "On recipient's safe senders list" };
+        case "SKA": return { severity: "info", label: "Allow-listed (SKA)", detail: "Sender on an allow list" };
+        case "SKB": return { severity: "error", label: "Block-listed (SKB)", detail: "Sender on a block list" };
+        case "SKI": return { severity: "info", label: "Internal (SKI)" };
+        case "SKN": return { severity: "info", label: "Allowed by rule (SKN)", detail: "Allowed by an admin rule" };
+        case "SKQ": return { severity: "info", label: "Released (SKQ)", detail: "Released from quarantine" };
+        case "SKS": return { severity: "info", label: "Marked spam by rule (SKS)", detail: "Marked spam by an admin rule" };
+        case "SPM": return { severity: "error", label: "Spam verdict (SPM)", detail: "Filter scored as spam" };
+        case "DMS": return { severity: "error", label: "Verdict overridden (DMS)", detail: "Spam verdict overridden by tenant" };
         default: return null;
     }
 }
 
 /** Describe CAT codes */
-function catDescription(cat: string): InsightDesc | null {
+function catDescription(cat: string): CodeEntry | null {
     switch (cat.toUpperCase()) {
-        case "BULK": return { severity: "warning", label: "Bulk mail", detail: "Categorized as bulk/marketing email" };
-        case "DIMP": return { severity: "error", label: "Domain impersonation", detail: "Detected as domain impersonation phishing" };
-        case "GIMP": return { severity: "error", label: "Mailbox intelligence", detail: "Phishing based on mailbox intelligence" };
-        case "HPHSH":
-        case "HPHISH": return { severity: "error", label: "High-confidence phish", detail: "High-confidence phishing message" };
-        case "HSPM": return { severity: "error", label: "High-confidence spam", detail: "High-confidence spam message" };
-        case "MALW": return { severity: "error", label: "Malware", detail: "Message contains malware" };
-        case "PHSH": return { severity: "error", label: "Phishing", detail: "Message identified as phishing" };
+        case "BULK": return { severity: "warning", label: "Bulk (BULK)", detail: "Looks like a newsletter" };
+        case "DIMP": return { severity: "error", label: "Domain impersonation (DIMP)", detail: "Resembles a known domain" };
+        case "GIMP": return { severity: "error", label: "Graph anomaly (GIMP)", detail: "Sender unusual for this mailbox" };
+        case "HPHISH": return { severity: "error", label: "High-conf phish (HPHISH)" };
+        case "HSPM": return { severity: "error", label: "High-conf spam (HSPM)" };
+        case "MALW": return { severity: "error", label: "Malware (MALW)", detail: "Threat detected by anti-malware" };
+        case "PHSH": return { severity: "error", label: "Phishing (PHSH)", detail: "Probable phishing" };
         case "SPM": return { severity: "error", label: "Categorized as spam", detail: "Categorized as spam by protection policy" };
-        case "SPOOF": return { severity: "error", label: "Spoofed", detail: "Message detected as spoofed" };
-        case "UIMP": return { severity: "error", label: "User impersonation", detail: "Detected as user impersonation" };
-        case "AMP": return { severity: "error", label: "Anti-malware", detail: "Message contains anti-malware threat" };
-        case "SAP": return { severity: "warning", label: "Safe Attachments", detail: "Flagged by Safe Attachments policy" };
-        case "OSPM": return { severity: "warning", label: "Outbound spam", detail: "Marked as outbound spam" };
-        case "NONE": return { severity: "success", label: "Clean", detail: "No threats detected by protection policies" };
+        case "SPOOF": return { severity: "error", label: "Spoofed (SPOOF)", detail: "Sender appears spoofed" };
+        case "UIMP": return { severity: "error", label: "User impersonation (UIMP)", detail: "Display name matches a protected user" };
+        case "AMP": return { severity: "error", label: "Anti-malware (AMP)", detail: "Threat detected by anti-malware" };
+        case "SAP": return { severity: "warning", label: "Safe Attachments (SAP)", detail: "Attachment flagged for detonation" };
+        case "OSPM": return { severity: "warning", label: "Outbound spam (OSPM)", detail: "Flagged leaving your tenant" };
+        case "NONE": return { severity: "success", label: "Clean (NONE)" };
         default: return null;
+    }
+}
+
+/** Decode SFTY safety-tip values. Format is typically "<class>" or "<class>.<sub>". */
+function sftyDescription(sfty: string): CodeEntry {
+    const cls = sfty.split(".")[0] ?? "";
+    switch (cls) {
+        case "1": return { severity: "info", label: `Safety tip: ${sfty}`, detail: "First message from this sender" };
+        case "2": return { severity: "error", label: `Safety tip: ${sfty}`, detail: "Sender domain resembles a known brand" };
+        case "3":
+        case "4": return { severity: "error", label: `Safety tip: ${sfty}`, detail: "Display name matches a protected user" };
+        default: return { severity: "warning", label: `Safety tip: ${sfty}` };
     }
 }
 
@@ -101,31 +133,22 @@ export function generateInsights(model: HeaderModel): Insight[] {
     const insights: Insight[] = [];
 
     // --- Authentication Results ---
-    const authResults = getRowValue(model.otherHeaders.rows,"Authentication-Results");
-    const arcAuthResults = getRowValue(model.otherHeaders.rows,"ARC-Authentication-Results");
+    const authResults = getRowValue(model.otherHeaders.rows, "Authentication-Results");
+    const arcAuthResults = getRowValue(model.otherHeaders.rows, "ARC-Authentication-Results");
     const authHeader = authResults || arcAuthResults;
 
     if (authHeader) {
-        for (const mechanism of ["spf", "dkim", "dmarc"]) {
-            const result = parseAuthResult(authHeader, mechanism);
-            if (result) {
-                insights.push({
-                    severity: authSeverity(result),
-                    label: authLabel(mechanism, result),
-                    detail: authDetail(mechanism, result),
-                    category: "auth",
-                });
-            }
-        }
+        const spf = parseAuthResult(authHeader, "spf");
+        if (spf) insights.push(authInsight("SPF", spf, SPF_RESULTS));
+
+        const dkim = parseAuthResult(authHeader, "dkim");
+        if (dkim) insights.push(authInsight("DKIM", dkim, DKIM_RESULTS));
+
+        const dmarc = parseAuthResult(authHeader, "dmarc");
+        if (dmarc) insights.push(authInsight("DMARC", dmarc, DMARC_RESULTS));
+
         const compauth = parseAuthResult(authHeader, "compauth");
-        if (compauth) {
-            insights.push({
-                severity: authSeverity(compauth),
-                label: `CompAuth ${compauth}`,
-                detail: authDetail("compauth", compauth),
-                category: "auth",
-            });
-        }
+        if (compauth) insights.push(authInsight("CompAuth", compauth, COMPAUTH_RESULTS));
     }
 
     // --- Spam Confidence Level (SCL) ---
@@ -133,13 +156,7 @@ export function generateInsights(model: HeaderModel): Insight[] {
     if (sclValue) {
         const scl = parseInt(sclValue, 10);
         if (!isNaN(scl)) {
-            const desc = sclDescription(scl);
-            insights.push({
-                severity: desc.severity,
-                label: `SCL ${scl}`,
-                detail: desc.detail,
-                category: "spam",
-            });
+            insights.push(sclInsight(scl));
         }
     }
 
@@ -153,6 +170,7 @@ export function generateInsights(model: HeaderModel): Insight[] {
                 label: desc.label,
                 detail: desc.detail,
                 category: "spam",
+                anchor: { section: "forefront", rowKey: "SFV" },
             });
         }
     }
@@ -167,6 +185,7 @@ export function generateInsights(model: HeaderModel): Insight[] {
                 label: desc.label,
                 detail: desc.detail,
                 category: "spam",
+                anchor: { section: "forefront", rowKey: "CAT" },
             });
         }
     }
@@ -177,19 +196,20 @@ export function generateInsights(model: HeaderModel): Insight[] {
         const bcl = parseInt(bclValue, 10);
         if (!isNaN(bcl)) {
             let severity: InsightSeverity = "success";
-            let detail = "Low bulk complaint level";
+            let detail: string | undefined;
             if (bcl >= 7) {
                 severity = "error";
-                detail = "High bulk complaint level — likely bulk/spam sender";
+                detail = "Heavy complaint volume";
             } else if (bcl >= 4) {
                 severity = "warning";
-                detail = "Moderate bulk complaint level";
+                detail = "Reputable bulk sender";
             }
             insights.push({
                 severity,
                 label: `BCL ${bcl}`,
                 detail,
                 category: "spam",
+                anchor: { section: "antispam", rowKey: "BCL" },
             });
         }
     }
@@ -199,83 +219,102 @@ export function generateInsights(model: HeaderModel): Insight[] {
     if (pclValue) {
         const pcl = parseInt(pclValue, 10);
         if (!isNaN(pcl) && pcl > 0) {
-            let severity: InsightSeverity = "warning";
-            let detail = "Possible phishing indicators detected";
-            if (pcl >= 4) {
-                severity = "error";
-                detail = "Strong phishing indicators — message likely phishing";
-            }
+            const severity: InsightSeverity = pcl >= 4 ? "error" : "warning";
+            const detail = pcl >= 4 ? "Strong phishing signals" : "Weak phishing signals";
             insights.push({
                 severity,
                 label: `PCL ${pcl}`,
                 detail,
                 category: "spam",
+                anchor: { section: "forefront", rowKey: "PCL" },
             });
         }
     }
 
+    // --- Directionality (read first; used to suppress noisy intra-org insights) ---
+    // Microsoft emits short codes here: INB (inbound), OUT (outbound), INT (intra-org).
+    const dir = getRowValue(model.forefrontAntiSpamReport.rows, "DIR");
+    const dirUpper = dir?.toUpperCase() ?? "";
+    const isIntraOrg = dirUpper === "INT" || dirUpper === "INTRA-ORG";
+
     // --- Country of Origin ---
     const ctry = getRowValue(model.forefrontAntiSpamReport.rows, "CTRY");
-    if (ctry) {
-        insights.push({
-            severity: "info",
-            label: `Origin: ${ctry}`,
-            detail: `Message originated from country/region: ${ctry}`,
-            category: "security",
-        });
+    if (ctry && !isIntraOrg) {
+        if (ctry.toUpperCase() === "XX") {
+            insights.push({
+                severity: "info",
+                label: "Origin: unknown",
+                detail: "Sender's country couldn't be determined",
+                category: "security",
+                anchor: { section: "forefront", rowKey: "CTRY" },
+            });
+        } else {
+            insights.push({
+                severity: "info",
+                label: `Origin: ${ctry}`,
+                category: "security",
+                anchor: { section: "forefront", rowKey: "CTRY" },
+            });
+        }
     }
 
     // --- Directionality ---
-    const dir = getRowValue(model.forefrontAntiSpamReport.rows, "DIR");
     if (dir) {
-        let dirDetail: string;
-        switch (dir) {
-            case "Inbound": dirDetail = "Inbound message from external sender"; break;
-            case "Outbound": dirDetail = "Outbound message from your organization"; break;
-            case "Intra-org": dirDetail = "Message sent within your organization"; break;
-            default: dirDetail = `Message directionality: ${dir}`;
-        }
         insights.push({
             severity: "info",
             label: dir,
-            detail: dirDetail,
             category: "security",
+            anchor: { section: "forefront", rowKey: "DIR" },
         });
     }
 
     // --- Connecting IP ---
     const cip = getRowValue(model.forefrontAntiSpamReport.rows, "CIP");
-    if (cip) {
+    if (cip && !isIntraOrg) {
         insights.push({
             severity: "info",
-            label: `IP: ${cip}`,
-            detail: `Connecting IP address: ${cip}`,
+            label: `Connecting IP ${cip}`,
             category: "security",
+            anchor: { section: "forefront", rowKey: "CIP" },
         });
     }
 
     // --- Delivery performance ---
     const hops = model.receivedHeaders.rows;
     if (hops.length > 0) {
-        insights.push({
-            severity: "info",
-            label: `${hops.length} hop${hops.length !== 1 ? "s" : ""}`,
-            detail: `Message traversed ${hops.length} server${hops.length !== 1 ? "s" : ""}`,
-            category: "delivery",
-        });
+        if (hops.length > 10) {
+            insights.push({
+                severity: "warning",
+                label: `Many hops (${hops.length})`,
+                detail: "Unusually long path",
+                category: "delivery",
+            });
+        } else {
+            insights.push({
+                severity: "info",
+                label: `${hops.length} hop${hops.length !== 1 ? "s" : ""}`,
+                category: "delivery",
+            });
+        }
 
         // Total delivery time
         const totalTime = model.summary.totalTime;
         if (totalTime) {
             const isLong = isLongDelivery(hops);
-            insights.push({
-                severity: isLong ? "warning" : "success",
-                label: `Transit: ${totalTime}`,
-                detail: isLong
-                    ? `Total delivery time was ${totalTime} — longer than typical`
-                    : `Total delivery time: ${totalTime}`,
-                category: "delivery",
-            });
+            if (isLong) {
+                insights.push({
+                    severity: "warning",
+                    label: `Slow transit ${totalTime}`,
+                    detail: "Took longer than typical",
+                    category: "delivery",
+                });
+            } else {
+                insights.push({
+                    severity: "success",
+                    label: `Transit ${totalTime}`,
+                    category: "delivery",
+                });
+            }
         }
 
         // Largest hop delay
@@ -283,8 +322,8 @@ export function generateInsights(model: HeaderModel): Insight[] {
         if (bottleneck) {
             insights.push({
                 severity: bottleneck.severity,
-                label: `Bottleneck: ${bottleneck.delay}`,
-                detail: `Largest delay at hop ${bottleneck.hop}: ${bottleneck.from} → ${bottleneck.by} (${bottleneck.delay})`,
+                label: `Bottleneck hop ${bottleneck.hop} (${bottleneck.delay})`,
+                detail: `Held ${bottleneck.delay} at ${bottleneck.by || bottleneck.from || "unknown server"}`,
                 category: "delivery",
             });
         }
@@ -292,10 +331,11 @@ export function generateInsights(model: HeaderModel): Insight[] {
         // Time travel (negative delays)
         const timeTravelHops = findTimeTravelHops(hops);
         if (timeTravelHops.length > 0) {
+            const hopList = timeTravelHops.join(", ");
             insights.push({
                 severity: "warning",
-                label: `Time skew (${timeTravelHops.length} hop${timeTravelHops.length !== 1 ? "s" : ""})`,
-                detail: `Negative delay at hop${timeTravelHops.length !== 1 ? "s" : ""} ${timeTravelHops.join(", ")} — clock skew or header manipulation`,
+                label: `Clock skew at hop${timeTravelHops.length !== 1 ? "s" : ""} ${hopList}`,
+                detail: "Clock drift between servers",
                 category: "anomaly",
             });
         }
@@ -306,23 +346,24 @@ export function generateInsights(model: HeaderModel): Insight[] {
             if (tlsInfo.encrypted === tlsInfo.total) {
                 insights.push({
                     severity: "success",
-                    label: "All hops encrypted",
-                    detail: `All ${tlsInfo.total} hop${tlsInfo.total !== 1 ? "s" : ""} used TLS encryption`,
+                    label: "TLS on all hops",
+                    detail: "Each hop encrypted",
                     category: "security",
                 });
             } else if (tlsInfo.encrypted > 0) {
                 const plain = tlsInfo.total - tlsInfo.encrypted;
+                const plainList = tlsInfo.plaintextHops.join(", ");
                 insights.push({
                     severity: "warning",
-                    label: `${plain} unencrypted hop${plain !== 1 ? "s" : ""}`,
-                    detail: `${tlsInfo.encrypted} of ${tlsInfo.total} hops used TLS — ${plain} transmitted in plaintext`,
+                    label: `${plain} plaintext hop${plain !== 1 ? "s" : ""}`,
+                    detail: plainList ? `Hop${plain !== 1 ? "s" : ""} ${plainList} unencrypted` : undefined,
                     category: "security",
                 });
             } else {
                 insights.push({
                     severity: "error",
-                    label: "No encryption",
-                    detail: "No hops used TLS encryption — message transmitted in plaintext",
+                    label: "No TLS observed",
+                    detail: "No hop reported encryption",
                     category: "security",
                 });
             }
@@ -330,15 +371,14 @@ export function generateInsights(model: HeaderModel): Insight[] {
     }
 
     // --- Message priority ---
-    const priority = getRowValue(model.otherHeaders.rows,"X-Priority") || getRowValue(model.otherHeaders.rows,"X-MSMail-Priority");
-    const importance = getRowValue(model.otherHeaders.rows,"Importance");
+    const priority = getRowValue(model.otherHeaders.rows, "X-Priority") || getRowValue(model.otherHeaders.rows, "X-MSMail-Priority");
+    const importance = getRowValue(model.otherHeaders.rows, "Importance");
     if (priority || importance) {
         const pInfo = parsePriority(priority, importance);
         if (pInfo) {
             insights.push({
                 severity: pInfo.severity,
                 label: pInfo.label,
-                detail: pInfo.detail,
                 category: "anomaly",
             });
         }
@@ -350,15 +390,14 @@ export function generateInsights(model: HeaderModel): Insight[] {
         const errors = violations.filter(v => v.severity === "error").length;
         const warnings = violations.filter(v => v.severity === "warning").length;
         const infos = violations.filter(v => v.severity === "info").length;
-        const parts: string[] = [];
-        if (errors > 0) parts.push(`${errors} error${errors !== 1 ? "s" : ""}`);
-        if (warnings > 0) parts.push(`${warnings} warning${warnings !== 1 ? "s" : ""}`);
-        if (infos > 0) parts.push(`${infos} info`);
+        const breakdown: string[] = [];
+        if (errors > 0) breakdown.push(`${errors}E`);
+        if (warnings > 0) breakdown.push(`${warnings}W`);
+        if (infos > 0) breakdown.push(`${infos}I`);
         const severity: InsightSeverity = errors > 0 ? "error" : warnings > 0 ? "warning" : "info";
         insights.push({
             severity,
-            label: `${violations.length} diagnostic${violations.length !== 1 ? "s" : ""}`,
-            detail: `Rule analysis found: ${parts.join(", ")}`,
+            label: `${violations.length} diagnostic${violations.length !== 1 ? "s" : ""} (${breakdown.join("/")})`,
             category: "anomaly",
         });
     }
@@ -366,11 +405,13 @@ export function generateInsights(model: HeaderModel): Insight[] {
     // --- Phishing safety (SFTY) ---
     const sfty = getRowValue(model.forefrontAntiSpamReport.rows, "SFTY");
     if (sfty) {
+        const desc = sftyDescription(sfty);
         insights.push({
-            severity: "error",
-            label: "Phishing flag",
-            detail: `Phishing safety value: ${sfty}`,
+            severity: desc.severity,
+            label: desc.label,
+            detail: desc.detail,
             category: "spam",
+            anchor: { section: "forefront", rowKey: "SFTY" },
         });
     }
 
@@ -392,6 +433,16 @@ function isLongDelivery(hops: ReceivedRow[]): boolean {
     return last > first && (last - first) > 5 * 60 * 1000;
 }
 
+/** Sum of positive hop delays in ms — used as the denominator for bottleneck severity. */
+function totalHopDelay(hops: ReceivedRow[]): number {
+    let total = 0;
+    for (const hop of hops) {
+        const sort = hop.delaySort.value;
+        if (typeof sort === "number" && sort > 0) total += sort;
+    }
+    return total;
+}
+
 function findBottleneck(hops: ReceivedRow[]): { hop: number; delay: string; from: string; by: string; severity: InsightSeverity } | null {
     let maxDelay = 0;
     let bottleneck: ReceivedRow | null = null;
@@ -409,12 +460,18 @@ function findBottleneck(hops: ReceivedRow[]): { hop: number; delay: string; from
     const delay = typeof bottleneck.delay.value === "string" ? bottleneck.delay.value : "";
     if (!delay) return null;
 
+    // Bottleneck is "interesting" only if it's a meaningful absolute delay AND a meaningful share of total transit.
+    // Threshold: greater than 5 min, OR more than 50% of total positive hop delay.
+    const total = totalHopDelay(hops);
+    const fiveMin = 5 * 60 * 1000;
+    const isWarning = maxDelay > fiveMin || (total > 0 && maxDelay / total > 0.5 && maxDelay > 30 * 1000);
+
     return {
         hop: typeof bottleneck.hop.value === "number" ? bottleneck.hop.value : 0,
         delay,
         from: (bottleneck.from.value ?? "").toString(),
         by: (bottleneck.by.value ?? "").toString(),
-        severity: maxDelay > 60000 ? "warning" : "info",
+        severity: isWarning ? "warning" : "info",
     };
 }
 
@@ -430,10 +487,11 @@ function findTimeTravelHops(hops: ReceivedRow[]): number[] {
     return result;
 }
 
-function analyzeTls(hops: ReceivedRow[]): { total: number; encrypted: number } {
+function analyzeTls(hops: ReceivedRow[]): { total: number; encrypted: number; plaintextHops: number[] } {
     let total = 0;
     let encrypted = 0;
-    const tlsPatterns = /\b(ESMTPS|TLS\S*|STARTTLS|mapi\s+over\s+https|https|SMTPS)\b/i;
+    const plaintextHops: number[] = [];
+    const tlsPatterns = /\b(ESMTPSA?|TLS\S*|STARTTLS|mapi\s+over\s+https|https|SMTPS)\b/i;
 
     for (const hop of hops) {
         const withVal = (hop.with.value ?? "").toString();
@@ -441,23 +499,26 @@ function analyzeTls(hops: ReceivedRow[]): { total: number; encrypted: number } {
             total++;
             if (tlsPatterns.test(withVal)) {
                 encrypted++;
+            } else {
+                const hopNum = typeof hop.hop.value === "number" ? hop.hop.value : 0;
+                if (hopNum > 0) plaintextHops.push(hopNum);
             }
         }
     }
-    return { total, encrypted };
+    return { total, encrypted, plaintextHops };
 }
 
-function parsePriority(xPriority: string, importance: string): { severity: InsightSeverity; label: string; detail: string } | null {
+function parsePriority(xPriority: string, importance: string): { severity: InsightSeverity; label: string } | null {
     // X-Priority: 1 (Highest), 2 (High), 3 (Normal), 4 (Low), 5 (Lowest)
     // Importance: high, normal, low
     const imp = importance?.toLowerCase() ?? "";
     const pri = parseInt(xPriority, 10);
 
     if (pri === 1 || pri === 2 || imp === "high") {
-        return { severity: "warning", label: "High priority", detail: "Message was marked as high priority/importance" };
+        return { severity: "warning", label: "High priority" };
     }
     if (pri === 4 || pri === 5 || imp === "low") {
-        return { severity: "info", label: "Low priority", detail: "Message was marked as low priority/importance" };
+        return { severity: "info", label: "Low priority" };
     }
     // Normal priority — not interesting enough to show
     return null;
