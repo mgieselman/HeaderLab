@@ -21,6 +21,7 @@ Rework the Security section to match the Summary section's flat, insight-led lay
 ## Files changed
 
 - `src/Scripts/ui/insights/InsightList.ts` (new) — shared `renderInsightList(insights, filter?)` with severity ordering.
+- `src/Scripts/ui/insights/InsightList.test.ts` (new) — unit tests covering render, severity ordering, detail/filter branches.
 - `src/Scripts/ui/insights/Insight.ts` — added `InsightAnchor` type and optional `anchor` field on `Insight` so the Security tab can map an insight back to the kv row that produced it.
 - `src/Scripts/ui/insights/InsightEngine.ts` — anchored the Forefront/Antispam-derived insights (SCL, SFV, CAT, BCL, PCL, CTRY, DIR, CIP, SFTY) to their source rows. Also contains the independent insight-system edits that were already in the working tree (auth parsing, TLS analysis, priority, violation summary, expanded codes).
 - `src/Scripts/ui/insights/InsightEngine.test.ts` — updated test fixtures and assertions that came with the Insight engine work.
