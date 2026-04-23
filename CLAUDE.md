@@ -104,8 +104,8 @@ The Graph fallback path is the only working iOS path. Outlook Desktop (Win/Mac) 
 ### Build-time secret wiring
 
 The Graph path needs an Entra app client ID at build time:
-- Source secret in the GitHub repo: **`MHA_NAA_CLIENT_ID`** (legacy name from when this was the MHA fork — never renamed).
-- `.github/workflows/build.yml` maps it: `HEADERLAB_NAA_CLIENT_ID: ${{ secrets.MHA_NAA_CLIENT_ID }}`.
+- Source secret in the GitHub repo: **`HEADERLAB_NAA_CLIENT_ID`** (previously `MHA_NAA_CLIENT_ID` — renamed to match the HeaderLab branding; the old secret has been removed).
+- `.github/workflows/build.yml` maps it: `HEADERLAB_NAA_CLIENT_ID: ${{ secrets.HEADERLAB_NAA_CLIENT_ID }}`.
 - `vite.config.ts` reads `process.env["HEADERLAB_NAA_CLIENT_ID"]` and bakes it into `__NAACLIENTID__`.
 - `src/Scripts/config/naaClientId.ts` exports the value at runtime.
 - `GetHeadersGraph.canUseGraph()` returns false if it's empty, which causes the Graph branch to be silently skipped.
