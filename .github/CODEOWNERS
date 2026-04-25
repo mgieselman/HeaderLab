@@ -1,1 +1,19 @@
+# CI/CD and governance
+/.github/ @mgieselman
+
+# Application source
+/src/ @mgieselman
+/public/ @mgieselman
+
+# Hosted build output and deployment artifacts
+/Pages/ @mgieselman
+
+# Manifests and deployment/config root files
+/Manifest.xml @mgieselman
+/ManifestDebugLocal.xml @mgieselman
+/manifest.json @mgieselman
+/staticwebapp.config.json @mgieselman
+/vite.config.ts @mgieselman
+
+# Default fallback ownership
 * @mgieselman
