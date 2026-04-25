@@ -50,6 +50,7 @@ ALWAYS_ALLOWED = {
 # Directories whose contents are always allowed to change.
 ALWAYS_ALLOWED_DIRS = (
     "docs/plans/",
+    ".github/",
 )
 
 # Outlook add-in <Permissions> levels, ordered least → most permissive.
@@ -184,6 +185,9 @@ def collect_planned_paths(repo_root: Path) -> Set[str]:
             elif "." in match[1:]:
                 paths.add(match)
             elif match.startswith(".") and len(match) > 1:
+                paths.add(match)
+            elif match.isalpha() and match.isupper():
+                # Convention: extensionless uppercase root files (LICENSE, NOTICE, README, …)
                 paths.add(match)
     return paths
 

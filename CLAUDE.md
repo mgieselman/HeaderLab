@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 HeaderLab (package name: `mha`) is an email Message Header Analyzer. It parses raw email transport headers and displays routing hops, delivery delays, antispam verdicts, authentication results (SPF/DKIM/DMARC), and rule-based diagnostics. It runs both as a standalone web app and as an Outlook Office Add-in (Office.js with a Microsoft Graph fallback for hosts where `getAllInternetHeadersAsync` is not implemented, notably Outlook for iOS).
 
-Originally named MHA (Microsoft Header Analyzer), now renamed to HeaderLab. MHA references have been removed from the data and retrieval layers. See `PLAN.md` for the UI rebuild plan and architecture modernization proposals.
+Originally named Microsoft Header Analyzer, now renamed to HeaderLab. Legacy-name references have been removed from the data and retrieval layers. See `PLAN.md` for the UI rebuild plan and architecture modernization proposals.
 
 ## Build & Dev Commands
 
@@ -97,14 +97,14 @@ The retrieval layer has a non-obvious shape that exists because of a still-unfix
 
 ### Why the fallback exists
 
-`getAllInternetHeadersAsync` is **not implemented on Outlook for iOS** even though `Office.context.requirements.isSetSupported("Mailbox", "1.9") === true` returns true there. iOS reports the high requirement-set number for the *subset* of Mailbox 1.9 APIs that's been ported to mobile, and this one isn't on the allow-list. The call fails with `code 7000 / "You don't have sufficient permissions for this action"` — a misleading message; the real meaning is "API not available on this host." Permission elevation does not fix it (we tried `ReadItem` → `ReadWriteItem` → `ReadWriteMailbox`; all hit the same 7000). Microsoft has had open issues on this for ~18 months (`microsoft/MHA#896`, `#1460`; `OfficeDev/office-js#2554`, `#4109`) with no committed fix.
+`getAllInternetHeadersAsync` is **not implemented on Outlook for iOS** even though `Office.context.requirements.isSetSupported("Mailbox", "1.9") === true` returns true there. iOS reports the high requirement-set number for the *subset* of Mailbox 1.9 APIs that's been ported to mobile, and this one isn't on the allow-list. The call fails with `code 7000 / "You don't have sufficient permissions for this action"` — a misleading message; the real meaning is "API not available on this host." Permission elevation does not fix it (we tried `ReadItem` → `ReadWriteItem` → `ReadWriteMailbox`; all hit the same 7000). Microsoft has had open issues on this for ~18 months (`microsoft` issue `#896`, `#1460`; `OfficeDev/office-js#2554`, `#4109`) with no committed fix.
 
 The Graph fallback path is the only working iOS path. Outlook Desktop (Win/Mac) and Outlook on the Web honor the direct API and never reach the Graph branch. The diagnostics tab's "API used" field will read `"API"` on Desktop/Web and `"Graph"` on iOS.
 
 ### Build-time secret wiring
 
 The Graph path needs an Entra app client ID at build time:
-- Source secret in the GitHub repo: **`HEADERLAB_NAA_CLIENT_ID`** (previously `MHA_NAA_CLIENT_ID` — renamed to match the HeaderLab branding; the old secret has been removed).
+- Source secret in the GitHub repo: **`HEADERLAB_NAA_CLIENT_ID`** (replacing the previous legacy identifier; the old secret has been removed).
 - `.github/workflows/build.yml` maps it: `HEADERLAB_NAA_CLIENT_ID: ${{ secrets.HEADERLAB_NAA_CLIENT_ID }}`.
 - `vite.config.ts` reads `process.env["HEADERLAB_NAA_CLIENT_ID"]` and bakes it into `__NAACLIENTID__`.
 - `src/Scripts/config/naaClientId.ts` exports the value at runtime.
