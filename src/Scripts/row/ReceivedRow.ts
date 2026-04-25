@@ -37,8 +37,9 @@ export class ReceivedRow {
             return;
         }
 
-        const field = this[fieldName.toLowerCase()] as unknown as ReceivedField;
-        if (!field) return;
+        const rawField = this[fieldName.toLowerCase()];
+        if (!rawField || typeof rawField === "function") return;
+        const field = rawField as ReceivedField;
 
         if (field.value) { field.value += "; " + fieldValue; }
         else { field.value = fieldValue; }

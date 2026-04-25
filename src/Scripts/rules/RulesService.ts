@@ -135,8 +135,6 @@ class RulesService {
                 violationGroups
             };
         } catch (error) {
-            console.error("Rules analysis failed:", error);
-
             return {
                 success: false,
                 error: error instanceof Error ? error.message : "Unknown analysis error",

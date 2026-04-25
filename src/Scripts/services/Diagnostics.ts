@@ -56,6 +56,7 @@ export class Diagnostics {
         this.appInsightsLoadPromise = (async (): Promise<void> => {
             const appInsightsModule = await import("@microsoft/applicationinsights-web");
             const appInsightsCtor = appInsightsModule.ApplicationInsights;
+            // eslint-disable-next-line no-restricted-syntax -- necessary: AppInsights is lazily imported so its type is not statically available
             const appInsightsInstance = new appInsightsCtor({
                 config: {
                     instrumentationKey: instrumentationKey,
@@ -99,10 +100,9 @@ export class Diagnostics {
             }
 
             this.appInsights = appInsightsInstance;
-        })().catch((error: unknown) => {
+        })().catch(() => {
             this.appInsightsLoadPromise = null;
             this.sendTelemetry = false;
-            console.warn("Telemetry initialization failed", (error as Error)?.message ?? error);
         });
     }
 
@@ -154,11 +154,7 @@ export class Diagnostics {
             this.ensureAppInsightsLoaded();
             if (typeof (Office) !== "undefined" && Office.context) {
                 Office.context.roamingSettings.set("sendTelemetry", this.sendTelemetry);
-                Office.context.roamingSettings.saveAsync((result: Office.AsyncResult<void>) => {
-                    if (result && result.status !== Office.AsyncResultStatus.Succeeded) {
-                        console.log(`setSendTelemetry = ${JSON.stringify(result)}`);
-                    }
-                });
+                Office.context.roamingSettings.saveAsync(() => { /* non-critical; ignore save failures */ });
             }
         }
     }
@@ -174,10 +170,6 @@ export class Diagnostics {
                 this.appInsights.trackEvent(event, customProperties);
             }
         }
-        else {
-            const mgsBase = `Event ${JSON.stringify(event)}: ${JSON.stringify(customProperties)}`;
-            console.log(mgsBase);
-        }
     }
 
     public trackException(event: IEventTelemetry, customProperties?: ICustomProperties): void {
@@ -186,10 +178,6 @@ export class Diagnostics {
             if (this.appInsights) {
                 this.appInsights.trackException(event, customProperties);
             }
-        }
-        else {
-            const mgsBase = `Exception ${JSON.stringify(event)}: ${JSON.stringify(customProperties)}`;
-            console.log(mgsBase);
         }
     }
 
@@ -201,10 +189,6 @@ export class Diagnostics {
             if (this.appInsights) {
                 this.appInsights.trackEvent({ name: eventType, properties: { source: source, message: message, stack: stack } });
             }
-        }
-        else {
-            const mgsBase = `Error ${eventType} from ${source}: ${message}`;
-            console.warn(mgsBase);
         }
     }
 

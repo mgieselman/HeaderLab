@@ -176,6 +176,12 @@ export default [{
 
         "import/no-unresolved": "error",
         "import/no-named-as-default-member": "off",
+        "no-console": "error",
+
+        "no-restricted-syntax": ["error", {
+            selector: "TSAsExpression > TSAsExpression",
+            message: "Avoid double type assertions (as X as Y). Use a type guard or intermediate variable instead.",
+        }],
 
         "import/order": ["error", {
             groups: [
@@ -194,5 +200,12 @@ export default [{
                 caseInsensitive: true,
             },
         }],
+    },
+}, {
+    // Test file rule overrides — must come after the main rules block so they take precedence
+    files: ["**/*.test.{js,ts}", "**/*.spec.{js,ts}", "**/test/**", "**/tests/**"],
+    rules: {
+        "no-console": "off",
+        "no-restricted-syntax": "off",
     },
 }];

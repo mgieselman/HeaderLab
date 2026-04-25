@@ -114,7 +114,7 @@ Steps to self-host:
    - Replace all occurrences of `headerlab.gieselman.com` in `Manifest.xml` and `manifest.json` with your domain
    - Replace the client ID GUID with your own
 
-> **Note:** The standalone web app (paste-and-analyze) works without any Entra setup. The Outlook add-in works without Entra on Desktop and Web, where the Office.js `getAllInternetHeadersAsync` API is implemented. Only Outlook for iOS requires the Graph/NAA fallback (and therefore the Entra registration), because Microsoft hasn't implemented the API on iOS — see `docs/plans/restore-naa-graph.md` for the investigation.
+> **Note:** The standalone web app (paste-and-analyze) works without any Entra setup. The Outlook add-in works without Entra on Desktop and Web, where the Office.js `getAllInternetHeadersAsync` API is implemented. Only Outlook for iOS requires the Graph/NAA fallback (and therefore the Entra registration), because Microsoft hasn't implemented the API on iOS.
 
 ## Deployment
 

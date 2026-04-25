@@ -32,12 +32,12 @@
       </DesktopSettings>
 
       <TabletSettings>
-        <SourceLocation DefaultValue="https://localhost:44336/Pages/DefaultTablet.html" />
+        <SourceLocation DefaultValue="https://localhost:44336/Pages/Default.html" />
         <RequestedHeight>350</RequestedHeight>
       </TabletSettings>
 
       <PhoneSettings>
-        <SourceLocation DefaultValue="https://localhost:44336/Pages/DefaultPhone.html" />
+        <SourceLocation DefaultValue="https://localhost:44336/Pages/MobilePane.html" />
       </PhoneSettings>
     </Form>
   </FormSettings>

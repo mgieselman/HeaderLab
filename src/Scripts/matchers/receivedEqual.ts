@@ -49,8 +49,8 @@ export function receivedEqual(this: { equals: (a: unknown, b: unknown) => boolea
             }
         }
     }
-    catch (e: unknown) {
-        console.log(e);
+    catch {
+        // comparison threw; treat as not-equal and report via messages
     }
 
     if (messages.length === 0) { messages.push("Received rows are equal"); }

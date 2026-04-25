@@ -1,17 +1,5 @@
-import { Strings } from "../core/Strings";
 import { RuleViolation, ViolationGroup } from "./types/AnalysisTypes";
 import { HeaderSection } from "./types/interfaces";
-
-/**
- * Escape HTML and apply content highlighting to show rule violation patterns
- * @param content - The text content to escape and highlight
- * @param violationGroups - Array of violation groups with highlight patterns
- * @returns The HTML-escaped content with highlighting spans applied
- */
-export function escapeAndHighlight(content: string, violationGroups: ViolationGroup[]): string {
-    const escapedContent = Strings.htmlEncode(content);
-    return highlightContent(escapedContent, violationGroups);
-}
 
 /**
  * Apply content highlighting to show rule violation patterns
@@ -52,8 +40,8 @@ export function highlightContent(content: string, violationGroups: ViolationGrou
                                     text: match[0]
                                 });
                             }
-                        } catch (error) {
-                            console.warn("Invalid regex pattern:", pattern, error);
+                        } catch {
+                            // skip invalid patterns silently
                         }
                     }
                 });

@@ -5,9 +5,37 @@ This project includes the following third-party components:
 
 ---
 
+@azure/msal-browser
+Copyright (c) Microsoft Corporation
+License: MIT
+https://github.com/AzureAD/microsoft-authentication-library-for-js
+
+---
+
+@microsoft/applicationinsights-web
+Copyright (c) Microsoft Corporation
+License: MIT
+https://github.com/microsoft/ApplicationInsights-JS
+
+---
+
 codepage
 Copyright (c) SheetJS
 License: Apache-2.0
 https://github.com/SheetJS/js-codepage
 
 This product includes software developed by SheetJS (https://sheetjs.com/).
+
+---
+
+dayjs
+Copyright (c) iamkun
+License: MIT
+https://github.com/iamkun/dayjs
+
+---
+
+stacktrace-js
+Copyright (c) Eric Wendelin and contributors
+License: MIT
+https://github.com/stacktracejs/stacktrace.js

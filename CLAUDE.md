@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 HeaderLab (package name: `mha`) is an email Message Header Analyzer. It parses raw email transport headers and displays routing hops, delivery delays, antispam verdicts, authentication results (SPF/DKIM/DMARC), and rule-based diagnostics. It runs both as a standalone web app and as an Outlook Office Add-in (Office.js with a Microsoft Graph fallback for hosts where `getAllInternetHeadersAsync` is not implemented, notably Outlook for iOS).
 
-Originally named Microsoft Header Analyzer, now renamed to HeaderLab. Legacy-name references have been removed from the data and retrieval layers. See `PLAN.md` for the UI rebuild plan and architecture modernization proposals.
+Originally named Microsoft Header Analyzer, now renamed to HeaderLab. Legacy-name references have been removed from the data and retrieval layers.
 
 ## Build & Dev Commands
 
@@ -56,7 +56,6 @@ Validates parsed headers against rules defined in `public/data/rules.json`. Entr
 ### `services/` — Infrastructure
 - **`Diagnostics.ts`** — Application Insights telemetry (exported class + `diagnostics` singleton).
 - **`Errors.ts`** / **`Stack.ts`** — Error collection (instance class with injected `Diagnostics`), stack trace parsing.
-- **`ParentFrameUtils.ts`** — Query string parsing, diagnostics string generation.
 - **`retrieval/`** — Header retrieval for Outlook add-in mode. See the **Header retrieval architecture** section below for the full story (it has cost real time and is non-obvious). Short version: `GetHeaders.send()` tries `GetHeadersAPI` (`getAllInternetHeadersAsync`) first, then falls back to `GetHeadersGraph` (Microsoft Graph via NAA/MSAL) when the API path returns empty. The fallback is load-bearing on Outlook for iOS — do not remove it. `HeaderCallbacks` interface decouples retrieval from UI.
 
 ### `ui/` — Presentation layer
@@ -83,7 +82,7 @@ Vanilla TypeScript + CSS custom properties, no framework. Two entry points:
 
 ## Header retrieval architecture (READ BEFORE TOUCHING `retrieval/`)
 
-The retrieval layer has a non-obvious shape that exists because of a still-unfixed Microsoft platform bug. Removing what looks like dead code here will silently break Outlook for iOS users. See `docs/plans/restore-naa-graph.md` and the Phase 7 entry in `PLAN.md` for the full investigation.
+The retrieval layer has a non-obvious shape that exists because of a still-unfixed Microsoft platform bug. Removing what looks like dead code here will silently break Outlook for iOS users. See the **Two-path fallback chain** and **Why the fallback exists** sections below for the full investigation.
 
 ### Two-path fallback chain
 
