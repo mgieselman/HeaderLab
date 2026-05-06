@@ -24,7 +24,18 @@
     "pretest": "npm run lint",
     "prebuild": "npm run clean"
   },
-  "keywords": ["email", "headers", "outlook", "add-in", "office-js", "analyzer", "antispam", "spf", "dkim", "dmarc"],
+  "keywords": [
+    "email",
+    "headers",
+    "outlook",
+    "add-in",
+    "office-js",
+    "analyzer",
+    "antispam",
+    "spf",
+    "dkim",
+    "dmarc"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/mgieselman/headerlab.git"
@@ -44,6 +55,7 @@
     "@eslint/compat": "^2.0.5",
     "@eslint/eslintrc": "^3.3.5",
     "@eslint/js": "^9.39.4",
+    "@microsoft/office-js": "^1.1.110",
     "@size-limit/file": "^12.1.0",
     "@stylistic/eslint-plugin": "^5.10.0",
     "@types/node": "^25.6.0",
@@ -55,13 +67,12 @@
     "eslint-import-resolver-typescript": "^4.4.4",
     "eslint-plugin-import-x": "^4.16.2",
     "eslint-plugin-node": "^11.1.0",
-    "globals": "^17.5.0",
+    "globals": "^17.6.0",
     "jsdom": "^29.1.1",
     "size-limit": "^12.1.0",
     "typescript": "^6.0.3",
     "vite": "^8.0.10",
-    "vitest": "^4.1.4",
-    "@microsoft/office-js": "^1.1.110"
+    "vitest": "^4.1.4"
   },
   "dependencies": {
     "@azure/msal-browser": "^5.2.0",
