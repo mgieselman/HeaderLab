@@ -3,7 +3,7 @@
 
 [![Build and Deploy](https://github.com/mgieselman/headerlab/actions/workflows/build.yml/badge.svg)](https://github.com/mgieselman/headerlab/actions/workflows/build.yml)
 [![Test](https://github.com/mgieselman/headerlab/actions/workflows/test.yml/badge.svg)](https://github.com/mgieselman/headerlab/actions/workflows/test.yml)
-[![codecov](https://codecov.io/gh/mgieselman/headerlab/graph/badge.svg)](https://codecov.io/gh/mgieselman/headerlab)
+[![codecov](https://codecov.io/gh/mgieselman/HeaderLab/graph/badge.svg?branch=main)](https://codecov.io/gh/mgieselman/HeaderLab)
 [![Node 22](https://img.shields.io/badge/node-22-brightgreen.svg)](https://nodejs.org/)
 [![ESLint](https://img.shields.io/badge/ESLint-enabled-4B32C3.svg)](https://eslint.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
